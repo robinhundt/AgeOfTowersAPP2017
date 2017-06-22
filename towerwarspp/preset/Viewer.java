@@ -1,9 +1,21 @@
 package towerwarspp.preset;
 
-public interface Viewer {
-    int getSize();
+import java.util.List;
 
-    int getTurn();
-
-    Status getStatus();
+public class Viewer {
+    public int getSize() {
+        return 0;
+    }
+    public int getTurn() {
+        return 0;
+    }
+    public Status getStatus() {
+        return null;
+    }
+    public int getStones() {
+        return 0;
+    }
+    public List getPossibleMoves(Position position) {
+        return null;
+    }
 }
