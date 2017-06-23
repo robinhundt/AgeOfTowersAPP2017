@@ -3,6 +3,9 @@ package towerwarspp.main;
 import towerwarspp.preset.ArgumentParser;
 import towerwarspp.preset.ArgumentParserException;
 import towerwarspp.io.*;
+import towerwarspp.preset.Move;
+import towerwarspp.preset.Status;
+import towerwarspp.preset.Player;
 
 /**
  * Class {@link AgeOfTowers} initializing a new game of TowerWarsPP with given settings <br>
@@ -142,7 +145,7 @@ public class AgeOfTowers {
          */
 
 
-        Status status = OK;
+        Status status = Status.OK;
         Move redMove = null;
         Move blueMove = null;
 
