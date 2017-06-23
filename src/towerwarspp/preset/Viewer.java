@@ -7,5 +7,5 @@ public interface Viewer {
     int getTurn();
     Status getStatus();
     int getStones();
-    List getPossibleMoves(Position position);
+    Move[] getPossibleMoves(Position position);
 }

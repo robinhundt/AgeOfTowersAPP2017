@@ -1,11 +1,11 @@
 package towerwarspp.io;
 
-import towerwarspp.board.Board;
+import towerwarspp.preset.Move;
 import towerwarspp.preset.Position;
 import towerwarspp.preset.Status;
 import towerwarspp.preset.Viewer;
+import towerwarspp.board.Board;
 
-import java.util.List;
 
 /**
  * Class {@link BoardInfo} create the graphical Board of the Game
@@ -22,7 +22,7 @@ public class BoardInfo implements Viewer {
 
     /**
      * Constructor to Initialize Viewer
-     * @param Board board
+     * @param board the Board of the game
      */
     public BoardInfo(Board board) {
         this.board = board;
@@ -34,7 +34,7 @@ public class BoardInfo implements Viewer {
      */
     @Override
     public int getSize() {
-        return 0;
+        return this.board.getSize();
     }
 
     /**
@@ -43,7 +43,7 @@ public class BoardInfo implements Viewer {
      */
     @Override
     public int getTurn() {
-        return 0;
+        return this.board.getTurn();
     }
 
     /**
@@ -53,7 +53,7 @@ public class BoardInfo implements Viewer {
      */
     @Override
     public Status getStatus() {
-        return null;
+        return this.board.getStatus();
     }
 
     /**
@@ -71,7 +71,12 @@ public class BoardInfo implements Viewer {
      * @return the possible Moves of the Stone
      */
     @Override
-    public List getPossibleMoves(Position position) {
+    public Move[] getPossibleMoves(Position position) {
+        try {
+            return this.board.stoneMoves(position);
+        } catch (Exception e) {
+            System.out.println(e);
+        }
         return null;
     }
 }
