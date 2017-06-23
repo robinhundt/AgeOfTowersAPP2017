@@ -1,0 +1,42 @@
+<?xml version="1.0"?>
+<project name="Age of Towers" basedir="." default="build">
+	<property name="src.dir" value="src"/>
+	<property name="build.dir" value="out"/>
+	<property name="doc.dir" value="doc"/>
+
+	<target name="init" description="Clean output directories and recreate directories">
+		<delete includeemptydirs="true" quiet="true">
+			<fileset dir="${build.dir}"/>
+		</delete>
+		<mkdir dir="${build.dir}"/>
+	</target>
+
+	<target name="build" description="Compile project" depends="init">
+		<javac destdir="${build.dir}" includeantruntime="false" debug="true">
+			<src path="${src.dir}"/>
+		</javac>
+	</target>
+
+	<target name="doc" description="Create JavaDoc files" depends="build">
+
+		<delete includeemptydirs="true" quiet="true">
+            <fileset dir="${doc.dir}"/>
+		</delete>
+		<mkdir dir="${doc.dir}"/>
+
+		<javadoc
+			sourcepath="${src.dir}"
+			destdir="${doc.dir}"
+			author="true"
+			version="true"
+			use="true"
+			Private="true"
+			Encoding="UTF-8"
+			charset="UTF-8"
+			docencoding="UTF-8"
+			windowtitle="APP">
+		</javadoc>
+
+	</target>
+
+</project>

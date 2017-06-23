@@ -1,7 +1,35 @@
 package towerwarspp.player;
 
+import towerwarspp.preset.Player;
+import towerwarspp.preset.PlayerColor;
+import towerwarspp.preset.PlayerType;
+import towerwarspp.preset.Requestable;
+
 /**
  * Created by robin on 23.06.17.
  */
 public class PlayerFactory {
+    private PlayerFactory(){}
+
+    public static Player makeHumanPlayer(int boardSize, PlayerColor playerColor, Requestable moveDeliver) throws Exception {
+        Player player = new HumanPlayer(moveDeliver);
+        player.init(boardSize, playerColor);
+        return player;
+    }
+
+    public static Player makePlayer(int boardSize, PlayerColor playerColor, PlayerType playerType) throws Exception {
+        Player player;
+        switch (playerType) {
+            // case REMOTE: player = new NetPlayer() /*TODO implement Remote*/ break;
+            case RANDOM_AI: player = new RndPlayer();       break;
+            case SIMPLE_AI: player =  new SimplePlayer();   break;
+            case ADVANCED_AI_1: player = new AdvPlayer();   break;
+            default: throw new IllegalArgumentException("Unsupported PlayerType");
+        }
+        player.init(boardSize, playerColor);
+        return player;
+    }
+
+
+
 }

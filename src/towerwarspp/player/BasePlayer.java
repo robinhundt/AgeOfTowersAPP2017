@@ -5,28 +5,18 @@ import towerwarspp.board.Board;
 import towerwarspp.preset.*;
 
 /**
- * Implementation of Player Interface that represents a human player.
+ * Partial omplementation of Player Interface that is used as Super-Class for specialized players (eg. Human, Random, etc.).
  */
-public class BasePlayer implements Player {
-    private Requestable move;
-    private Board board;
-    private PlayerState state;
+abstract class BasePlayer implements Player {
+    Board board;
+    PlayerState state;
+    PlayerColor color;
 
-    private BasePlayer(Requestable move) {
-        this.move = move;
-    }
-
-    /*
-    * request a move from move object (the human player)
-    * */
-    @Override
-    public Move request() throws Exception {
-        if(state != PlayerState.INIT && state != PlayerState.UPDATED)
-            throw new Exception("Illegal PlayerState. request can only be called after init or update.");
-        state = PlayerState.REQUESTED;
-        return move.deliver();
-    }
-
+    /**
+     * Method to validate the players boardStatus against the passed one. <b>Must always</b> be called after request and <b>before</b> confirm!
+     * @param boardStatus boardStatus to validate
+     * @throws Exception Throws an Exception in case the method is invodek in the wrong order.
+     */
     @Override
     public void confirm(Status boardStatus) throws Exception {
         if(state != PlayerState.REQUESTED)
@@ -36,6 +26,12 @@ public class BasePlayer implements Player {
         state = PlayerState.CONFIRMED;
     }
 
+    /**
+     * Update own
+     * @param opponentMove
+     * @param boardStatus
+     * @throws Exception
+     */
     @Override
     public void update(Move opponentMove, Status boardStatus) throws Exception {
         if(state != PlayerState.CONFIRMED)

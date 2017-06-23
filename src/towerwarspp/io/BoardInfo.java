@@ -1,5 +1,6 @@
 package towerwarspp.io;
 
+import towerwarspp.board.Board;
 import towerwarspp.preset.Position;
 import towerwarspp.preset.Status;
 import towerwarspp.preset.Viewer;

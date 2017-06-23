@@ -6,6 +6,7 @@ import towerwarspp.io.*;
 import towerwarspp.preset.Move;
 import towerwarspp.preset.Status;
 import towerwarspp.preset.Player;
+import towerwarspp.preset.PlayerColor;
 
 /**
  * Class {@link AgeOfTowers} initializing a new game of TowerWarsPP with given settings <br>
