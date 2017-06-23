@@ -1,13 +1,12 @@
 package towerwarspp.player;
 
-import towerwarspp.board.Board;
 import towerwarspp.preset.Move;
 import towerwarspp.preset.Requestable;
 
 import java.rmi.RemoteException;
 
 /**
- * Created by robin on 23.06.17.
+ *
  */
 class HumanPlayer extends BasePlayer {
     private Requestable moveDeliver;
@@ -18,8 +17,11 @@ class HumanPlayer extends BasePlayer {
 
     @Override
     public Move request() throws Exception, RemoteException {
+        if(state != PlayerState.REQUEST)
+            throw new Exception("Illegal PlayerState. Request can only be called after after init or update");
         Move move = moveDeliver.deliver();
         board.update(move, color);
+        state = state.next();
         return move;
     }
 }

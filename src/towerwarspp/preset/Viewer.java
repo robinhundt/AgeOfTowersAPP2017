@@ -1,6 +1,5 @@
 package towerwarspp.preset;
 
-import java.util.List;
 
 public interface Viewer {
     int getSize();

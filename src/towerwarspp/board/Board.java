@@ -9,8 +9,8 @@ public class Board implements Viewable {
 	private int size;
 	private PlayerColor turn = PlayerColor.RED;
 	private Status status = Status.OK;
-	private Vector<Position> listRed = new Vector<Position>();
-	private Vector<Position> listBlue = new Vector<Position>();
+	private Vector<Position> listRed = new Vector<>();
+	private Vector<Position> listBlue = new Vector<>();
 	private Entity[][] board; 
 	private int[][] boardInt;
 	private Position redBase;
@@ -51,7 +51,7 @@ public class Board implements Viewable {
 	*	the curren turn. 
 	*/
 	public int getTurn() {
-		return (turn == turn.RED? 1: 2);
+		return (turn == PlayerColor.RED? 1: 2);
 	}
 	/**
 	* Gives the status of the board.
@@ -223,12 +223,12 @@ public class Board implements Viewable {
 	
 	/**
 	* Gives all possible moves which a figure (stone, tower, base) on the position pos has.
-	* @param pos - position of the figure.
+	* @param p - position of the figure.
 	* @return
 	*	a vector with all possible moves which the specified figure has.
 	*/
 	public Move[] stoneMoves(Position p) throws Exception {
-		if (p == null) throw new Exception("IllegalArgumnetException");
+		if (p == null) throw new Exception("IllegalArgumentException");
 		Entity ent = board[p.getLetter()][p.getNumber()];
 		return ent.getMoves().toArray(new Move[ent.getMovesNumber()]);
 	}
