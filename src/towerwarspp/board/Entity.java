@@ -5,22 +5,26 @@ import java.util.Vector;
 //import java.util.ListIterator;
 
 public class Entity {
-	private Position position;
-	private Vector<Move> moves;
+	private Position myPosition;
+	private Vector<Position> moves;
 	private PlayerColor color;
 	private int high = 0; 
 	private int intRepr;
 	private boolean blocked = false;
-	public Entity(Position p, Vector<Move> possibleMoves, PlayerColor col) {
-		position = p;
+	private int step = 0;
+	public Entity(Position p, Vector<Position> possibleMoves, PlayerColor col) {
+		myPosition = p;
 		moves = possibleMoves;
 		color = col;
 		intRepr = 1;
 	}
-	public void addMove(Move move) {
-		moves.add(move);
+	public void addMove(Position moveEnd) {
+		moves.add(moveEnd);
 	}
-	public Vector<Move> getMoves() {
+	public boolean removeMove(Position moveEnd) {
+		return moves.remove(moveEnd);
+	}
+	public Vector<Position> getMoves() {
 		return moves;
 	}
 	public int getMovesNumber() {
@@ -29,19 +33,16 @@ public class Entity {
 	public PlayerColor getColor() {
 		return color;
 	}
-	public boolean moveIsPossible(Move move) {
-		return moves.contains(move);
-	}
-	public boolean removeMove(Move move) {
-		return moves.remove(move);
+	public boolean moveIsPossible(Position endPos) {
+		return moves.contains(endPos);
 	}
 	public void setPosition(Position p) {
-		position = p;
+		myPosition = p;
 	}
 	public Position getPosition() {
-		return position;
+		return myPosition;
 	}
-	public boolean isTurm() {
+	public boolean isTower() {
 		return high > 0;
 	}
 	public void addStone() {
@@ -49,6 +50,9 @@ public class Entity {
 	}
 	public void removeStone() {
 		high--;
+	}
+	public int getHigh() {
+		return high;
 	}
 	public boolean maxHigh() {
 		return false;
@@ -64,5 +68,11 @@ public class Entity {
 	}
 	public void setBlocked(boolean bl) {
 		blocked = bl;
-	} 
+	}
+	public void stepDecrease(int change) {
+		step -= change;
+	}
+	public void stepInrease(int change) {
+		step += change;
+	}
 }
