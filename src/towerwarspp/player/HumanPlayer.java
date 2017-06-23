@@ -19,7 +19,7 @@ class HumanPlayer extends BasePlayer {
     @Override
     public Move request() throws Exception, RemoteException {
         Move move = moveDeliver.deliver();
-        board.makeMove(move);
+        board.update(move, color);
         return move;
     }
 }

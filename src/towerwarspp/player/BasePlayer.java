@@ -42,6 +42,7 @@ abstract class BasePlayer implements Player {
     @Override
     public void init(int size, PlayerColor color) throws Exception {
         board = new Board(size);
+        this.color = color;
         state = PlayerState.INIT;
     }
 }
