@@ -57,6 +57,13 @@ public class AgeOfTowers {
                     /*
                     <AdvancedPlayer> red = new <AdvancedPlayer>();
                      */
+                    break;
+                case REMOTE:
+                    System.out.println("Red chose remote player");
+                    /*
+                    <RemotePlayer> red = new <RemotePlayer>();
+                    */
+                    break;
             }
 
             switch (ap.getBlue()) {
@@ -83,6 +90,12 @@ public class AgeOfTowers {
                     /*
                     <AdvancedPlayer> blue = new <AdvancedPlayer>();
                      */
+                case REMOTE:
+                    System.out.println("Blue chose remote player");
+                    /*
+                    <RemotePlayer> blue = new <RemotePlayer>();
+                    */
+                    break;
             }
             
             /*set wether it's should be debug mode or not */
