@@ -7,7 +7,7 @@ import towerwarspp.preset.*;
 /**
  * Class {@link TextIO} control the Input over the Command Line Interface
  *
- * @version 0.1 20th june 2017
+ * @version 0.2 23th june 2017
  * @author Kai Kuhlmann
  */
 public class TextIO implements Requestable {
@@ -26,13 +26,13 @@ public class TextIO implements Requestable {
     /**
      * Viewer-Object
      */
-    private Viewer viewer;
+    private BoardViewer viewer;
 
     /**
      * Constructor to Initialize the TextIO
      * @param viewer Object of Type Viewer
      */
-    public TextIO(Viewer viewer) {
+    public TextIO(BoardViewer viewer) {
         this.viewer = viewer;
     }
 
@@ -40,6 +40,14 @@ public class TextIO implements Requestable {
      * just for testing
      */
     public TextIO() {}
+
+    /**
+     * Checks if is Stone
+     * @return  True if Token is stone, otherwise false
+     */
+    private boolean isStone() {
+        return false;
+    }
 
     /**
      * Checks if Stone is Tower
@@ -62,6 +70,7 @@ public class TextIO implements Requestable {
      * @return Size of Board
      */
     private int getSize() {
+        //return viewer.getSize();
         return 10;
     }
 
@@ -73,42 +82,38 @@ public class TextIO implements Requestable {
     public String toString() {
         int size = getSize();
         char headChar = 'A';
-        String stone = "     ";
-        System.out.print("\t    ");
-        for(int head = 0; head < size; ++head) {
-            System.out.print(headChar + "\t\t\t    ");
+        System.out.print("\t");
+        for(int top = 0; top < size; ++top) {
+            System.out.print(headChar + "\t");
             ++headChar;
         }
         System.out.print("\n");
+        String tap = "  ";
         for(int row = 0; row < size; ++row) {
-            for(int top = 0; top < size; ++top) {
-                System.out.print("\t    -\t\t");
-            }
-            System.out.print("\n");
-            for(int next = 0; next < size; ++next) {
-                System.out.print("\t /     \\\t");
-            }
-            System.out.print("\n");
-            System.out.print(row);
+            System.out.print(tap + row + "  ");
             for(int col = 0; col < size; ++col) {
-                if(row == 2) {
-                    stone = RED + "  t  " + RESET;
-                } else if(row == 0) {
-                    stone = BLUE + "  t  " + RESET;
+                if(isTower()) {
+                    System.out.print(" T ");
+                } else if(row == 0 && col == 0) {
+                    System.out.print(RED + " B " + RESET);
+                } else if(row == size - 1 && col == size - 1) {
+                    System.out.print(BLUE + " B " + RESET);
+                } else if(isStone()) {
+                    System.out.print(" S ");
                 } else {
-                    stone = "     ";
+                    System.out.print(" o ");
                 }
-                System.out.print("\t  " + stone + "  \t");
+                System.out.print(" ");
             }
-            System.out.print("\n");
-            for (int next = 0; next < size; ++next) {
-                System.out.print("\t \\     /\t");
-            }
-            System.out.print("\n");
-            for (int next = 0; next < size; ++next) {
-                System.out.print("\t    -\t\t");
-            }
-            System.out.print("\n");
+            tap += "  ";
+            System.out.print("  " + row + "\n");
+        }
+        headChar = 'A';
+        tap += "   ";
+        System.out.print(tap);
+        for(int top = 0; top < size; ++top) {
+            System.out.print(headChar + "   ");
+            ++headChar;
         }
         return null;
     }

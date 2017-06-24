@@ -8,12 +8,11 @@ import towerwarspp.board.Board;
 
 
 /**
- * Class {@link BoardInfo} create the graphical Board of the Game
- *
- * @version 0.1 20th june 2017
+ * Class {@link BoardViewer} create the interface to Board
+ * @version 0.3 23th june 2017
  * @author Kai Kuhlmann
  */
-public class BoardInfo implements Viewer {
+public class BoardViewer implements Viewer {
 
     /**
      * Private Board
@@ -24,7 +23,7 @@ public class BoardInfo implements Viewer {
      * Constructor to Initialize Viewer
      * @param board the Board of the game
      */
-    public BoardInfo(Board board) {
+    public BoardViewer(Board board) {
         this.board = board;
     }
 
