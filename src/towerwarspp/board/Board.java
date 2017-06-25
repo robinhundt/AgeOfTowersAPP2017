@@ -10,8 +10,8 @@ public class Board implements Viewable {
 	private int size;
 	private PlayerColor turn = PlayerColor.RED;
 	private Status status = Status.OK;
-	private Vector<Position> listRed = new Vector<>();
-	private Vector<Position> listBlue = new Vector<>();
+	private Vector<Entity> listRed = new Vector<Entity>();
+	private Vector<Entity> listBlue = new Vector<Entity>();
 	private Entity[][] board; 
 	private int[][] boardInt;
 	private Position redBase;
@@ -31,15 +31,15 @@ public class Board implements Viewable {
 		;
 	}
 	/**
-	* Gives a viewer for this board.
+	* Returns a viewer for this board.
 	* @return
 	*	a viewer for this board. 
 	*/
 	public Viewer viewer() {
-		return new BoardInfo(this);
+		return new BoardViewer(this);
 	}
 	/**
-	* Gives the size of the board.
+	* Returns the size of the board.
 	* @return
 	*	the size of the board. 
 	*/
@@ -47,7 +47,7 @@ public class Board implements Viewable {
 		return size;
 	}
 	/**
-	* Gives the current turn.
+	* Returns the current turn.
 	* @return
 	*	the curren turn. 
 	*/
@@ -55,7 +55,7 @@ public class Board implements Viewable {
 		return (turn == PlayerColor.RED? 1: 2);
 	}
 	/**
-	* Gives the status of the board.
+	* Returns the status of the board.
 	* @return
 	*	the status of the board. 
 	*/
@@ -63,7 +63,7 @@ public class Board implements Viewable {
 		return status;
 	}
 	/**
-	* Gives a representation of the board as a 2-dimensional integer array.
+	* Returns a representation of the board as a 2-dimensional integer array.
 	* @return
 	*	a representation of the board as a 2-dimensional integer array. 
 	*/
@@ -92,7 +92,7 @@ public class Board implements Viewable {
 	/**
 	* Checks if the specified move is possible and if so, updates the board: executes the move. 
 	* Illegal moves will not be executed. 
-	* Changes the board status accordingly and gives it out.
+	* Changes the board status accordingly and returns it.
 	* @param move - new move to be executed.
 	* @param col - color of the figure which has to be moved.
 	* @return
@@ -108,7 +108,7 @@ public class Board implements Viewable {
 		}
 		boolean color = (col == PlayerColor.RED);
 		ent = changeStart(ent, start.getLetter(), start.getNumber());
-		ent.setPosition(start);
+		ent.setPosition(end);
 		changeEnd(ent, end.getLetter(), end.getNumber(), color);
 		checkWin();
 		return status;
@@ -118,7 +118,9 @@ public class Board implements Viewable {
 			ent.removeStone();
 			actualiseTowerStoneRemoved(ent);
 			boardInt[oldX][oldY]--;	
-			return new Entity(null, new Vector<Position>(), ent.getColor());
+			Entity newStone = new Entity(null, new Vector<Position>(), ent.getColor());
+			addToList(newStone, ent.getColor() == PlayerColor.RED);
+			return newStone;
 		}
 		setElement(null, 0, oldX, oldY);
 		return ent;	
@@ -133,59 +135,52 @@ public class Board implements Viewable {
 		if(opponent == null) {
 			setElement(ent, ent.getIntRepr(), newX, newY);
 			findMoves(ent);
-			addToList(ent.getPosition(), col);
+			return;
 		}
-		else if	(opponent.getColor() != ent.getColor()) {
+		if (opponent.getColor() != ent.getColor()) {
 			if(opponent.isTower()) {
 				if(distance(opponent.getPosition(), ent.getPosition()) > 1) {
 					opponent.setBlocked(true);
-					actualiseTowerBlocked(opponent.getPosition(), opponent.getHigh(), !col);
+					actualiseTowerBlocked(opponent, !col);
+					removeFromList(ent, col);
 				}
 				else {
 					setElement(ent, ent.getIntRepr(), newX, newY);
-					addToList(ent.getPosition(), col);
-					if(col) {
-						listBlue.remove(opponent);
-					}
-					else {
-						listRed.remove(opponent);
-					}
+					removeFromList(opponent, !col);
 					actualiseTowerRemoved(opponent, !col);
 				}
-			}					
-		} 
-		else if(opponent.isBlocked()) {
-			opponent.setBlocked(false);
-			actualiseTowerUnblocked(opponent.getPosition(), col);
-		}
-		else {
-			opponent.addStone();
-			if (opponent.maxHigh()) {
-				actualiseTowerMaxHigh(opponent.getPosition(), col);
 			}
-			else actualiseTowerStoneAdded(opponent, col);	
+			return;					
+		} 
+		removeFromList(ent, col);
+		if(opponent.isBlocked()) {
+			opponent.setBlocked(false);
+			actualiseTowerUnblocked(opponent, col);
+			return;
 		}
+		opponent.addStone();
+		if (opponent.maxHigh()) {
+			actualiseTowerMaxHigh(opponent.getPosition(), col);
+		}
+		else actualiseTowerStoneAdded(opponent, col);
 	}
 	private void positionClosed(Position closedPos, boolean col) {
-		Vector<Position> list = (col? listRed: listBlue);
-		ListIterator<Position> it = list.listIterator();
-		Position p;	
+		Vector<Entity> list = (col? listRed: listBlue);
+		ListIterator<Entity> it = list.listIterator();
 		while(it.hasNext()) {
-			p = it.next();
-			board[p.getLetter()][p.getNumber()].removeMove(closedPos);
+			it.next().removeMove(closedPos);
 		}
 	}
-	private void positionOpened(Position opendePos, boolean col) {
-		Vector<Position> list = (col? listRed: listBlue);
-		ListIterator<Position> it = list.listIterator();
-		Position p;	
+	private void positionOpened(Position openedPos, boolean col) {
+		Vector<Entity> list = (col? listRed: listBlue);
+		ListIterator<Entity> it = list.listIterator();
 		while(it.hasNext()) {
-			p = it.next();
-			board[p.getLetter()][p.getNumber()].addMove(opendePos);
+			it.next().addMove(openedPos);
 		}
 	}
-	private void actualiseTowerBlocked(Position towerPos, int high, boolean col) {
-		Vector<Position> neighbours = board[towerPos.getLetter()][towerPos.getNumber()].getMoves();
+	private void actualiseTowerBlocked(Entity tower, boolean col) {
+		int high = tower.getHigh();
+		Vector<Position> neighbours = tower.getMoves();
 		ListIterator<Position> it = neighbours.listIterator();
 		Position p;	
 		while(it.hasNext()) {
@@ -195,8 +190,9 @@ public class Board implements Viewable {
 			ent.stepDecrease(high);
 			findMoves(ent);
 		}
+		positionClosed(tower.getPosition(), !col);
 	}
-	private void actualiseTowerUnblocked(Position p, boolean col) {
+	private void actualiseTowerUnblocked(Entity tower, boolean col) {
 
 	}
 	private void actualiseTowerRemoved(Entity tower, boolean col) {
@@ -221,15 +217,22 @@ public class Board implements Viewable {
 		board[x][y] = ent;
 		boardInt[x][y] = repr;
 	}
-	private void addToList(Position p, boolean col) {
+	private void addToList(Entity ent, boolean col) {
 		if(col)
-			listRed.add(p);
+			listRed.add(ent);
 		else 
-			listBlue.add(p);
+			listBlue.add(ent);
 	}
-
+	private void removeFromList(Entity ent, boolean col) {
+		if(col) {
+			listRed.remove(ent);
+		}
+		else {
+			listBlue.remove(ent);
+		}
+	}
 	/**
-	* Gives all possible moves which a player with the color col has.
+	* Returns all possible moves which a player with the color col has.
 	* @param col - player's color.
 	* @return
 	*	a vector with all possible moves of the player or an empty vector if there are no such moves.
@@ -252,7 +255,7 @@ public class Board implements Viewable {
 		return null;
 	}
 	/**
-	* Gives all possible moves which a figure (stone, tower, base) on the position pos has.
+	* Returns all possible moves which a figure (stone, tower, base) on the position pos has.
 	* @param p - position of the figure.
 	* @return
 	*	a vector with all possible moves which the specified figure has.
@@ -264,5 +267,36 @@ public class Board implements Viewable {
 	}*/
 	public Move[] stoneMoves(Position p) throws Exception {
 		return null;
+	}
+
+	/**
+	* Returns all possible moves which a player with the color {@link col} has.
+	* @param col - player's color.
+	* @return
+	*	a vector with all possible moves of the player packed in {@link MoveList} objects or an empty vector if there are no such moves.
+	*/
+	public Vector<MoveList> getAllPossibleMoves(PlayerColor col) throws Exception {
+		Vector<MoveList> moves = new Vector<MoveList>();
+ 		Vector<Entity> list = (col == PlayerColor.RED? listRed: listBlue);
+		ListIterator<Entity> it = list.listIterator();
+		while(it.hasNext()) {
+			Entity ent = it.next();
+			if(ent.hasMove()) {
+				moves.add(new MoveList(ent));
+			}
+		}
+		return moves;
+	}
+	/**
+	* Creates and returns a new {@link MoveList} object with all possible moves
+	* which a figure (stone, tower, base) on the position {@link p} has
+	* @param p - position of the figure.
+	* @return
+	*	a {@link MoveList} with all possible moves which the specified figure has.
+	*/
+	public MoveList getStoneMoves(Position p) throws Exception {
+		Entity ent = board[p.getLetter()][p.getNumber()];
+		if (ent == null) throw new Exception ("Position is empty");
+		return new MoveList(ent);
 	}
 }

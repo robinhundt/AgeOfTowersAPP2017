@@ -27,6 +27,9 @@ public class Entity {
 	public Vector<Position> getMoves() {
 		return moves;
 	}
+	public boolean hasMove() {
+		return (!blocked && !moves.isEmpty());
+	}
 	public int getMovesNumber() {
 		return moves.size();
 	}
