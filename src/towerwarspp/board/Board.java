@@ -97,6 +97,10 @@ public class Board implements Viewable {
 	*	a status of the board after checking or checking and executing the move. 
 	*/
 	public Status update(Move move, PlayerColor col) {
+		if(col != turn) {
+			status = Status.ILLEGAL;
+			return status;
+		}
 		Position start = move.getStart();
 		Position end = move.getEnd();
 		Entity ent = board[start.getLetter()][start.getNumber()];
@@ -117,8 +121,23 @@ public class Board implements Viewable {
 			addToList(newStone, col);
 			return newStone;
 		}
-		setElement(ent, start.getLetter(), start.getNumber());
+		int x = start.getLetter();
+		int y = start.getNumber();
+		setElement(null, x, y);
+		checkOpponentTower(ent, x, y-1);
+		checkOpponentTower(ent, x+1, y-1);
+		checkOpponentTower(ent, x+1, y);
+		checkOpponentTower(ent, x, y+1);
+		checkOpponentTower(ent, x-1, y+1);
+		checkOpponentTower(ent, x-1, y);
 		return ent;	
+	}
+	private void checkOpponentTower(Entity ent, int x, int y) {
+		if(x < 1 || y < 1 || x > size || y > size) return;
+		Entity opponent = board[x][y];
+		if(opponent.getColor() != ent.getColor() && opponent.isTower() && !opponent.isBlocked()) {
+			opponent.addMove(ent.getPosition(), 1);
+		}
 	}
 	private void changeEnd(Entity ent, Position start, Position end, boolean col) {
 		ent.setPosition(end);
