@@ -13,7 +13,6 @@ public class Board implements Viewable {
 	private Vector<Entity> listRed = new Vector<Entity>();
 	private Vector<Entity> listBlue = new Vector<Entity>();
 	private Entity[][] board; 
-	private int[][] boardInt;
 	private Position redBase;
 	private Position blueBase;
 
@@ -23,11 +22,10 @@ public class Board implements Viewable {
 	*/	
 	public Board (int n) {
 		board = new Entity[n][n];
-		boardInt = new int[n][n];
-		setBoards();
+		setBoard();
 		size = n;
 	}
-	private void setBoards() {
+	private void setBoard() {
 		;
 	}
 	/**
@@ -68,7 +66,7 @@ public class Board implements Viewable {
 	*	a representation of the board as a 2-dimensional integer array. 
 	*/
 	public int[][] getBoard() { 
-		return boardInt;
+		return new int[size][size];
 	}
 	private int distance (Position a, Position b) {
 		int x = a.getLetter() - b.getLetter();
@@ -102,51 +100,53 @@ public class Board implements Viewable {
 		Position start = move.getStart();
 		Position end = move.getEnd();
 		Entity ent = board[start.getLetter()][start.getNumber()];
-		if (ent == null || ent.getColor() != col || !ent.moveIsPossible(end)) {
+		if (ent == null || ent.getColor() != col || !ent.hasMove(end)) {
 			status = Status.ILLEGAL;
 			return status;
 		}
 		boolean color = (col == PlayerColor.RED);
-		ent = changeStart(ent, start.getLetter(), start.getNumber(), color);
-		ent.setPosition(end);
-		changeEnd(ent, end.getLetter(), end.getNumber(), color);
+		ent = changeStart(ent, start, color);
+		changeEnd(ent, start, end, color);
 		checkWin();
 		return status;
 	}
-	private Entity changeStart(Entity ent, int oldX, int oldY, boolean col) {
+	private Entity changeStart(Entity ent, Position start, boolean col) {
 		if (ent.isTower()) {
 			actualiseTowerRemoveStone(ent, col);
-			//boardInt[oldX][oldY]--;	
-			Entity newStone = new Entity(null, new Vector<Position>(), ent.getColor(), size);
+			Entity newStone = new Entity(start, new Vector<Position>(), ent.getColor(), size);
 			addToList(newStone, col);
 			return newStone;
 		}
-		setElement(null, 0, oldX, oldY);
+		setElement(ent, start.getLetter(), start.getNumber());
 		return ent;	
 	}
-	private void changeEnd(Entity ent, int newX, int newY, boolean col) {
-		Entity opponent = board[newX][newY];
+	private void changeEnd(Entity ent, Position start, Position end, boolean col) {
+		ent.setPosition(end);
+		int endX = end.getLetter();
+		int endY = end.getNumber();
+		Entity opponent = board[endX][endY];
 		if(opponent.isBase()){
-			setElement(ent, ent.getIntRepr(), newX, newY); 
+			setElement(ent, endX, endY); 
 			status = (col? Status.RED_WIN : Status.BLUE_WIN);
 			return;
 		}
 		if(opponent == null) {
-			setElement(ent, ent.getIntRepr(), newX, newY);
+			setElement(ent, endX, endY);
 			findMoves(ent);
 			return;
 		}
 		if (opponent.getColor() != ent.getColor()) {
 			if(opponent.isTower()) {
-				if(distance(opponent.getPosition(), ent.getPosition()) > 1) {
+				if(distance(start, end) > 1) {
 					opponent.setBlocked(true);
 					actualiseTowerBlockOrDecrease(opponent, !col, opponent.getHigh());
 					removeFromList(ent, col);
-					positionClosed(opponent.getPosition(), col);
+					remotePositionClosed(end, col);
 				}
 				else {
-					setElement(ent, ent.getIntRepr(), newX, newY);
+					setElement(ent, endX, endY);
 					actualiseTowerRemoved(opponent, !col);
+					findMoves(ent);
 				}
 			}
 			return;					
@@ -154,8 +154,8 @@ public class Board implements Viewable {
 		removeFromList(ent, col);
 		if(opponent.isBlocked()) {
 			opponent.setBlocked(false);
-			actualiseTowerUnblockOrIncrease(opponent, col, opponent.getHigh());
-			positionOpened(opponent.getPosition(), !col);
+			actualiseTowerUnblockOrNew(opponent, col);
+			positionOpened(end, !col);
 			return;
 		}
 		actualiseTowerAddStone(opponent, col);
@@ -164,7 +164,18 @@ public class Board implements Viewable {
 		ListIterator<Entity> it = (col? listRed.listIterator(): listBlue.listIterator());
 		while(it.hasNext()) {
 			Entity ent = it.next();
-			ent.removeMove(closedPos);
+			if(ent.hasMove(closedPos)) {
+				ent.removeMove(closedPos);
+			}
+		}
+	}
+	private void remotePositionClosed(Position closedPos, boolean col) {
+		ListIterator<Entity> it = (col? listRed.listIterator(): listBlue.listIterator());
+		while(it.hasNext()) {
+			Entity ent = it.next();
+			if(ent.hasRemoteMove(closedPos)) {
+				ent.removeMove(closedPos);
+			}
 		}
 	}
 	private void positionOpened(Position openedPos, boolean col) {
@@ -184,68 +195,172 @@ public class Board implements Viewable {
 			Entity ent = board[p.getLetter()][p.getNumber()];
 			if(ent == null) continue;
 			ent.stepDecrease(change);
-			findMoves(ent);
 		}
 		if(tower.maxHigh()) {
 			positionOpened(tower.getPosition(), col);
 		}
 	}
-	private void actualiseTowerUnblockOrIncrease(Entity tower, boolean col, int change) {
-		int high = tower.getHigh();
+	private void actualiseTowerIncrease(Entity tower, boolean col) {
 		ListIterator<Position> it = tower.getMoves().listIterator();
 		Position p;	
 		while(it.hasNext()) {
 			p = it.next();
 			Entity ent = board[p.getLetter()][p.getNumber()];
 			if(ent == null) continue;
-			ent.stepIncrease(change);
-			findMoves(ent);
+			ent.stepIncrease(1);
 		}
 		if(tower.maxHigh()) {
 			positionClosed(tower.getPosition(), col);
 		}
+	}
+	private void actualiseTowerUnblockOrNew(Entity tower, boolean col) {
+		Position p = tower.getPosition();
+		if(tower.maxHigh()) {
+			positionClosed(tower.getPosition(), col);
+		}
+		int x = p.getLetter();
+		int y = p.getNumber();
+		tower.removeAllMoves();
+		towerCheckNeighbour(tower, x, y-1);
+		towerCheckNeighbour(tower, x+1, y-1);
+		towerCheckNeighbour(tower, x+1, y);
+		towerCheckNeighbour(tower, x, y+1);
+		towerCheckNeighbour(tower, x-1, y+1);
+		towerCheckNeighbour(tower, x-1, y);	
 	}
 	private void actualiseTowerRemoved(Entity tower, boolean col) {
 		removeFromList(tower, col);
 		if(!tower.isBlocked()) {
 			actualiseTowerBlockOrDecrease(tower, col, tower.getHigh());
 		}
+		else positionOpened(tower.getPosition(), !col);
 	}
 	private void actualiseTowerAddStone(Entity tower, boolean col) {
 		tower.addStone();
-		if(tower.getHigh() == 2) {
-			tower.removeAllMoves();
-			actualiseTowerNeighbours(tower, col);
+		if(tower.getHigh() == 1) {
+			actualiseTowerUnblockOrNew(tower, col);
 		}
 		else {
-			actualiseTowerUnblockOrIncrease(tower, col, 1);
-		}
-		if(tower.maxHigh()) {
-			positionClosed(tower.getPosition(), col);
+			actualiseTowerIncrease(tower, col);
 		}
 	}	
 	private void actualiseTowerRemoveStone(Entity tower, boolean col) {
 		actualiseTowerBlockOrDecrease(tower, col, 1);
 		tower.removeStone();
-		if(tower.getHigh() < 2) {
+		if(tower.getHigh() < 1) {
 			findMoves(tower);
 		}
 	}
-	private void findCloseMoves (Entity ent) {
-
+	private void towerCheckNeighbour(Entity tower, int x, int y) {
+		if(x < 1 || y < 1 || x > size || y > size) return;
+		Entity opponent = board[x][y];
+		if(opponent == null) {
+			tower.addMove(new Position(x, y), 1);
+		}
+		if(opponent.isBase()) return;
+		if(opponent.getColor() == tower.getColor()) {
+			if(opponent.isBlocked()) {
+				tower.addMove(new Position(x, y), 1);
+				return;
+			}
+			if(!opponent.maxHigh()) {
+				tower.addMove(new Position(x, y), 1);
+			}
+			if(!opponent.isTower()) {
+				addMoves(opponent, tower.getHigh());
+			}	
+		}		
 	}
-	private void actualiseTowerNeighbours(Entity tower, boolean col) {
+	private int checkCloseNeighbour(Entity ent,  int x, int y) {
+		if(x < 1 || y < 1 || x > size || y > size) return 0;
+		Entity opponent = board[x][y];
+		int res = 0;
+		if(opponent == null) {
+			ent.addMove(new Position(x, y), 1);
+		}
+		if(opponent.isBase()) {
+			if (opponent.getColor() == ent.getColor()) return 0;
+			ent.addMove(new Position(x, y), 1);
+			return 0;
+		}
+		if(opponent.isBlocked()) {
+			ent.addMove(new Position(x, y), 1);
+			return res;
+		}
+		if(opponent.isTower()) {
+			if(opponent.getColor() == ent.getColor()) {
+				res += opponent.getHigh();
+				if(opponent.maxHigh()) {
+					ent.setReach(x, y, 1);
+				}	
+				else {
+					ent.addMove(new Position(x, y), 1);
+				}
+			}
+			else {
+				opponent.removeMove(new Position(x, y));
+				ent.addMove(new Position(x, y), 1);
+			}
 
+		}
+		else ent.addMove(new Position(x, y), 1);
+		return res; 
+	}
+	private int findCloseMoves (Entity ent) {
+		int addStep = 0;
+		Position p = ent.getPosition();
+		int x = p.getLetter();
+		int y = p.getNumber();
+		addStep += checkCloseNeighbour(ent, x, y-1);
+		addStep += checkCloseNeighbour(ent, x+1, y-1);
+		addStep += checkCloseNeighbour(ent, x+1, y);
+		addStep += checkCloseNeighbour(ent, x, y+1);
+		addStep += checkCloseNeighbour(ent, x-1, y+1);
+		addStep += checkCloseNeighbour(ent, x-1, y);
+		return addStep;
 	}
 	private void findMoves(Entity ent) {
-
+		ent.removeAllMoves();
+		int addStep = findCloseMoves(ent);
+		if (addStep < 1) return;
+		addMoves(ent, addStep);
 	}
+	private void checkRemoteNeighbour(Entity ent,  int x, int y) {
+		if(x < 1 || y < 1 || x > size || y > size) return;
+		Entity opponent = board[x][y];
+		if(opponent == null) {
+			ent.addMove(new Position(x, y), 1);
+		}
+		if(opponent.isBase()) {
+			if (opponent.getColor() == ent.getColor()) return;
+			ent.addMove(new Position(x, y), 1);
+			return;
+		}
+		if(opponent.getColor() == ent.getColor())
+			if(opponent.isBlocked() || !opponent.maxHigh()) {
+				ent.addMove(new Position(x, y), 1);
+				return;
+			}
+			if(opponent.maxHigh()) {
+				ent.setReach(x, y, 1);
+			}	
+		else {
+			if(opponent.isBlocked()) {
+				ent.setReach(x, y, 1);
+				return;
+			}
+			ent.addMove(new Position(x, y), 1);
+		}
+	}
+	private void addMoves (Entity ent, int change) {
+		int oldStep = ent.getStep();
+		int newStep = ent.stepIncrease(change);
+	} 
 	private void checkWin() {
 
 	}
-	private void setElement(Entity ent, int repr, int x, int y) {
+	private void setElement(Entity ent, int x, int y) {
 		board[x][y] = ent;
-		boardInt[x][y] = repr;
 	}
 	private void addToList(Entity ent, boolean col) {
 		if(col) listRed.add(ent);
@@ -304,7 +419,7 @@ public class Board implements Viewable {
 		ListIterator<Entity> it = (col == PlayerColor.RED? listRed.listIterator(): listBlue.listIterator());
 		while(it.hasNext()) {
 			Entity ent = it.next();
-			if(ent.hasMove()) {
+			if(ent.canMove()) {
 				moves.add(new MoveList(ent));
 			}
 		}
