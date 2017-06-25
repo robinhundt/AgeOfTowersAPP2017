@@ -376,7 +376,20 @@ public class Board implements Viewable {
 		int newStep = ent.stepIncrease(change);
 	} 
 	private void checkWin() {
-
+		if (status == Status.RED_WIN || status == Status.BLUE_WIN) {
+			return;
+		}
+		if (turn == PlayerColor.BLUE) { 
+			if (!hasMoves (listRed.listIterator())) {
+				status = Status.BLUE_WIN;
+				return;			
+			}
+		}
+		else if (!hasMoves (listBlue.listIterator())) {
+			status = Status.RED_WIN;
+			return;			
+		}
+		status = Status.OK;
 	}
 	private void setElement(Entity ent, int x, int y) {
 		board[x][y] = ent;
@@ -388,6 +401,13 @@ public class Board implements Viewable {
 	private void removeFromList(Entity ent, boolean col) {
 		if(col) listRed.remove(ent);
 		else listBlue.remove(ent);
+	}
+	private boolean hasMoves (ListIterator<Entity> it) {
+		while(it.hasNext()) {
+			if(it.next().canMove())
+				return true;
+		}
+		return false;
 	}
 	/**
 	* Returns all possible moves which a player with the color col has.
