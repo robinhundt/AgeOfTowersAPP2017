@@ -9,13 +9,15 @@ public class Entity {
 	private Vector<Position> moves;
 	private PlayerColor color;
 	private int high = 0; 
+	private int maxHigh = 0; 
 	private int intRepr;
 	private boolean blocked = false;
-	private int step = 0;
-	public Entity(Position p, Vector<Position> possibleMoves, PlayerColor col) {
+	private int step = 1;
+	public Entity(Position p, Vector<Position> possibleMoves, PlayerColor col, int size) {
 		myPosition = p;
 		moves = possibleMoves;
 		color = col;
+		maxHigh = size/3;
 		intRepr = 1;
 	}
 	public void addMove(Position moveEnd) {
@@ -23,6 +25,9 @@ public class Entity {
 	}
 	public boolean removeMove(Position moveEnd) {
 		return moves.remove(moveEnd);
+	}
+	public void removeAllMoves() {
+		;
 	}
 	public Vector<Position> getMoves() {
 		return moves;
@@ -32,6 +37,9 @@ public class Entity {
 	}
 	public int getMovesNumber() {
 		return moves.size();
+	}
+	public boolean canReach(Position pos) {
+		return true;
 	}
 	public PlayerColor getColor() {
 		return color;
@@ -58,7 +66,7 @@ public class Entity {
 		return high;
 	}
 	public boolean maxHigh() {
-		return false;
+		return high == maxHigh;
 	}
 	public boolean isBase() {
 		return high < 0;
@@ -75,7 +83,7 @@ public class Entity {
 	public void stepDecrease(int change) {
 		step -= change;
 	}
-	public void stepInrease(int change) {
+	public void stepIncrease(int change) {
 		step += change;
 	}
 }
