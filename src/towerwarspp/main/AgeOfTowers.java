@@ -3,19 +3,23 @@ package towerwarspp.main;
 import towerwarspp.preset.ArgumentParser;
 import towerwarspp.preset.ArgumentParserException;
 import towerwarspp.io.*;
-import towerwarspp.preset.Move;
-import towerwarspp.preset.Status;
-import towerwarspp.preset.Player;
-import towerwarspp.preset.PlayerColor;
+import towerwarspp.player.*;
+import towerwarspp.board.*;
+import towerwarspp.preset.*;
+
+import java.rmi.RemoteException;
 
 /**
  * Class {@link AgeOfTowers} initializing a new game of TowerWarsPP with given settings <br>
  *     from the commandline using the {@link ArgumentParser}.
  *
- * @version 0.1 20th June 2017
+ * @version 0.2 26th June 2017
  * @author Niklas Mueller
  */
 public class AgeOfTowers {
+
+    /*Object from class which implements requestable-interface*/
+    TextIO io;
 
     /**
      * Constructor to initialize a new game
@@ -23,86 +27,46 @@ public class AgeOfTowers {
      */
     public AgeOfTowers(String[] args) {
 
-        boolean debugMode;
-        int delayTime;
-        //<Board> board
+        boolean debugMode = false;
+        int delayTime = 0;
+
+        Board board = null;
+        Viewer viewer = null;
+        Player redPlayer = null;
+        Player bluePlayer = null;
 
         try {
             ArgumentParser ap = new ArgumentParser(args);
 
-            //System.out.println("local: " + ap.isLocal());     //will probably be removed
-            System.out.println("network: " + ap.isNetwork());
+            /*initialize board object with given size */
+            board = new Board(ap.getSize());
+
+            /*initialize viewer-object with method viewer() from board*/
+            viewer = board.viewer();
+
+            io = new TextIO((BoardViewer) viewer);
+
+            //System.out.println("network: " + ap.isNetwork());
             System.out.println("size: " + ap.getSize());
+            System.out.println("graphic: " + ap.isGraphic());
 
-            //System.out.println("graphic: " + ap.isGraphic());
-
-
-            switch (ap.getRed()) {
-                case HUMAN:
-                    System.out.println("Red chose human player");
-                    /*
-                    <HumanPlayer> red = new <HumanPlayer>();
-                     */
-                    break;
-                case RANDOM_AI:
-                    System.out.println("Red chose random player");
-                    /*
-                    <AIPlayer> red = new <AIPlayer>();
-                     */
-                    break;
-                case SIMPLE_AI:
-                    System.out.println("Red chose simple player");
-                    /*
-                    <SimplePlayer red = new <SimplePlayer>();
-                     */
-                    break;
-                case ADVANCED_AI_1:
-                    System.out.println("Red chose advanced player");
-                    /*
-                    <AdvancedPlayer> red = new <AdvancedPlayer>();
-                     */
-                    break;
-                case REMOTE:
-                    System.out.println("Red chose remote player");
-                    /*
-                    <RemotePlayer> red = new <RemotePlayer>();
-                    */
-                    break;
+            if (ap.getRed() == PlayerType.HUMAN) {
+                System.out.println("Red chose human player");
+                redPlayer = PlayerFactory.makeHumanPlayer(ap.getSize(), PlayerColor.RED, io);
+            }
+            else {
+                redPlayer = PlayerFactory.makePlayer(ap.getSize(), PlayerColor.RED, ap.getRed());
             }
 
-            switch (ap.getBlue()) {
-                case HUMAN:
-                    System.out.println("Blue chose human player");
-                    /*
-                    <HumanPlayer> blue = new <HumanPlayer>();
-                     */
-                    break;
-                case RANDOM_AI:
-                    System.out.println("Blue chose random player");
-                    /*
-                    <AIPlayer> blue = new <AIPlayer>();
-                     */
-                    break;
-                case SIMPLE_AI:
-                    System.out.println("Blue chose simple player");
-                    /*
-                    <SimplePlayer blue = new <SimplePlayer>();
-                     */
-                    break;
-                case ADVANCED_AI_1:
-                    System.out.println("Blue chose advanced player");
-                    /*
-                    <AdvancedPlayer> blue = new <AdvancedPlayer>();
-                     */
-                case REMOTE:
-                    System.out.println("Blue chose remote player");
-                    /*
-                    <RemotePlayer> blue = new <RemotePlayer>();
-                    */
-                    break;
+            if (ap.getBlue() == PlayerType.HUMAN) {
+                System.out.println("Blue chose human player");
+                bluePlayer = PlayerFactory.makeHumanPlayer(ap.getSize(), PlayerColor.BLUE, io);
+            }
+            else {
+                bluePlayer = PlayerFactory.makePlayer(ap.getSize(), PlayerColor.BLUE, ap.getBlue());
             }
             
-            /*set wether it's should be debug mode or not */
+            /*set wether it should be debug mode or not */
             debugMode = ap.isDebug();
 
             /*set delay-time*/
@@ -112,21 +76,10 @@ public class AgeOfTowers {
         catch (ArgumentParserException e) {
             e.printStackTrace();
         }
+        catch (Exception e) {
+            e.printStackTrace();
+        }
 
-        /*Object from wich implements requestable-interface*/
-        //textInput input = new textInput();
-
-        red.init(ap.getSize(), PlayerColor.RED);
-        blue.init(ap.getSize(), PlayerColor.BLUE);
-
-        Player redPlayer = red;
-        Player bluePlayer = blue;
-
-        /*initialize board object with given size */
-        //board = new <Board>(ap.getSize());
-
-        /*initialize viewer-object with method viewer() from board*/
-        //<Viewer> viewer = board.viewer();
 
 
         /*
@@ -163,7 +116,7 @@ public class AgeOfTowers {
                 redPlayer.update(blueMove, board.getStatus());
 
                 if (board.getStatus() == Status.RED_WIN) {
-                    status = RED_WIN;
+                    status = Status.RED_WIN;
                     break;
                 }
 
@@ -174,7 +127,7 @@ public class AgeOfTowers {
                 if (debugMode) {
                     System.out.println("Red's move: " + redMove.toString());
                     //output board
-                    System.out.println("Status: " + redMove.getStatus());
+                    System.out.println("Status: " + board.getStatus());
                 }
 
                 /*if delay-mode is enabled*/
@@ -201,7 +154,7 @@ public class AgeOfTowers {
                 bluePlayer.confirm(board.getStatus());
 
                 if (board.getStatus() == Status.BLUE_WIN) {
-                    status = BLUE_WIN;
+                    status = Status.BLUE_WIN;
                     break;
                 }
 
@@ -212,7 +165,7 @@ public class AgeOfTowers {
                 if (debugMode) {
                     System.out.println("Blue's move: " + blueMove.toString());
                     //output board
-                    System.out.println("Status: " + blueMove.getStatus());
+                    System.out.println("Status: " + board.getStatus());
                 }
 
                 /*if delay-mode is enabled*/
@@ -235,8 +188,8 @@ public class AgeOfTowers {
      * Method getMove calling deliver from input-class to get a move from user input
      * @return move parsed from user input
      */
-    public Move getMove() {
-        //return inputClass.deliver();
+    public Move getMove() throws Exception {
+        return io.deliver();
     }
 
     /**
