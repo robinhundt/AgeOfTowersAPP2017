@@ -3,6 +3,7 @@ package towerwarspp.board;
 import towerwarspp.preset.*;
 import towerwarspp.io.*;
 import static towerwarspp.preset.PlayerColor.*;
+import static towerwarspp.preset.Status.*;
 import java.util.Vector;
 import java.util.ListIterator;
 import java.lang.Exception;
@@ -54,18 +55,18 @@ public class Board implements Viewable {
 		lastX = size - 1 - d;
 		lastY = size - 1 - d;
 		for(int x = size-1; x >= lastX; --x) {
-			Entity ent = new Entity(new Position(x, y), RED, size);
+			Entity ent = new Entity(new Position(x, y), BLUE, size);
 			board[x][y] = ent;
 			initialiseEntityMoves(ent, x, y);
-			listRed.add(ent);
+			listBlue.add(ent);
 		}
 		for (y = size - 1; y >= lastY; --y) {
 			++lastX;
 			for (int x = size; x >= lastX; --x) {
-				Entity ent = new Entity(new Position(x, y), RED, size);
+				Entity ent = new Entity(new Position(x, y), BLUE, size);
 				board[x][y] = ent;
 				initialiseEntityMoves(ent, x, y);
-				listRed.add(ent);
+				listBlue.add(ent);
 			}
 		}
 	}
@@ -121,14 +122,7 @@ public class Board implements Viewable {
 	public Status getStatus() {
 		return status;
 	}
-	/**
-	* Returns a representation of the board as a 2-dimensional integer array.
-	* @return
-	*	a representation of the board as a 2-dimensional integer array.
-	*/
-	public int[][] getBoard() {
-		return new int[size][size];
-	}
+
 	private int distance (Position a, Position b) {
 		int x = a.getLetter() - b.getLetter();
 		int y = a.getNumber() - b.getNumber();
