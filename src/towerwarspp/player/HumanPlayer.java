@@ -20,7 +20,6 @@ class HumanPlayer extends BasePlayer {
     Move deliverMove() throws Exception {
         Move move = moveDeliver.deliver();
         board.update(move, color);
-        state = state.next();
         return move;
     }
 }
