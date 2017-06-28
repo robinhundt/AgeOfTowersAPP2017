@@ -7,7 +7,7 @@ import towerwarspp.preset.*;
 /**
  * Class {@link TextIO} control the Input over the Command Line Interface
  *
- * @version 0.3 2th june 2017
+ * @version 0.5 June 29th 2017
  * @author Kai Kuhlmann
  */
 public class TextIO implements Requestable {
@@ -28,6 +28,9 @@ public class TextIO implements Requestable {
      */
     private BoardViewer viewer;
 
+    /**
+     * Private Scanner-Object
+     */
     private Scanner scanner;
 
     /**
@@ -46,33 +49,52 @@ public class TextIO implements Requestable {
 
     /**
      * Checks if is Stone
+     * @param x X-Coordinate
+     * @param y Y-Coordinate
      * @return  True if Token is stone, otherwise false
      */
-    private boolean isStone(int row, int col) {
-        return this.viewer.isStone(row, col);
+    private boolean isStone(int x, int y) {
+        return this.viewer.isStone(x, y);
     }
 
     /**
      * Checks if Stone is Tower
+     * @param x X-Coordinate
+     * @param y Y-Coordinate
      * @return True if Stone is Tower, otherwise false
      */
-    private boolean isTower(int row, int col) {
-        return this.viewer.isTower(row, col);
+    private boolean isTower(int x, int y) {
+        return this.viewer.isTower(x, y);
     }
 
     /**
      * Checks if Stone is blocked
+     * @param x X-Coordinate
+     * @param y Y-Coordinate
      * @return True if Stone is vlocked, otherwise false
      */
-    private boolean isBlocked(int row, int col) {
-        return this.viewer.isBlocked(row, col);
+    private boolean isBlocked(int x, int y) {
+        return this.viewer.isBlocked(x, y);
     }
 
     /**
-     *
+     * Get the height of a Tower
+     * @param x X-Coordinate
+     * @param y Y-Coordinate
+     * @return height of Tower
      */
-    private PlayerColor getPlayerColor(int row, int col) {
-        return this.viewer.getPlayerColor(row, col);
+    private int getTowerHeight(int x, int y) {
+        return this.viewer.getHeight(x, y);
+    }
+
+    /**
+     * Get owner of Tower
+     * @param x X-Coordinate
+     * @param y Y-Coordinate
+     * @return Playercolor
+     */
+    private PlayerColor getPlayerColor(int x, int y) {
+        return this.viewer.getPlayerColor(x, y);
     }
 
     /**
@@ -96,24 +118,29 @@ public class TextIO implements Requestable {
         }
         System.out.print("\n");
         String tap = "  ";
-        for(int row = 1; row <= size; ++row) {
-            System.out.print(tap + row + "  ");
-            for(int col = 1; col <= size; ++col) {
-                if(isTower(row, col)) {
-                    System.out.print(" T ");
-                } else if(row == 1 && col == 1) {
+        for(int x = 1; x <= size; ++x) {
+            System.out.print(tap + x + "  ");
+            for(int y = 1; y <= size; ++y) {
+                if(isTower(x, y)) {
+                    if(getPlayerColor(x, y) == PlayerColor.RED) {
+                        System.out.print(RED);
+                    } else {
+                        System.out.print(BLUE);
+                    }
+                    System.out.print(" T" + getTowerHeight(x, y) + RESET);
+                } else if(x == 1 && y == 1) {
                     System.out.print(RED + " B " + RESET);
-                } else if(row == size && col == size) {
+                } else if(x == size && y == size) {
                     System.out.print(BLUE + " B " + RESET);
-                } else if(isStone(row, col)) {
-                    if(getPlayerColor(row, col) == PlayerColor.RED) {
+                } else if(isStone(x, y)) {
+                    if(getPlayerColor(x, y) == PlayerColor.RED) {
                         System.out.print(RED);
                     } else {
                         System.out.print(BLUE);
                     }
                     System.out.print(" S " + RESET);
-                } else if(isBlocked(row, col)) {
-                    if(getPlayerColor(row, col) == PlayerColor.RED) {
+                } else if(isBlocked(x, y)) {
+                    if(getPlayerColor(x, y) == PlayerColor.RED) {
                         System.out.print(RED);
                     } else {
                         System.out.print(BLUE);
@@ -125,7 +152,7 @@ public class TextIO implements Requestable {
                 System.out.print(" ");
             }
             tap += "  ";
-            System.out.print("  " + row + "\n");
+            System.out.print("  " + x + "\n");
         }
         headChar = 'A';
         tap += "   ";

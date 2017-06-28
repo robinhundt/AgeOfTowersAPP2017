@@ -7,7 +7,7 @@ import towerwarspp.board.Board;
 
 /**
  * Class {@link BoardViewer} create the interface to Board
- * @version 0.3 23th june 2017
+ * @version 0.5 June 29th 2017
  * @author Kai Kuhlmann
  */
 public class BoardViewer implements Viewer {
@@ -16,6 +16,9 @@ public class BoardViewer implements Viewer {
      * Private Board
      */
     private Board board;
+    /**
+     * Private Array of Entities
+     */
     private Entity[][] entities;
 
     /**
@@ -55,24 +58,71 @@ public class BoardViewer implements Viewer {
         return this.board.getStatus();
     }
 
+    /**
+     * Checks if Stone is blocked
+     * @param x X-Coordinate
+     * @param y Y-Coordinate
+     * @return True if Stone is vlocked, otherwise false
+     */
     @Override
-    public boolean isBlocked(int row, int col) {
-        return entities[row][col].isBlocked();
+    public boolean isBlocked(int x, int y) {
+        if(entities[x][y] != null) {
+            return entities[x][y].isBlocked();
+        }
+        return false;
     }
 
+    /**
+     * Checks if is Stone
+     * @param x X-Coordinate
+     * @param y Y-Coordinate
+     * @return  True if Token is stone, otherwise false
+     */
     @Override
-    public boolean isStone(int row, int col) {
-        return !entities[row][col].isTower();
+    public boolean isStone(int x, int y) {
+        if(entities[x][y] != null) {
+            return !entities[x][y].isTower();
+        }
+        return false;
     }
 
+    /**
+     * Checks if Stone is Tower
+     * @param x X-Coordinate
+     * @param y Y-Coordinate
+     * @return True if Stone is Tower, otherwise false
+     */
     @Override
-    public boolean isTower(int row, int col) {
-        return entities[row][col].isTower();
+    public boolean isTower(int x, int y) {
+        if(entities[x][y] != null) {
+            return entities[x][y].isTower();
+        }
+        return false;
     }
 
+    /**
+     * Get owner of Tower
+     * @param x X-Coordinate
+     * @param y Y-Coordinate
+     * @return Playercolor
+     */
     @Override
-    public PlayerColor getPlayerColor(int row, int col) {
-        return entities[row][col].getColor();
+    public PlayerColor getPlayerColor(int x, int y) {
+        return entities[x][y].getColor();
+    }
+
+    /**
+     * Get the height of a Tower
+     * @param x X-Coordinate
+     * @param y Y-Coordinate
+     * @return height of Tower
+     */
+    @Override
+    public int getHeight(int x, int y) {
+        if(entities[x][y] != null) {
+            return entities[x][y].getHigh();
+        }
+        return 0;
     }
 
     /**
