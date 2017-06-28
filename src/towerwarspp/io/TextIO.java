@@ -84,7 +84,7 @@ public class TextIO implements Requestable {
         char headChar = 'A';
         System.out.print("\t");
         for(int top = 0; top < size; ++top) {
-            System.out.print(headChar + "\t");
+            System.out.print(headChar + "   ");
             ++headChar;
         }
         System.out.print("\n");
