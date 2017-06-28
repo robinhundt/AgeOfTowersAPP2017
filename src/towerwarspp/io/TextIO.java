@@ -7,7 +7,7 @@ import towerwarspp.preset.*;
 /**
  * Class {@link TextIO} control the Input over the Command Line Interface
  *
- * @version 0.2 23th june 2017
+ * @version 0.3 2th june 2017
  * @author Kai Kuhlmann
  */
 public class TextIO implements Requestable {
@@ -98,8 +98,13 @@ public class TextIO implements Requestable {
                     System.out.print(RED + " B " + RESET);
                 } else if(row == size - 1 && col == size - 1) {
                     System.out.print(BLUE + " B " + RESET);
-                } else if(isStone()) {
-                    System.out.print(" S ");
+                } else if(true) {
+                    if(false) {
+                        System.out.print(RED);
+                    } else {
+                        System.out.print(BLUE);
+                    }
+                    System.out.print(" S " + RESET);
                 } else {
                     System.out.print(" o ");
                 }
