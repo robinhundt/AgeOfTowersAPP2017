@@ -28,12 +28,15 @@ public class TextIO implements Requestable {
      */
     private BoardViewer viewer;
 
+    private Scanner scanner;
+
     /**
      * Constructor to Initialize the TextIO
      * @param viewer Object of Type Viewer
      */
     public TextIO(BoardViewer viewer) {
         this.viewer = viewer;
+        this.scanner = new Scanner(System.in);
     }
 
     /**
@@ -142,12 +145,11 @@ public class TextIO implements Requestable {
     @Override
     public Move deliver() throws Exception {
         Move move = null;
-        Scanner scanner = new Scanner(System.in);
         String nextMove = null;
         System.out.println("Bitte geben Sie Ihren Zug an: ");
-        nextMove = scanner.next();
+        nextMove = this.scanner.next();
         try {
-            move = move.parseMove(nextMove);
+            move = Move.parseMove(nextMove);
         } catch (Exception e) {
             System.out.println(e);
         }

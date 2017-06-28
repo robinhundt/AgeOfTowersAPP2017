@@ -1,12 +1,14 @@
 package towerwarspp.io;
 
+import javax.swing.*;
+
 /**
  * Class {@link Hexagon} creates a single Hexagon
  *
  * @version 0.1 June 28th 2017
  * @author Kai Kuhlmann
  */
-public class Hexagon {
+public class Hexagon extends JPanel{
     private int x, y;
     private Corner[] coners;
     private Center center;
@@ -51,7 +53,7 @@ class Corner {
     }
 
     public Corner getCorner(Center center, int size, int i) {
-        int angle_degree = 60 * i;
+        int angle_degree = 60 * i + 30;
         double angle_radius = Math.PI / 180 * angle_degree;
         return new Corner(center.getX() + size * Math.cos(angle_radius),
                 center.getY() + size * Math.sin(angle_radius));
