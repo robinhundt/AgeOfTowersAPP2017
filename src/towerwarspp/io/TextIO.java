@@ -96,14 +96,14 @@ public class TextIO implements Requestable {
         }
         System.out.print("\n");
         String tap = "  ";
-        for(int row = 0; row < size; ++row) {
+        for(int row = 1; row <= size; ++row) {
             System.out.print(tap + row + "  ");
-            for(int col = 0; col < size; ++col) {
+            for(int col = 1; col <= size; ++col) {
                 if(isTower(row, col)) {
                     System.out.print(" T ");
-                } else if(row == 0 && col == 0) {
+                } else if(row == 1 && col == 1) {
                     System.out.print(RED + " B " + RESET);
-                } else if(row == size - 1 && col == size - 1) {
+                } else if(row == size && col == size) {
                     System.out.print(BLUE + " B " + RESET);
                 } else if(isStone(row, col)) {
                     if(getPlayerColor(row, col) == PlayerColor.RED) {
