@@ -102,131 +102,62 @@ public class AgeOfTowers {
           possibility to play with a network player
 
          */
+        Player currentPlayer = redPlayer;
+        Move currentMove = null;
+        PlayerColor currentColor = PlayerColor.RED;
+
+        while (status == Status.OK) {
+            System.out.println(currentColor + "'s turn: ");
+            try {
+                /*request move*/
+                if (currentPlayer != null) {
+                    currentMove = currentPlayer.request();
+
+                    /*make move on board*/
+                    if (board != null)
+                        status = board.update(currentMove, currentColor);
+
+                    /*confirm move */
+                    currentPlayer.confirm(board.getStatus());
+                    
+
+                    /*update move*/
+                    if (currentMove != null) 
+                        currentPlayer.update(currentMove == redMove ? blueMove : redMove, board.getStatus());
+                }
 
 
-        redsTurn();
+                /*if debug-mode is enabled*/
+                if (debugMode) {
+                    System.out.println(currentColor + "'s move: " + currentMove.toString());
+                    io.toString();
+                    System.out.println("Status: " + status);
+                }
+
+                /*if delay-mode is enabled*/
+                if (delayTime != 0)
+                    Thread.sleep(delayTime);
+                
+            }
+            catch (RemoteException e) {
+                System.out.println(e);
+            }
+            catch (Exception e) {
+                System.out.println(e);
+            }
+
+            currentColor = currentColor == PlayerColor.RED ? PlayerColor.BLUE : PlayerColor.RED;
+            currentPlayer = currentPlayer == redPlayer ? bluePlayer : redPlayer;
+        }
+        
+        if (status == Status.RED_WIN || status == Status.BLUE_WIN) {
+            System.out.println(status);
+        }
 
         /*end of game */
     }
 
-    /**
-     * Method redsTurn
-     */
-    private void redsTurn() {
-        /*red's move*/
-        System.out.println("Red's turn: ");
-            try {
-                /*request move*/
-                if (redPlayer != null) {
-                    redMove = redPlayer.request();
-
-                    /*make move on board*/
-                    if (board != null)
-                        status = board.update(redMove, PlayerColor.RED);
-
-                    /*confirm move */
-                    redPlayer.confirm(board.getStatus());
-                
-
-                    /*update move*/
-                    if (blueMove != null) 
-                        redPlayer.update(blueMove, board.getStatus());
-                }
-
-
-                /*if debug-mode is enabled*/
-                if (debugMode) {
-                    System.out.println("Red's move: " + redMove.toString());
-                    io.toString();
-                    System.out.println("Status: " + status);
-                }
-
-                /*if delay-mode is enabled*/
-                if (delayTime != 0)
-                    Thread.sleep(delayTime);
-                
-            }
-            catch (RemoteException e) {
-                System.out.println(e);
-            }
-            catch (Exception e) {
-                System.out.println(e);
-            }
-
-            /*
-            if (status == Status.ILLEGAL)
-                redsTurn();
-            else if (status == Status.OK)
-                bluesTurn();
-            else
-                endGame();
-            */
-            bluesTurn();
-            
-    }
-
-    /**
-     * Method bluesTurn
-     */
-    private void bluesTurn() {
-        /*blue's move*/
-        System.out.println("Blue's turn: ");
-        
-            try {
-                if (bluePlayer != null) {
-                    /*update move*/
-                    if (redMove != null)
-                        bluePlayer.update(redMove, board.getStatus());
-
-                    /*request move*/
-                    if (board != null)
-                        blueMove = bluePlayer.request();
-
-                    /*make move on board*/
-                    status = board.update(blueMove, PlayerColor.BLUE);
-
-                    /*confirm move */
-                    bluePlayer.confirm(board.getStatus());
-                }
-                
-                /*if debug-mode is enabled*/
-                if (debugMode) {
-                    System.out.println("Blue's move: " + blueMove.toString());
-                    io.toString();
-                    System.out.println("Status: " + status);
-                }
-
-                /*if delay-mode is enabled*/
-                if (delayTime != 0)
-                    Thread.sleep(delayTime);
-                
-            }
-            catch (RemoteException e) {
-                System.out.println(e);
-            }
-            catch (Exception e) {
-                System.out.println(e);
-            }
-
-            /*
-            if (status == Status.ILLEGAL)
-                bluesTurn();
-            else if (status == Status.OK)
-                redsTurn();
-            else
-                endGame();
-            */
-
-            redsTurn();
-    }
-
-    /**
-     * Method endGame
-     */
-    private void endGame() {
-        String winner;
-        System.out.println(winner = status == Status.RED_WIN ? "Red won!" : "Blue won!");
-    }
+    
 
     /**
      * Method getMove calling deliver from input-class to get a move from user input
