@@ -121,10 +121,12 @@ public class AgeOfTowers {
                     /*confirm move */
                     currentPlayer.confirm(board.getStatus());
                     
+                    /*change players*/
+                    currentPlayer = currentPlayer == redPlayer ? bluePlayer : redPlayer;
 
                     /*update move*/
                     if (currentMove != null) 
-                        currentPlayer.update(currentMove == redMove ? blueMove : redMove, board.getStatus());
+                        currentPlayer.update(currentMove, board.getStatus());
                 }
 
 
@@ -148,7 +150,6 @@ public class AgeOfTowers {
             }
 
             currentColor = currentColor == PlayerColor.RED ? PlayerColor.BLUE : PlayerColor.RED;
-            currentPlayer = currentPlayer == redPlayer ? bluePlayer : redPlayer;
         }
         
         if (status == Status.RED_WIN || status == Status.BLUE_WIN) {
