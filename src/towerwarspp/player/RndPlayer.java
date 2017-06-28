@@ -18,7 +18,7 @@ class RndPlayer extends BasePlayer {
     }
 
     @Override
-    public Move request() throws Exception, RemoteException {
+    Move deliverMove() throws Exception {
         Vector<Move> moves = board.allPossibleMoves(color);
         Move move = moves.get(rnd.nextInt(moves.size()));
         board.update(move, color);

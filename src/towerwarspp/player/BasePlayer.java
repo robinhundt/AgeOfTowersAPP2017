@@ -3,6 +3,8 @@ package towerwarspp.player;
 import towerwarspp.board.Board;
 import towerwarspp.preset.*;
 
+import java.rmi.RemoteException;
+
 /**
  * Partial implementation of Player Interface that is used as Super-Class for specialized players (eg. Human, Random, etc.).
  */
@@ -14,11 +16,22 @@ abstract class BasePlayer implements Player {
     PlayerState state;
     PlayerColor color;
 
+    abstract Move deliverMove() throws Exception;
+
+    @Override
+    public Move request() throws Exception, RemoteException {
+        if(state != PlayerState.REQUEST)
+            throw new Exception("Illegal PlayerState. Request can only be called after after init or update");
+        return deliverMove();
+    }
+
     /**
      * Method to validate the players boardStatus against the passed one. <b>Must always</b> be called after request and <b>before</b> confirm!
      * @param boardStatus boardStatus to validate
      * @throws Exception Throws an Exception in case the method is invodek in the wrong order.
      */
+
+
     @Override
     public void confirm(Status boardStatus) throws Exception {
         if(state != PlayerState.CONFIRM)

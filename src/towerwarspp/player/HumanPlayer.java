@@ -8,6 +8,7 @@ import java.rmi.RemoteException;
 /**
  *
  */
+
 class HumanPlayer extends BasePlayer {
     private Requestable moveDeliver;
 
@@ -16,9 +17,7 @@ class HumanPlayer extends BasePlayer {
     }
 
     @Override
-    public Move request() throws Exception, RemoteException {
-        if(state != PlayerState.REQUEST)
-            throw new Exception("Illegal PlayerState. Request can only be called after after init or update");
+    Move deliverMove() throws Exception {
         Move move = moveDeliver.deliver();
         board.update(move, color);
         state = state.next();

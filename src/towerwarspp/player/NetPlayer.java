@@ -10,7 +10,7 @@ import java.rmi.RemoteException;
 class NetPlayer extends BasePlayer {
 
     @Override
-    public Move request() throws Exception, RemoteException {
+    Move deliverMove() throws Exception {
         return null;
     }
 }
