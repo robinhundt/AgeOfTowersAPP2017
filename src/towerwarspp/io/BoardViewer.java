@@ -1,9 +1,7 @@
 package towerwarspp.io;
 
-import towerwarspp.preset.Move;
-import towerwarspp.preset.Position;
-import towerwarspp.preset.Status;
-import towerwarspp.preset.Viewer;
+import towerwarspp.board.Entity;
+import towerwarspp.preset.*;
 import towerwarspp.board.Board;
 
 
@@ -18,13 +16,15 @@ public class BoardViewer implements Viewer {
      * Private Board
      */
     private Board board;
+    private Entity[][] entities;
 
     /**
      * Constructor to Initialize Viewer
      * @param board the Board of the game
      */
-    public BoardViewer(Board board) {
+    public BoardViewer(Board board, Entity[][] entities) {
         this.board = board;
+        this.entities = entities;
     }
 
     /**
@@ -55,13 +55,24 @@ public class BoardViewer implements Viewer {
         return this.board.getStatus();
     }
 
-    /**
-     * Retruns the set of Stones
-     * @return set of Stones
-     */
     @Override
-    public int getStones() {
-        return 0;
+    public boolean isBlocked(int row, int col) {
+        return entities[row][col].isBlocked();
+    }
+
+    @Override
+    public boolean isStone(int row, int col) {
+        return !entities[row][col].isTower();
+    }
+
+    @Override
+    public boolean isTower(int row, int col) {
+        return entities[row][col].isTower();
+    }
+
+    @Override
+    public PlayerColor getPlayerColor(int row, int col) {
+        return entities[row][col].getColor();
     }
 
     /**

@@ -45,24 +45,31 @@ public class TextIO implements Requestable {
      * Checks if is Stone
      * @return  True if Token is stone, otherwise false
      */
-    private boolean isStone() {
-        return false;
+    private boolean isStone(int row, int col) {
+        return this.viewer.isStone(row, col);
     }
 
     /**
      * Checks if Stone is Tower
      * @return True if Stone is Tower, otherwise false
      */
-    private boolean isTower() {
-        return false;
+    private boolean isTower(int row, int col) {
+        return this.viewer.isTower(row, col);
     }
 
     /**
      * Checks if Stone is blocked
      * @return True if Stone is vlocked, otherwise false
      */
-    private boolean isBlocked() {
-        return false;
+    private boolean isBlocked(int row, int col) {
+        return this.viewer.isBlocked(row, col);
+    }
+
+    /**
+     *
+     */
+    private PlayerColor getPlayerColor(int row, int col) {
+        return this.viewer.getPlayerColor(row, col);
     }
 
     /**
@@ -70,8 +77,7 @@ public class TextIO implements Requestable {
      * @return Size of Board
      */
     private int getSize() {
-        //return viewer.getSize();
-        return 10;
+        return this.viewer.getSize();
     }
 
     /**
@@ -90,21 +96,21 @@ public class TextIO implements Requestable {
         for(int row = 0; row < size; ++row) {
             System.out.print(tap + row + "  ");
             for(int col = 0; col < size; ++col) {
-                if(isTower()) {
+                if(isTower(row, col)) {
                     System.out.print(" T ");
                 } else if(row == 0 && col == 0) {
                     System.out.print(RED + " B " + RESET);
                 } else if(row == size - 1 && col == size - 1) {
                     System.out.print(BLUE + " B " + RESET);
-                } else if(isStone()) {
-                    if(false) {
+                } else if(isStone(row, col)) {
+                    if(getPlayerColor(row, col) == PlayerColor.RED) {
                         System.out.print(RED);
                     } else {
                         System.out.print(BLUE);
                     }
                     System.out.print(" S " + RESET);
-                } else if(isBlocked()) {
-                    if(false) {
+                } else if(isBlocked(row, col)) {
+                    if(getPlayerColor(row, col) == PlayerColor.RED) {
                         System.out.print(RED);
                     } else {
                         System.out.print(BLUE);
