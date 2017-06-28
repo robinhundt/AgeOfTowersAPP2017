@@ -108,6 +108,7 @@ public class AgeOfTowers {
 
         while (status == Status.OK) {
             System.out.println(currentColor + "'s turn: ");
+            //System.exit(0);
             try {
                 /*request move*/
                 if (currentPlayer != null) {

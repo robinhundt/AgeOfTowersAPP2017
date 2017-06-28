@@ -24,12 +24,14 @@ public class Board implements Viewable {
         */
         public Board (int n) {
                 board = new Entity[n+1][n+1];
+				size = n;
                 initializeBoard();
-                size = n;
+                
         }
         private void initializeBoard() {
                 redBase = new Position(1, 1);
                 board[1][1] = new Entity (redBase, RED, size);
+				System.out.println("size: " + size);
                 blueBase = new Position(size, size);
                 board[size][size] = new Entity (blueBase, BLUE, size);
                 int d = size/2;
