@@ -21,19 +21,22 @@ public class AgeOfTowers {
     /*Object from class which implements requestable-interface*/
     TextIO io;
 
+    boolean debugMode = false;
+    int delayTime = 0;
+
+    Board board = null;
+    Viewer viewer = null;
+    Player redPlayer = null;
+    Player bluePlayer = null;
+    Status status = Status.OK;
+    Move redMove = null;
+    Move blueMove = null;
+
     /**
      * Constructor to initialize a new game
      * @param args list with settings to put into the ArgumentParser
      */
     public AgeOfTowers(String[] args) {
-
-        boolean debugMode = false;
-        int delayTime = 0;
-
-        Board board = null;
-        Viewer viewer = null;
-        Player redPlayer = null;
-        Player bluePlayer = null;
 
         try {
             ArgumentParser ap = new ArgumentParser(args);
@@ -50,6 +53,7 @@ public class AgeOfTowers {
             System.out.println("size: " + ap.getSize());
             System.out.println("graphic: " + ap.isGraphic());
 
+            /*initialize red player*/
             if (ap.getRed() == PlayerType.HUMAN) {
                 System.out.println("Red chose human player");
                 redPlayer = PlayerFactory.makeHumanPlayer(ap.getSize(), PlayerColor.RED, io);
@@ -58,6 +62,7 @@ public class AgeOfTowers {
                 redPlayer = PlayerFactory.makePlayer(ap.getSize(), PlayerColor.RED, ap.getRed());
             }
 
+            /*initialize blue player*/
             if (ap.getBlue() == PlayerType.HUMAN) {
                 System.out.println("Blue chose human player");
                 bluePlayer = PlayerFactory.makeHumanPlayer(ap.getSize(), PlayerColor.BLUE, io);
@@ -99,29 +104,39 @@ public class AgeOfTowers {
          */
 
 
-        Status status = Status.OK;
-        Move redMove = null;
-        Move blueMove = null;
+        redsTurn();
 
-        while (true) {
-            /*red's move*/
+        /*end of game */
+    }
+
+    /**
+     * Method redsTurn
+     */
+    private void redsTurn() {
+        /*red's move*/
+        System.out.println("Red's turn: ");
             try {
                 /*request move*/
-                redMove = redPlayer.request();
+                if (redPlayer != null) {
+                    redMove = redPlayer.request();
 
-                /*confirm move */
-                redPlayer.confirm(board.getStatus());
+                    /*make move on board*/
+                    board.update(redMove, PlayerColor.RED);
 
-                /*update move*/
-                redPlayer.update(blueMove, board.getStatus());
+                    /*confirm move */
+                    redPlayer.confirm(board.getStatus());
+                
 
-                if (board.getStatus() == Status.RED_WIN) {
-                    status = Status.RED_WIN;
-                    break;
+                    /*update move*/
+                    if (blueMove != null) 
+                        redPlayer.update(blueMove, board.getStatus());
                 }
 
-                /*make move on board*/
-                //board.makeMove(redMove);
+                if (board != null && board.getStatus() == Status.RED_WIN) {
+                    status = Status.RED_WIN;
+                    endGame();
+                }
+
 
                 /*if debug-mode is enabled*/
                 if (debugMode) {
@@ -136,30 +151,42 @@ public class AgeOfTowers {
                 }
             }
             catch (RemoteException e) {
-                e.printStackTrace();
+                System.out.println(e);
             }
             catch (Exception e) {
-                e.printStackTrace();
+                System.out.println(e);
             }
 
-            /*blue's move*/
+            bluesTurn();
+    }
+
+    /**
+     * Method bluesTurn
+     */
+    private void bluesTurn() {
+        /*blue's move*/
+        System.out.println("Blue's turn: ");
+
             try {
-                /*update move*/
-                bluePlayer.update(redMove, board.getStatus());
+                if (bluePlayer != null) {
+                    /*update move*/
+                    if (redMove != null)
+                        bluePlayer.update(redMove, board.getStatus());
 
-                /*request move*/
-                blueMove = bluePlayer.request();
+                    /*request move*/
+                    blueMove = bluePlayer.request();
 
-                /*confirm move */
-                bluePlayer.confirm(board.getStatus());
+                    /*make move on board*/
+                    board.update(blueMove, PlayerColor.BLUE);
 
-                if (board.getStatus() == Status.BLUE_WIN) {
-                    status = Status.BLUE_WIN;
-                    break;
+                    /*confirm move */
+                    bluePlayer.confirm(board.getStatus());
                 }
 
-                /*make move on board*/
-                //board.makeMove(blueMove);
+                if (board != null && board.getStatus() == Status.BLUE_WIN) {
+                    status = Status.BLUE_WIN;
+                    endGame();
+                }
                 
                 /*if debug-mode is enabled*/
                 if (debugMode) {
@@ -174,14 +201,21 @@ public class AgeOfTowers {
                 }
             }
             catch (RemoteException e) {
-                e.printStackTrace();
+                System.out.println(e);
             }
             catch (Exception e) {
-                e.printStackTrace();
+                System.out.println(e);
             }
-        }
 
-        /*end of game */
+            redsTurn();
+    }
+
+    /**
+     * Method endGame
+     */
+    private void endGame() {
+        String winner;
+        System.out.println(winner = status == Status.RED_WIN ? "Red won!" : "Blue won!");
     }
 
     /**
@@ -195,6 +229,7 @@ public class AgeOfTowers {
     /**
      * Main method initializing a new object of AgeOfTowers parsing the input String
      * @param args input specifying all settings
+     * @throws FileNotFoundException
      */
     public static void main(String[] args) {
         AgeOfTowers game = new AgeOfTowers(args);
