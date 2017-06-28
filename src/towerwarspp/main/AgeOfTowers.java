@@ -133,7 +133,7 @@ public class AgeOfTowers {
                 /*if debug-mode is enabled*/
                 if (debugMode) {
                     System.out.println(currentColor + "'s move: " + currentMove.toString());
-                    io.toString();
+                    io.visualize();
                     System.out.println("Status: " + status);
                 }
 
