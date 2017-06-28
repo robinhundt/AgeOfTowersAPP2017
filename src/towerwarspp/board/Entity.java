@@ -26,9 +26,9 @@ public class Entity {
 /**
 * Construktor
 */
-	public Entity(Position p, Vector<Position> possibleMoves, PlayerColor col, int size) {
+	public Entity(Position p, PlayerColor col, int size) {
 		myPosition = p;
-		moves = possibleMoves;
+		moves = new Vector<Position>();
 		color = col;
 		this.size = size;
 		maxHigh = size/3;

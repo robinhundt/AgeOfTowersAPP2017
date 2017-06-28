@@ -2,44 +2,105 @@ package towerwarspp.board;
 
 import towerwarspp.preset.*;
 import towerwarspp.io.*;
+import static towerwarspp.preset.PlayerColor.*;
 import java.util.Vector;
 import java.util.ListIterator;
-import java.lang.Exception; 
+import java.lang.Exception;
 
 public class Board implements Viewable {
-	private int size;
-	private PlayerColor turn = PlayerColor.RED;
-	private Status status = Status.OK;
-	private Vector<Entity> listRed = new Vector<Entity>();
-	private Vector<Entity> listBlue = new Vector<Entity>();
-	private Entity[][] board; 
-	private Position redBase;
-	private Position blueBase;
+        private int size;
+        private PlayerColor turn = RED;
+        private Status status = Status.OK;
+        private Vector<Entity> listRed = new Vector<Entity>();
+        private Vector<Entity> listBlue = new Vector<Entity>();
+        private Entity[][] board;
+        private Position redBase;
+        private Position blueBase;
 
-	/**
-	* Initialises a new object of the Board class.
-	* @param n - size of the new board. 
-	*/	
-	public Board (int n) {
-		board = new Entity[n][n];
-		setBoard();
-		size = n;
+        /**
+        * Initialises a new object of the Board class.
+        * @param n - size of the new board.
+        */
+        public Board (int n) {
+                board = new Entity[n+1][n+1];
+                initializeBoard();
+                size = n;
+        }
+        private void initializeBoard() {
+                redBase = new Position(1, 1);
+                board[1][1] = new Entity (redBase, RED, size);
+                blueBase = new Position(size, size);
+                board[size][size] = new Entity (blueBase, BLUE, size);
+                int d = size/2;
+                int y = 1;
+                int lastX = 1 + d;
+                int lastY = 1 + d;
+	 	for(int x = 2; x <= lastX; ++x) {
+                        Entity ent = new Entity(new Position(x, y), RED, size);
+                        board[x][y] = ent;
+                        initialiseEntityMoves(ent, x, y);
+                        listRed.add(ent);
+                }
+                for (y = 2; y <= lastY; ++y) {
+                         --lastX;
+                        for (int x = 1; x <= lastX; ++x) {
+                                Entity ent = new Entity(new Position(x, y), RED, size);
+                                board[x][y] = ent;
+                                initialiseEntityMoves(ent, x, y);
+                                listRed.add(ent);
+                        }
+                }
+                y = size;
+		lastX = size - 1 - d;
+		lastY = size - 1 - d;
+		for(int x = size-1; x >= lastX; --x) {
+			Entity ent = new Entity(new Position(x, y), RED, size);
+			board[x][y] = ent;
+			initialiseEntityMoves(ent, x, y);
+			listRed.add(ent);
+		}
+		for (y = size - 1; y >= lastY; --y) {
+			++lastX;
+			for (int x = size; x >= lastX; --x) {
+				Entity ent = new Entity(new Position(x, y), RED, size);
+				board[x][y] = ent;
+				initialiseEntityMoves(ent, x, y);
+				listRed.add(ent);
+			}
+		}
 	}
-	private void setBoard() {
-		;
+	private void initialiseEntityMoves(Entity ent, int x, int y) {
+		if (y > 1) {
+			ent.addMove(new Position(x, y-1));
+			if (x < size) {
+				ent.addMove(new Position(x+1, y-1));
+			}
+		}
+		if (x > 1) {
+			ent.addMove(new Position(x-1, y));
+			if (y < size) {
+				ent.addMove(new Position(x-1, y+1));
+			}
+		}
+		if (x < size) {
+			ent.addMove(new Position(x+1, y));
+		}
+		if (y < size) {
+			ent.addMove(new Position(x, y+1));
+		}
 	}
 	/**
 	* Returns a viewer for this board.
 	* @return
-	*	a viewer for this board. 
+	*	a viewer for this board.
 	*/
 	public Viewer viewer() {
-		return new BoardViewer(this);
+		return new BoardViewer(this, board);
 	}
 	/**
 	* Returns the size of the board.
 	* @return
-	*	the size of the board. 
+	*	the size of the board.
 	*/
 	public int getSize() {
 		return size;
@@ -47,7 +108,7 @@ public class Board implements Viewable {
 	/**
 	* Returns the current turn.
 	* @return
-	*	the curren turn. 
+	*	the curren turn.
 	*/
 	public int getTurn() {
 		return (turn == PlayerColor.RED? 1: 2);
@@ -55,7 +116,7 @@ public class Board implements Viewable {
 	/**
 	* Returns the status of the board.
 	* @return
-	*	the status of the board. 
+	*	the status of the board.
 	*/
 	public Status getStatus() {
 		return status;
@@ -63,9 +124,9 @@ public class Board implements Viewable {
 	/**
 	* Returns a representation of the board as a 2-dimensional integer array.
 	* @return
-	*	a representation of the board as a 2-dimensional integer array. 
+	*	a representation of the board as a 2-dimensional integer array.
 	*/
-	public int[][] getBoard() { 
+	public int[][] getBoard() {
 		return new int[size][size];
 	}
 	private int distance (Position a, Position b) {
@@ -73,7 +134,7 @@ public class Board implements Viewable {
 		int y = a.getNumber() - b.getNumber();
 		int z = x - y;
 		return (Math.abs(x) + Math.abs(y) + Math.abs(z))/2;
-	
+
 	}
 	private void setTurn(PlayerColor t) {
 		turn = t;
@@ -82,19 +143,19 @@ public class Board implements Viewable {
 	* Evaluates the specified move.
 	* @param move - the move which has to be evaluated.
 	* @return
-	*	a score of the move. 
+	*	a score of the move.
 	*/
 	public int scoreMove(Move move) {
 		return 0;
 	}
 	/**
-	* Checks if the specified move is possible and if so, updates the board: executes the move. 
-	* Illegal moves will not be executed. 
+	* Checks if the specified move is possible and if so, updates the board: executes the move.
+	* Illegal moves will not be executed.
 	* Changes the board status accordingly and returns it.
 	* @param move - new move to be executed.
 	* @param col - color of the figure which has to be moved.
 	* @return
-	*	a status of the board after checking or checking and executing the move. 
+	*	a status of the board after checking or checking and executing the move.
 	*/
 	public Status update(Move move, PlayerColor col) {
 		if(col != turn) {
@@ -117,7 +178,7 @@ public class Board implements Viewable {
 	private Entity changeStart(Entity ent, Position start, boolean col) {
 		if (ent.isTower()) {
 			actualiseTowerRemoveStone(ent, col);
-			Entity newStone = new Entity(start, new Vector<Position>(), ent.getColor(), size);
+			Entity newStone = new Entity(start, ent.getColor(), size);
 			addToList(newStone, col);
 			return newStone;
 		}
@@ -130,7 +191,7 @@ public class Board implements Viewable {
 		checkOpponentTower(ent, x, y+1);
 		checkOpponentTower(ent, x-1, y+1);
 		checkOpponentTower(ent, x-1, y);
-		return ent;	
+		return ent;
 	}
 	private void checkOpponentTower(Entity ent, int x, int y) {
 		if(x < 1 || y < 1 || x > size || y > size) return;
@@ -145,7 +206,7 @@ public class Board implements Viewable {
 		int endY = end.getNumber();
 		Entity opponent = board[endX][endY];
 		if(opponent.isBase()){
-			setElement(ent, endX, endY); 
+			setElement(ent, endX, endY);
 			status = (col? Status.RED_WIN : Status.BLUE_WIN);
 			return;
 		}
@@ -168,8 +229,8 @@ public class Board implements Viewable {
 					findMoves(ent);
 				}
 			}
-			return;					
-		} 
+			return;
+		}
 		removeFromList(ent, col);
 		if(opponent.isBlocked()) {
 			opponent.setBlocked(false);
@@ -208,7 +269,7 @@ public class Board implements Viewable {
 	}
 	private void actualiseTowerBlockOrDecrease(Entity tower, boolean col, int change) {
 		ListIterator<Position> it = tower.getMoves().listIterator();
-		Position p;	
+		Position p;
 		while(it.hasNext()) {
 			p = it.next();
 			Entity ent = board[p.getLetter()][p.getNumber()];
@@ -221,7 +282,7 @@ public class Board implements Viewable {
 	}
 	private void actualiseTowerIncrease(Entity tower, boolean col) {
 		ListIterator<Position> it = tower.getMoves().listIterator();
-		Position p;	
+		Position p;
 		while(it.hasNext()) {
 			p = it.next();
 			Entity ent = board[p.getLetter()][p.getNumber()];
@@ -245,7 +306,7 @@ public class Board implements Viewable {
 		towerCheckNeighbour(tower, x+1, y);
 		towerCheckNeighbour(tower, x, y+1);
 		towerCheckNeighbour(tower, x-1, y+1);
-		towerCheckNeighbour(tower, x-1, y);	
+		towerCheckNeighbour(tower, x-1, y);
 	}
 	private void actualiseTowerRemoved(Entity tower, boolean col) {
 		removeFromList(tower, col);
@@ -262,7 +323,7 @@ public class Board implements Viewable {
 		else {
 			actualiseTowerIncrease(tower, col);
 		}
-	}	
+	}
 	private void actualiseTowerRemoveStone(Entity tower, boolean col) {
 		actualiseTowerBlockOrDecrease(tower, col, 1);
 		tower.removeStone();
@@ -287,8 +348,8 @@ public class Board implements Viewable {
 			}
 			if(!opponent.isTower()) {
 				addMoves(opponent, tower.getHigh());
-			}	
-		}		
+			}
+		}
 	}
 	private int checkCloseNeighbour(Entity ent,  int x, int y) {
 		if(x < 1 || y < 1 || x > size || y > size) return 0;
@@ -311,7 +372,7 @@ public class Board implements Viewable {
 				res += opponent.getHigh();
 				if(opponent.maxHigh()) {
 					ent.setReach(x, y, 1);
-				}	
+				}
 				else {
 					ent.addMove(new Position(x, y), 1);
 				}
@@ -323,7 +384,7 @@ public class Board implements Viewable {
 
 		}
 		else ent.addMove(new Position(x, y), 1);
-		return res; 
+		return res;
 	}
 	private int findCloseMoves (Entity ent) {
 		int addStep = 0;
@@ -344,50 +405,74 @@ public class Board implements Viewable {
 		if (addStep < 1) return;
 		addMoves(ent, addStep);
 	}
-	private void checkRemoteNeighbour(Entity ent,  int x, int y) {
+	private void checkOpponent (Entity ent,  int x, int y, int step) {
 		if(x < 1 || y < 1 || x > size || y > size) return;
 		Entity opponent = board[x][y];
 		if(opponent == null) {
-			ent.addMove(new Position(x, y), 1);
+			ent.addMove(new Position(x, y), step);
 		}
 		if(opponent.isBase()) {
 			if (opponent.getColor() == ent.getColor()) return;
-			ent.addMove(new Position(x, y), 1);
+			ent.addMove(new Position(x, y), step);
 			return;
 		}
 		if(opponent.getColor() == ent.getColor())
 			if(opponent.isBlocked() || !opponent.maxHigh()) {
-				ent.addMove(new Position(x, y), 1);
+				ent.addMove(new Position(x, y), step);
 				return;
 			}
 			if(opponent.maxHigh()) {
-				ent.setReach(x, y, 1);
-			}	
+				ent.setReach(x, y, step);
+			}
 		else {
-			if(opponent.isBlocked()) {
-				ent.setReach(x, y, 1);
+			if(opponent.isBlocked() && step > 1) {
+				ent.setReach(x, y, step);
 				return;
 			}
-			ent.addMove(new Position(x, y), 1);
+			ent.addMove(new Position(x, y), step);
 		}
 	}
 	private void addMoves (Entity ent, int change) {
-		int oldStep = ent.getStep();
+		int curStep = ent.getStep() + 1;
 		int newStep = ent.stepIncrease(change);
-	} 
+		Position pos = ent.getPosition();
+		int entX = pos.getLetter();
+		int entY = pos.getNumber();
+		for(; curStep <= newStep; ++curStep) {
+			int firstX = entX;
+			int lastX = entX + curStep;
+			int y = entY - curStep;
+			for(int x = firstX; x <= lastX && y >= 1; ++x) {
+				checkOpponent(ent, x, y, curStep);
+			}
+			for (int d = 1; d <= curStep; ++d) {
+				checkOpponent(ent, --firstX, ++y, curStep);
+				checkOpponent(ent, lastX, y, curStep);
+			}
+			for (int d = 1; d < curStep; ++d) {
+				checkOpponent(ent, firstX, ++y, curStep);
+				checkOpponent(ent, --lastX, y, curStep);
+			}
+			++y;
+			--lastX;
+			for(int x = firstX; x <= lastX && y <= size; ++x) {
+				checkOpponent(ent, x, y, curStep);
+			}
+		}
+	}
 	private void checkWin() {
 		if (status == Status.RED_WIN || status == Status.BLUE_WIN) {
 			return;
 		}
-		if (turn == PlayerColor.BLUE) { 
+		if (turn == PlayerColor.BLUE) {
 			if (!hasMoves (listRed.listIterator())) {
 				status = Status.BLUE_WIN;
-				return;			
+				return;
 			}
 		}
 		else if (!hasMoves (listBlue.listIterator())) {
 			status = Status.RED_WIN;
-			return;			
+			return;
 		}
 		status = Status.OK;
 	}
