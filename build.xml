@@ -7,25 +7,20 @@
 	<target name="init" description="Clean output directories and recreate directories">
 		<delete includeemptydirs="true" quiet="true">
 			<fileset dir="${build.dir}"/>
-		</delete>
-		<mkdir dir="${build.dir}"/>
-	</target>
-
-	<target name="build" description="Compile project" depends="init">
-		<javac destdir="${build.dir}" includeantruntime="false" debug="true">
-			<src path="${src.dir}"/>
-		</javac>
-	</target>
-
-	<target name="doc" description="Create JavaDoc files" depends="build">
-
-		<delete includeemptydirs="true" quiet="true">
             <fileset dir="${doc.dir}"/>
 		</delete>
+		<mkdir dir="${build.dir}"/>
 		<mkdir dir="${doc.dir}"/>
+	</target>
 
+	<target name="build" description="Compile project and generate JavaDoc" depends="init">
+		<javac destdir="${build.dir}" includeantruntime="false">
+			<src path="${src.dir}"/>
+			<classpath path="${jar}"/>
+		</javac>
 		<javadoc
 			sourcepath="${src.dir}"
+            classpath="${jar}"
 			destdir="${doc.dir}"
 			author="true"
 			version="true"
@@ -36,7 +31,5 @@
 			docencoding="UTF-8"
 			windowtitle="APP">
 		</javadoc>
-
 	</target>
-
 </project>

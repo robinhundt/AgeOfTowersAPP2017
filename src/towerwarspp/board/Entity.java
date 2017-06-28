@@ -23,7 +23,6 @@ public class Entity {
 	private int maxHigh; 	// max possible high for a tower
 	private boolean blocked = false;	// shows if the Entity is blocked (relevant only for towers)
 	private int step = 1;			// current step size of this Entity
-	
 /**
 * Construktor
 */
@@ -37,8 +36,8 @@ public class Entity {
 	}
 /**
 * Ensures that the move with end position {@link moveEnd} is in the list of possible moves.
-* @param moveEnd - end position of the move in question.
-* @param stps - amount of steps needed to reach {@link moveEnd} from {@link myPosition}.
+* @param moveEnd end position of the move in question.
+* @param stps amount of steps needed to reach {@link moveEnd} from {@link myPosition}.
 * 
 * HOW IT WORKS:
 * 1. prooves, if the move is already in the list;
@@ -114,7 +113,7 @@ public class Entity {
 		return nSteps[endPos.getLetter()][endPos.getNumber()] > 1;
 	}
 /**
-* Prooves if this Entity can reach the position {@link pos} with the current value of {@link step}.
+* Proves if this Entity can reach the position {@link pos} with the current value of {@link step}.
 * @param pos the position in question.
 */ 
 	public boolean canReach(Position pos) {
