@@ -22,6 +22,7 @@ abstract class BasePlayer implements Player {
     public Move request() throws Exception, RemoteException {
         if(state != PlayerState.REQUEST)
             throw new Exception("Illegal PlayerState. Request can only be called after after init or update");
+        state = state.next();
         return deliverMove();
     }
 
