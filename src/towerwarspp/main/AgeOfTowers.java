@@ -121,7 +121,8 @@ public class AgeOfTowers {
                     redMove = redPlayer.request();
 
                     /*make move on board*/
-                    board.update(redMove, PlayerColor.RED);
+                    if (board != null)
+                        status = board.update(redMove, PlayerColor.RED);
 
                     /*confirm move */
                     redPlayer.confirm(board.getStatus());
@@ -132,23 +133,18 @@ public class AgeOfTowers {
                         redPlayer.update(blueMove, board.getStatus());
                 }
 
-                if (board != null && board.getStatus() == Status.RED_WIN) {
-                    status = Status.RED_WIN;
-                    endGame();
-                }
-
 
                 /*if debug-mode is enabled*/
                 if (debugMode) {
                     System.out.println("Red's move: " + redMove.toString());
-                    //output board
-                    System.out.println("Status: " + board.getStatus());
+                    io.toString();
+                    System.out.println("Status: " + status);
                 }
 
                 /*if delay-mode is enabled*/
-                if (delayTime != 0) {
+                if (delayTime != 0)
                     Thread.sleep(delayTime);
-                }
+                
             }
             catch (RemoteException e) {
                 System.out.println(e);
@@ -157,7 +153,16 @@ public class AgeOfTowers {
                 System.out.println(e);
             }
 
+            /*
+            if (status == Status.ILLEGAL)
+                redsTurn();
+            else if (status == Status.OK)
+                bluesTurn();
+            else
+                endGame();
+            */
             bluesTurn();
+            
     }
 
     /**
@@ -166,7 +171,7 @@ public class AgeOfTowers {
     private void bluesTurn() {
         /*blue's move*/
         System.out.println("Blue's turn: ");
-
+        
             try {
                 if (bluePlayer != null) {
                     /*update move*/
@@ -174,31 +179,27 @@ public class AgeOfTowers {
                         bluePlayer.update(redMove, board.getStatus());
 
                     /*request move*/
-                    blueMove = bluePlayer.request();
+                    if (board != null)
+                        blueMove = bluePlayer.request();
 
                     /*make move on board*/
-                    board.update(blueMove, PlayerColor.BLUE);
+                    status = board.update(blueMove, PlayerColor.BLUE);
 
                     /*confirm move */
                     bluePlayer.confirm(board.getStatus());
-                }
-
-                if (board != null && board.getStatus() == Status.BLUE_WIN) {
-                    status = Status.BLUE_WIN;
-                    endGame();
                 }
                 
                 /*if debug-mode is enabled*/
                 if (debugMode) {
                     System.out.println("Blue's move: " + blueMove.toString());
-                    //output board
-                    System.out.println("Status: " + board.getStatus());
+                    io.toString();
+                    System.out.println("Status: " + status);
                 }
 
                 /*if delay-mode is enabled*/
-                if (delayTime != 0) {
+                if (delayTime != 0)
                     Thread.sleep(delayTime);
-                }
+                
             }
             catch (RemoteException e) {
                 System.out.println(e);
@@ -206,6 +207,15 @@ public class AgeOfTowers {
             catch (Exception e) {
                 System.out.println(e);
             }
+
+            /*
+            if (status == Status.ILLEGAL)
+                bluesTurn();
+            else if (status == Status.OK)
+                redsTurn();
+            else
+                endGame();
+            */
 
             redsTurn();
     }
