@@ -76,13 +76,11 @@ public class TextIO implements Requestable {
 
     /**
      * Output of the Board
-     * @return Board as String
      */
-    @Override
-    public String toString() {
+    public void visualize() {
         int size = getSize();
         char headChar = 'A';
-        System.out.print("\t");
+        System.out.print("    ");
         for(int top = 0; top < size; ++top) {
             System.out.print(headChar + "   ");
             ++headChar;
@@ -98,13 +96,20 @@ public class TextIO implements Requestable {
                     System.out.print(RED + " B " + RESET);
                 } else if(row == size - 1 && col == size - 1) {
                     System.out.print(BLUE + " B " + RESET);
-                } else if(true) {
+                } else if(isStone()) {
                     if(false) {
                         System.out.print(RED);
                     } else {
                         System.out.print(BLUE);
                     }
                     System.out.print(" S " + RESET);
+                } else if(isBlocked()) {
+                    if(false) {
+                        System.out.print(RED);
+                    } else {
+                        System.out.print(BLUE);
+                    }
+                    System.out.print(" X " + RESET);
                 } else {
                     System.out.print(" o ");
                 }
@@ -120,7 +125,7 @@ public class TextIO implements Requestable {
             System.out.print(headChar + "   ");
             ++headChar;
         }
-        return null;
+        System.out.println("");
     }
 
     /**
