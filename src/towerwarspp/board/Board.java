@@ -25,15 +25,24 @@ public class Board implements Viewable {
         public Board (int n) {
                 board = new Entity[n+1][n+1];
 				size = n;
-                initializeBoard();
+                initialiseBoard();
                 
         }
-        private void initializeBoard() {
+	public Entity[][] getBoard(){
+		return board;
+	}
+        private void initialiseBoard() {
                 redBase = new Position(1, 1);
                 board[1][1] = new Entity (redBase, RED, size);
                 blueBase = new Position(size, size);
                 board[size][size] = new Entity (blueBase, BLUE, size);
-                int d = size/2;
+		initialiseRedEntities();
+		initialiseBlueEntities();
+                
+        
+	}
+	private void initialiseRedEntities() {
+		int d = size/2;
                 int y = 1;
                 int lastX = 1 + d;
                 int lastY = 1 + d;
@@ -52,9 +61,12 @@ public class Board implements Viewable {
                                 listRed.add(ent);
                         }
                 }
-                y = size;
-		lastX = size - 1 - d;
-		lastY = size - 1 - d;
+	}
+	private void initialiseBlueEntities() {
+		int d = size/2;
+       		int y = size;
+		int lastX = size - d;
+		int lastY = size - d;
 		for(int x = size-1; x >= lastX; --x) {
 			Entity ent = new Entity(new Position(x, y), BLUE, size);
 			board[x][y] = ent;
@@ -197,6 +209,7 @@ public class Board implements Viewable {
 		ent = changeStart(ent, start, col);
 		changeEnd(ent, start, end, col);
 		checkWin();
+		turn = (turn == RED? BLUE: RED);
 		return status;
 	}
 	private Entity changeStart(Entity ent, Position start, PlayerColor col) {
