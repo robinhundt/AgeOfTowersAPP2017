@@ -144,6 +144,36 @@ public class Board implements Viewable {
 		return 0;
 	}
 	/**
+	* Evaluates the specified move.
+	* @param move - the move which has to be evaluated.
+	* @return
+	*	a score of the move.
+	*/
+	public int scoreMove(Move move, PlayerColor col) {
+		Evaluator evaluator = new Evaluator();
+		Position endPos = move.getEnd();
+		if (col == RED && endPos.equals(blueBase)) {
+			return Integer.MAX_VALUE;
+		}
+		if (col == BLUE && endPos.equals(blueBase)) {
+			return Integer.MAX_VALUE;
+		}
+		Entity opponent = board[endPos.getLetter()][endPos.getNumber()];
+		Position base = (col == RED? blueBase: redBase);
+		int res =  distance(move.getStart(), base) - distance(endPos, base);
+		if (opponent == null) {
+			return res;
+		}
+		if(opponent.getColor() != col) {
+			if(!opponent.isTower()) {
+				return (res + 1);
+			}
+			if (distance(move.getStart(), endPos) == 1)
+				return (res + 2);
+		}
+		return res;
+	}
+	/**
 	* Checks if the specified move is possible and if so, updates the board: executes the move.
 	* Illegal moves will not be executed.
 	* Changes the board status accordingly and returns it.
