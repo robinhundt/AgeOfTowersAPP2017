@@ -70,7 +70,12 @@ public class Entity extends BasicFigure{
 	public boolean removeMove(Position moveEnd, int stps) {
 		return moves.remove(moveEnd);
 	}
-	
+	/**
+	* Calculates the distance between two positions on the board.
+	* @param a the first position.
+	* @param b the second position.
+	* @return the distance between the positions a and b.
+	*/
 	private int distance (Position a, Position b) {
 		int x = a.getLetter() - b.getLetter();
 		int y = a.getNumber() - b.getNumber();
@@ -147,7 +152,12 @@ public class Entity extends BasicFigure{
 * Decreases current {@link step} by 1.
 */
 	public void removeStep() {
-		moves = null;
+		ListIterator<Position> it = moves.listIterator();
+		while(it.hasNext()) {
+			if(distance(position, it.next()) == step) {
+				it.remove();
+			}
+		}
 		--step;
 	}
 /**
