@@ -47,7 +47,7 @@ public class AgeOfTowers {
             /*initialize viewer-object with method viewer() from board*/
             viewer = board.viewer();
 
-            io = new TextIO((BoardViewer) viewer);
+            io = new TextIO((BViewer) viewer);
 
             //System.out.println("network: " + ap.isNetwork());
             System.out.println("size: " + ap.getSize());
@@ -102,7 +102,8 @@ public class AgeOfTowers {
           possibility to play with a network player
 
          */
-        io.visualize();
+        if (io != null)
+            io.visualize();
 
         Player currentPlayer = redPlayer;
         Move currentMove = null;
@@ -110,15 +111,14 @@ public class AgeOfTowers {
 
         while (status == Status.OK) {
             System.out.println(currentColor + "'s turn: ");
-            //System.exit(0);
+
             try {
                 /*request move*/
-                if (currentPlayer != null) {
-                    currentMove = currentPlayer.request();
+                currentMove = currentPlayer.request();
 
+                if (board != null && currentMove != null) {
                     /*make move on board*/
-                    if (board != null)
-                        status = board.update(currentMove, currentColor);
+                    status = board.update(currentMove, currentColor);
 
                     /*confirm move */
                     currentPlayer.confirm(board.getStatus());
@@ -127,13 +127,12 @@ public class AgeOfTowers {
                     currentPlayer = currentPlayer == redPlayer ? bluePlayer : redPlayer;
 
                     /*update move*/
-                    if (currentMove != null) 
-                        currentPlayer.update(currentMove, board.getStatus());
+                    currentPlayer.update(currentMove, board.getStatus());
                 }
 
 
                 /*if debug-mode is enabled*/
-                if (debugMode) {
+                if (debugMode && currentMove != null) {
                     System.out.println(currentColor + "'s move: " + currentMove.toString());
                     io.visualize();
                     System.out.println("Status: " + status);

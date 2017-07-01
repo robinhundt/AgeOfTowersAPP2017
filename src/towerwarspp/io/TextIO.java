@@ -2,6 +2,7 @@ package towerwarspp.io;
 
 import java.util.Scanner;
 
+import towerwarspp.board.BViewer;
 import towerwarspp.preset.*;
 
 /**
@@ -26,7 +27,7 @@ public class TextIO implements Requestable {
     /**
      * Viewer-Object
      */
-    private BoardViewer viewer;
+    private BViewer viewer;
 
     /**
      * Private Scanner-Object
@@ -37,7 +38,7 @@ public class TextIO implements Requestable {
      * Constructor to Initialize the TextIO
      * @param viewer Object of Type Viewer
      */
-    public TextIO(BoardViewer viewer) {
+    public TextIO(BViewer viewer) {
         this.viewer = viewer;
         this.scanner = new Scanner(System.in);
     }
@@ -54,7 +55,7 @@ public class TextIO implements Requestable {
      * @return  True if Token is stone, otherwise false
      */
     private boolean isStone(int x, int y) {
-        return this.viewer.isStone(x, y);
+        return this.viewer.isStone(new Position(x, y));
     }
 
     /**
@@ -64,7 +65,7 @@ public class TextIO implements Requestable {
      * @return True if Stone is Tower, otherwise false
      */
     private boolean isTower(int x, int y) {
-        return this.viewer.isTower(x, y);
+        return this.viewer.isTower(new Position(x, y));
     }
 
     /**
@@ -74,7 +75,7 @@ public class TextIO implements Requestable {
      * @return True if Stone is vlocked, otherwise false
      */
     private boolean isBlocked(int x, int y) {
-        return this.viewer.isBlocked(x, y);
+        return this.viewer.isBlocked(new Position(x, y));
     }
 
     /**
@@ -84,7 +85,7 @@ public class TextIO implements Requestable {
      * @return height of Tower
      */
     private int getTowerHeight(int x, int y) {
-        return this.viewer.getHeight(x, y);
+        return this.viewer.getHeight(new Position(x, y));
     }
 
     /**
@@ -94,7 +95,7 @@ public class TextIO implements Requestable {
      * @return Playercolor
      */
     private PlayerColor getPlayerColor(int x, int y) {
-        return this.viewer.getPlayerColor(x, y);
+        return this.viewer.getPlayerColor(new Position(x, y));
     }
 
     /**
