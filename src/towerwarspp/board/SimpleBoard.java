@@ -107,7 +107,7 @@ public class SimpleBoard implements Viewable {
 	*	a viewer for this board.
 	*/
 	public Viewer viewer() {
-		return new BoardViewer(new Board(size), new Entity[size+1][size+1]);
+		return new BViewer(this, board, size);
 	}
 	/**
 	* Returns the size of the board.

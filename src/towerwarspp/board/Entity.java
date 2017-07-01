@@ -83,6 +83,12 @@ public class Entity extends BasicFigure{
 		return (Math.abs(x) + Math.abs(y) + Math.abs(z))/2;
 
 	}
+	public boolean isBase() {
+		return base;
+	}
+	public Position getPosition() {
+		return position;
+	}	
 /**
 * For example: creates new {@link moves},  {@link canGo}, {@link nSteps}.
 */

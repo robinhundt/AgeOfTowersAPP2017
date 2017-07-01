@@ -3,6 +3,7 @@ package towerwarspp.io;
 import towerwarspp.board.Entity;
 import towerwarspp.preset.*;
 import towerwarspp.board.Board;
+import towerwarspp.board.MoveList;
 
 
 /**
@@ -10,7 +11,7 @@ import towerwarspp.board.Board;
  * @version 0.5 June 29th 2017
  * @author Kai Kuhlmann
  */
-public class BoardViewer implements Viewer {
+public class BoardViewer implements Viewer{
 
     /**
      * Private Board
@@ -64,7 +65,7 @@ public class BoardViewer implements Viewer {
      * @param y Y-Coordinate
      * @return True if Stone is vlocked, otherwise false
      */
-    @Override
+   // @Override
     public boolean isBlocked(int x, int y) {
         if(entities[x][y] != null) {
             return entities[x][y].isBlocked();
@@ -78,7 +79,7 @@ public class BoardViewer implements Viewer {
      * @param y Y-Coordinate
      * @return  True if Token is stone, otherwise false
      */
-    @Override
+   // @Override
     public boolean isStone(int x, int y) {
         if(entities[x][y] != null) {
             return !entities[x][y].isTower();
@@ -92,7 +93,7 @@ public class BoardViewer implements Viewer {
      * @param y Y-Coordinate
      * @return True if Stone is Tower, otherwise false
      */
-    @Override
+   // @Override
     public boolean isTower(int x, int y) {
         if(entities[x][y] != null) {
             return entities[x][y].isTower();
@@ -106,7 +107,7 @@ public class BoardViewer implements Viewer {
      * @param y Y-Coordinate
      * @return Playercolor
      */
-    @Override
+   // @Override
     public PlayerColor getPlayerColor(int x, int y) {
         return entities[x][y].getColor();
     }
@@ -117,7 +118,7 @@ public class BoardViewer implements Viewer {
      * @param y Y-Coordinate
      * @return height of Tower
      */
-    @Override
+    // @Override
     public int getHeight(int x, int y) {
         if(entities[x][y] != null) {
             return entities[x][y].getHigh();
@@ -130,7 +131,7 @@ public class BoardViewer implements Viewer {
      * @param position Position of a Stone
      * @return the possible Moves of the Stone
      */
-    @Override
+  //  @Override
     public Move[] getPossibleMoves(Position position) {
         try {
             return this.board.stoneMoves(position);
@@ -139,4 +140,25 @@ public class BoardViewer implements Viewer {
         }
         return null;
     }
+
+
+// Anasrtasiia wrote:
+	public MoveList possibleMoves(Position p) throws Exception {
+		return null;
+	}
+	public boolean isTower(Position pos) {
+		return true;
+	}
+	public boolean isStone(Position pos) {
+		return true;
+	}
+	public boolean isBlocked(Position pos) {
+		return true;
+	}	
+	public int getHeight(Position pos) {
+		return 1;
+	}
+	public PlayerColor getPlayerColor(Position pos) {
+		return PlayerColor.RED;
+	}
 }
