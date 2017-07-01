@@ -102,6 +102,8 @@ public class AgeOfTowers {
           possibility to play with a network player
 
          */
+        io.visualize();
+
         Player currentPlayer = redPlayer;
         Move currentMove = null;
         PlayerColor currentColor = PlayerColor.RED;
