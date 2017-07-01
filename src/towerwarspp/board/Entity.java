@@ -2,10 +2,10 @@ package towerwarspp.board;
 
 import towerwarspp.preset.*;
 import java.util.Vector;
-//import java.util.ListIterator;
+import java.util.ListIterator;
 
-public class Entity {
-	private Position myPosition;
+public class Entity extends BasicFigure{
+	private Position position;
 	private Vector<Position> moves;
 /**
 * Includes information about possible moves
@@ -17,7 +17,7 @@ public class Entity {
 * canReach[i][j] = x -> this Entity can reach the position (i,j) in x soteps
 */
 	private int[][] nSteps;
-	private PlayerColor color;	// color of this Entity
+	//private PlayerColor color;	// color of this Entity
 	int size;
 	private int high = 0;	// 0 - the high of a single stone
 	private int maxHigh; 	// max possible high for a tower
@@ -27,12 +27,20 @@ public class Entity {
 * Construktor
 */
 	public Entity(Position p, PlayerColor col, int size) {
-		myPosition = p;
-		moves = new Vector<Position>();
-		color = col;
+		super(p, col);
+		base = false;
 		this.size = size;
+		moves = new Vector<Position>();
 		maxHigh = size/3;
-		nSteps = new int[size][size];
+		nSteps = new int[size+1][size+1];
+	}
+	public Entity(Position p, PlayerColor col, int size, boolean isBase) {
+		super(p, col);
+		this.base = isBase;
+		this.size = size;
+		moves = new Vector<Position>();
+		maxHigh = size/3;
+		nSteps = new int[size+1][size+1];
 	}
 /**
 * Ensures that the move with end position {@link moveEnd} is in the list of possible moves.
@@ -47,37 +55,34 @@ public class Entity {
 * 4. add stps to {@link nSteps}
 */
 	public void addMove(Position moveEnd, int stps) {
-		// if(canGo includes moveEnd) return;
-		// else do: 
-		// add moveEnd to canGo
-		moves.add(moveEnd);
-		nSteps[moveEnd.getLetter()][moveEnd.getNumber()] = stps;
+		if(!moves.contains(moveEnd)) {
+			moves.add(moveEnd);
+		}
 	}
-	public void addMove(Position moveEnd) {
-		// if nSteps[][] == 0 - fehler
-		// else: add moveEnd to canGo
-		moves.add(moveEnd);
-	}
+	/*public void addMove(Position moveEnd) {
+		if(!moves.contain(moveEnd)) {
+			moves.add(moveEnd);
+		}
+	}*/
 /**
-* removes the move from {@link moves} and {@link canGo}. {@link nSteps} does not have to be changed.
+* removes the move from the possible moves list.
 */
-	public boolean removeMove(Position moveEnd) {
+	public boolean removeMove(Position moveEnd, int stps) {
 		return moves.remove(moveEnd);
 	}
+	
+	private int distance (Position a, Position b) {
+		int x = a.getLetter() - b.getLetter();
+		int y = a.getNumber() - b.getNumber();
+		int z = x - y;
+		return (Math.abs(x) + Math.abs(y) + Math.abs(z))/2;
 
-/**
-* Removes all moves which need at least {@link stps} steps from {@link moves} and {@link canGo}. {@link nSteps} does not have to be changed.
-* For ex.: traveres {@link moves} with an iterator an removes all positions (i, j) from this list if nSteps[i][j] >= stps.
-* @param stps
-*/
-	public void removeMoves(int stps) {
-		;
 	}
 /**
 * For example: creates new {@link moves},  {@link canGo}, {@link nSteps}.
 */
 	public void removeAllMoves() {
-		;
+		moves = new Vector<Position>();
 	}
 /**
 * Returns the list of all possible moves (their end positions) for this Entity.
@@ -101,55 +106,20 @@ public class Entity {
 * Returns true, if there is a possible move to the position {@link endPos}.
 * @param endPos - end position of the move in question.
 */
-	public boolean hasMove(Position endPos) {
+	public boolean hasMove(Position endPos, int dist) {
 		return moves.contains(endPos);
 	}
-/**
-* Returns true, if there is a move to the position {@link endPos} and this move is a remote one.
-* @param endPos - end position of the move in question.
-*/
-	public boolean hasRemoteMove(Position endPos) {
-		// If the move is NOT in {@link canGo} return false. Else DO:
-		return nSteps[endPos.getLetter()][endPos.getNumber()] > 1;
-	}
-/**
-* Proves if this Entity can reach the position {@link pos} with the current value of {@link step}.
-* @param pos the position in question.
-*/ 
-	public boolean canReach(Position pos) {
-		int st = nSteps[pos.getLetter()][pos.getNumber()];
-		return (st > 0 && st <= step);
-	}
-/**
-* Set informatian about field (x,y) to {@link nSteps}
-*/
-	public void setReach(int x, int y, int stps) {
-		nSteps[x][y] = stps;
-	}
-/**
-* Prooves if this Entity can reach the position {@link pos} in {@link stps} or less steps.
-* @param pos the position in question.
-* @param stps - the maximum allowed number of steps.
-*/ 
-	public boolean canReach(Position pos, int stps) {
-		int st = nSteps[pos.getLetter()][pos.getNumber()];
-		return (st > 0 && st <= stps);
-	}
-	public PlayerColor getColor() {
-		return color;
-	}
-	public void setPosition(Position p) {
-		myPosition = p;
-		nSteps = new int[size][size];
-		canGo = new int[size];
-		step = 1;
 
-	}
-	public Position getPosition() {
-		return myPosition;
+	public void setPosition(Position p) {
+		position = p;
+		step = 1;
+		removeAllMoves();
 	}
 	public int getStep() {
 		return step;
+	}
+	public void setMinimalStep() {
+		step = 1;
 	}
 	public boolean isTower() {
 		return high > 0;
@@ -166,22 +136,26 @@ public class Entity {
 	public boolean maxHigh() {
 		return high == maxHigh;
 	}
-	public boolean isBase() {
-		return high < 0;
-	}
-
 	public boolean isBlocked() {
 		return blocked;
 	}
 	public void setBlocked(boolean bl) {
 		blocked = bl;
 	}
-	public void stepDecrease(int change) {
-		step -= change;
-		removeMoves(step);
+/**
+* Removes all positions which can be reached in {@link step} steps from the list of possible moves.
+* Decreases current {@link step} by 1.
+*/
+	public void removeStep() {
+		moves = null;
+		--step;
 	}
-	public int stepIncrease(int change) {
-		step += change;
-		return step;
+/**
+* Adds all positions which can be reached in {@link step}+1 steps to the list of possible moves.
+* Increases current {@link step} by 1.
+*/
+
+	public void addStep() {
+		++step;
 	}
 }
