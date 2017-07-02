@@ -315,6 +315,10 @@ public class SimpleBoard implements Viewable {
 					removeTower(opponent, ent);
 				}
 			}
+			else {
+				setElement(ent, end);
+				removeFromList(opponent);
+			}
 			return;
 		}
 		if(opponent.isBlocked()) {
@@ -343,6 +347,7 @@ public class SimpleBoard implements Viewable {
 	*/
 	private void removeTower(Entity tower, Entity removingStone) {
 		setElement(removingStone, tower.getPosition());
+		removeFromList(tower);
 		actualiseTowerRemoved(tower);
 		findStoneMoves(removingStone);
 	}
