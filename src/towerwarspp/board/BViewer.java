@@ -40,7 +40,7 @@ public class BViewer implements Viewer {
 	*	a {@link MoveList} with all possible moves which the specified figure has.
 	*/
 	public MoveList possibleMoves(Position p) throws Exception {
-		Entity ent = board[p.getLetter()][p.getNumber()];
+		Entity ent = getElement(p);
 		if (ent == null) throw new Exception ("Position is empty");
 		return new MoveList(ent);
 	}

@@ -447,7 +447,7 @@ public class SimpleBoard implements Viewable {
 		Position pos;
 		while(it.hasNext()) {
 			pos = it.next();
-			Entity ent = board[pos.getLetter()][pos.getNumber()];
+			Entity ent = getElement(pos);
 			if(ent == null || ent.isTower()) 
 				continue;
 			else 
@@ -581,7 +581,7 @@ public class SimpleBoard implements Viewable {
 			if(checkMoveForStone(neighbourPos, stone.getColor(), 1) ) {
 				stone.addMove(neighbourPos, 1);
 			}
-			if(neighbour.isTower() && !neighbour.isBlocked()) {
+			if(neighbour != null && neighbour.isTower() && !neighbour.isBlocked()) {
 				if(neighbour.getColor() == stone.getColor()) {
 					addSteps += neighbour.getHigh();
 				} 
