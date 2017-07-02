@@ -251,6 +251,10 @@ public class ArgumentParser {
         return parsePlayerType((String) getSetting("blue"));
     }
 
+    public int getRounds() throws ArgumentParserException {
+        return Integer.parseInt((String) getSetting("tournament"));
+    }
+
     // ********************************************************************
     //  Hier koennen weitere Schalter und Einstellungen ergaenzt werden...
     // ********************************************************************

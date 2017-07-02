@@ -21,8 +21,10 @@ public class AgeOfTowers {
     /*Object from class which implements requestable-interface*/
     TextIO io;
 
+    int size = 0;
     boolean debugMode = false;
     int delayTime = 0;
+    int tournamentRounds = 1;
 
     Board board = null;
     Viewer viewer = null;
@@ -41,42 +43,47 @@ public class AgeOfTowers {
         try {
             ArgumentParser ap = new ArgumentParser(args);
 
+            size = ap.getSize();
             /*initialize board object with given size */
-            board = new Board(ap.getSize());
+            board = new Board(size);
 
             /*initialize viewer-object with method viewer() from board*/
             viewer = board.viewer();
 
             io = new TextIO((BViewer) viewer);
 
+            /*set number of rounds*/
+            tournamentRounds = ap.getRounds();
+
             //System.out.println("network: " + ap.isNetwork());
-            System.out.println("size: " + ap.getSize());
+            System.out.println("size: " + size);
             System.out.println("graphic: " + ap.isGraphic());
 
             /*initialize red player*/
             if (ap.getRed() == PlayerType.HUMAN) {
                 System.out.println("Red chose human player");
-                redPlayer = PlayerFactory.makeHumanPlayer(ap.getSize(), PlayerColor.RED, io);
+                redPlayer = PlayerFactory.makeHumanPlayer(size, PlayerColor.RED, io);
             }
             else {
-                redPlayer = PlayerFactory.makePlayer(ap.getSize(), PlayerColor.RED, ap.getRed());
+                redPlayer = PlayerFactory.makePlayer(size, PlayerColor.RED, ap.getRed());
             }
 
             /*initialize blue player*/
             if (ap.getBlue() == PlayerType.HUMAN) {
                 System.out.println("Blue chose human player");
-                bluePlayer = PlayerFactory.makeHumanPlayer(ap.getSize(), PlayerColor.BLUE, io);
+                bluePlayer = PlayerFactory.makeHumanPlayer(size, PlayerColor.BLUE, io);
             }
             else {
-                bluePlayer = PlayerFactory.makePlayer(ap.getSize(), PlayerColor.BLUE, ap.getBlue());
+                bluePlayer = PlayerFactory.makePlayer(size, PlayerColor.BLUE, ap.getBlue());
             }
+
             
             /*set wether it should be debug mode or not */
             debugMode = ap.isDebug();
 
             /*set delay-time*/
             delayTime = ap.getDelay();
-            //
+
         }
         catch (ArgumentParserException e) {
             e.printStackTrace();
@@ -102,60 +109,89 @@ public class AgeOfTowers {
           possibility to play with a network player
 
          */
-        if (io != null)
-            io.visualize();
+        int redWins = 0;
+        int blueWins = 0;
 
-        Player currentPlayer = redPlayer;
-        Move currentMove = null;
-        PlayerColor currentColor = PlayerColor.RED;
-
-        while (status == Status.OK) {
-            System.out.println(currentColor + "'s turn: ");
-
+        for (int i = 1; i<=tournamentRounds; i++) {
             try {
-                /*request move*/
-                currentMove = currentPlayer.request();
-
-                if (board != null && currentMove != null) {
-                    /*make move on board*/
-                    status = board.update(currentMove, currentColor);
-
-                    /*confirm move */
-                    currentPlayer.confirm(board.getStatus());
-                    
-                    /*change players*/
-                    currentPlayer = currentPlayer == redPlayer ? bluePlayer : redPlayer;
-
-                    /*update move*/
-                    currentPlayer.update(currentMove, board.getStatus());
+                if (i > 1) {
+                    board = new Board(size);
+                    bluePlayer.init(size, PlayerColor.BLUE);
+                    redPlayer.init(size, PlayerColor.RED);
                 }
-
-
-                /*if debug-mode is enabled*/
-                if (debugMode && currentMove != null) {
-                    System.out.println(currentColor + "'s move: " + currentMove.toString());
-                    io.visualize();
-                    System.out.println("Status: " + status);
-                }
-
-                /*if delay-mode is enabled*/
-                if (delayTime != 0)
-                    Thread.sleep(delayTime);
-                
-            }
-            catch (RemoteException e) {
-                System.out.println(e);
             }
             catch (Exception e) {
                 System.out.println(e);
             }
 
-            currentColor = currentColor == PlayerColor.RED ? PlayerColor.BLUE : PlayerColor.RED;
+            System.out.println("Round No.: " + i);
+            if (io != null)
+                io.visualize();
+
+            Player currentPlayer = redPlayer;
+            Move currentMove = null;
+            PlayerColor currentColor = PlayerColor.RED;
+
+            while (status == Status.OK) {
+                System.out.println(currentColor + "'s turn: ");
+
+                try {
+                    /*request move*/
+                    currentMove = currentPlayer.request();
+
+                    if (board != null && currentMove != null) {
+                        /*make move on board*/
+                        status = board.update(currentMove, currentColor);
+
+                        /*confirm move */
+                        currentPlayer.confirm(board.getStatus());
+
+                        /*change players*/
+                        currentPlayer = currentPlayer == redPlayer ? bluePlayer : redPlayer;
+
+                        /*update move*/
+                        currentPlayer.update(currentMove, board.getStatus());
+                    }
+
+
+                    /*if debug-mode is enabled*/
+                    if (debugMode && currentMove != null) {
+                        System.out.println(currentColor + "'s move: " + currentMove.toString());
+                        //io.visualize();
+                        System.out.println("Status: " + status);
+                    }
+
+                    /*if delay-mode is enabled*/
+                    if (delayTime != 0)
+                        Thread.sleep(delayTime);
+
+                } catch (RemoteException e) {
+                    System.out.println(e);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                    //System.exit(0);
+                }
+
+                currentColor = currentColor == PlayerColor.RED ? PlayerColor.BLUE : PlayerColor.RED;
+            }
+
+            if (status == Status.RED_WIN) {
+                redWins++;
+                System.out.println(status);
+            }
+            else if (status == Status.BLUE_WIN) {
+                blueWins++;
+                System.out.println(status);
+            }
         }
+
+        /*output statistic*/
+        System.out.println("Red won " + redWins + " times!");
+        System.out.println("Blue won " + blueWins + " times!");
+        PlayerColor ultimateWinner = redWins > blueWins ? PlayerColor.RED : PlayerColor.BLUE;
+        System.out.println("Final winner is " + ultimateWinner);
         
-        if (status == Status.RED_WIN || status == Status.BLUE_WIN) {
-            System.out.println(status);
-        }
+
 
         /*end of game */
     }
