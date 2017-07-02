@@ -106,7 +106,7 @@ public class SimpleBoard implements Viewable {
 	* @return
 	*	a viewer for this board.
 	*/
-	public Viewer viewer() {
+	public BViewer viewer() {
 		return new BViewer(this, board, size);
 	}
 	/**

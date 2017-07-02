@@ -64,6 +64,12 @@ public class BViewer implements Viewer {
 		Entity ent = getElement(pos);
 		return ent.getColor();
 	}
+	public boolean isEmpty(Position pos) {
+		return getElement(pos) == null;
+	}
+	public boolean isBase(Position pos) {
+		return !isEmpty(pos) && getElement(pos).isBase();
+	}
 	/**
 	* Returns an element located on the specified position on the board.
 	* @param pos the position of the element that has to be returned.

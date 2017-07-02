@@ -4,9 +4,11 @@ import towerwarspp.preset.*;
 import java.util.Vector;
 import java.util.ListIterator;
 
-public class Entity extends BasicFigure{
+public class Entity {
 	private Position position;
+	private PlayerColor color;
 	private Vector<Position> moves;
+	boolean base;
 /**
 * Includes information about possible moves
 */
@@ -27,7 +29,8 @@ public class Entity extends BasicFigure{
 * Construktor
 */
 	public Entity(Position p, PlayerColor col, int size) {
-		super(p, col);
+		position = p;
+		color = col;
 		base = false;
 		this.size = size;
 		moves = new Vector<Position>();
@@ -35,7 +38,8 @@ public class Entity extends BasicFigure{
 		nSteps = new int[size+1][size+1];
 	}
 	public Entity(Position p, PlayerColor col, int size, boolean isBase) {
-		super(p, col);
+		position = p;
+		color = col;
 		this.base = isBase;
 		this.size = size;
 		moves = new Vector<Position>();
@@ -88,6 +92,9 @@ public class Entity extends BasicFigure{
 	}
 	public Position getPosition() {
 		return position;
+	}
+	public PlayerColor getColor() {
+		return color;
 	}	
 /**
 * For example: creates new {@link moves},  {@link canGo}, {@link nSteps}.
