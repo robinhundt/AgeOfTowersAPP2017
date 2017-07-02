@@ -77,4 +77,12 @@ public class BViewer implements Viewer {
 	private Entity getElement(Position pos) {
 		return board[pos.getLetter()][pos.getNumber()];
 	}
+	
+	public String positionToString(Position pos) {
+		Entity ent = getElement(pos);
+		if (ent == null)
+			return "."; 
+		else 
+			return ent.toString();
+	}
 }

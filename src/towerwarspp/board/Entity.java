@@ -5,6 +5,14 @@ import java.util.Vector;
 import java.util.ListIterator;
 
 public class Entity {
+
+	public static final String ANSI_RED = "\u001B[31m";
+	public static final String ANSI_BLUE = "\u001B[34m";
+	public static final String ANSI_PURPLE = "\u001B[35m";
+	public static final String ANSI_YELLOW = "\u001B[33m";
+	public static final String ANSI_CYAN = "\u001B[36m";
+	public static final String ANSI_WHITE = "\u001B[37m";
+
 	private Position position;
 	private PlayerColor color;
 	private Vector<Position> moves;
@@ -180,5 +188,39 @@ public class Entity {
 
 	public void addStep() {
 		++step;
+	}
+	public String toString() {
+		String col;
+		String s;
+		if(color == PlayerColor.RED) { 
+			if(blocked) {
+				col = ANSI_WHITE;
+			}
+			else if (maxHigh()) {
+				col = ANSI_YELLOW;
+			}
+			else {
+				col = ANSI_RED;
+			}
+		}
+		else {
+			if(blocked) {
+				col = ANSI_CYAN;
+			}
+			else if (maxHigh()){
+				col = ANSI_PURPLE;
+			}
+			else {
+				col = ANSI_BLUE;
+			}
+
+		}
+		if(base) {
+			s = col + "B";
+		}
+		else {
+			s = col + high;
+		}
+		return s;
 	}
 }

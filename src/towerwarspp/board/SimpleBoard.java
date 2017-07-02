@@ -47,7 +47,7 @@ public class SimpleBoard implements Viewable {
 	 	for(int x = 2; x <= lastX; ++x) {
                         Entity ent = new Entity(new Position(x, y), RED, size);
                         board[x][y] = ent;
-                        initialiseEntityMoves(ent, x, y);
+			findStoneMoves(ent);
                         listRed.add(ent);
                 }
                 for (y = 2; y <= lastY; ++y) {
@@ -55,7 +55,7 @@ public class SimpleBoard implements Viewable {
                         for (int x = 1; x <= lastX; ++x) {
                                 Entity ent = new Entity(new Position(x, y), RED, size);
                                 board[x][y] = ent;
-                                initialiseEntityMoves(ent, x, y);
+				findStoneMoves(ent);
                                 listRed.add(ent);
                         }
                 }
@@ -68,7 +68,7 @@ public class SimpleBoard implements Viewable {
 		for(int x = size-1; x >= lastX; --x) {
 			Entity ent = new Entity(new Position(x, y), BLUE, size);
 			board[x][y] = ent;
-			initialiseEntityMoves(ent, x, y);
+			findStoneMoves(ent);
 			listBlue.add(ent);
 		}
 		for (y = size - 1; y >= lastY; --y) {
@@ -76,7 +76,7 @@ public class SimpleBoard implements Viewable {
 			for (int x = size; x >= lastX; --x) {
 				Entity ent = new Entity(new Position(x, y), BLUE, size);
 				board[x][y] = ent;
-				initialiseEntityMoves(ent, x, y);
+				findStoneMoves(ent);
 				listBlue.add(ent);
 			}
 		}
