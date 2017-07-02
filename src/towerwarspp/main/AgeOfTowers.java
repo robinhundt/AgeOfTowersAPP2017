@@ -9,6 +9,8 @@ import towerwarspp.preset.*;
 
 import java.rmi.RemoteException;
 
+import static towerwarspp.preset.Status.OK;
+
 /**
  * Class {@link AgeOfTowers} initializing a new game of TowerWarsPP with given settings <br>
  *     from the commandline using the {@link ArgumentParser}.
@@ -30,7 +32,7 @@ public class AgeOfTowers {
     Viewer viewer = null;
     Player redPlayer = null;
     Player bluePlayer = null;
-    Status status = Status.OK;
+    Status status = OK;
     Move redMove = null;
     Move blueMove = null;
 
@@ -56,8 +58,9 @@ public class AgeOfTowers {
             tournamentRounds = ap.getRounds();
 
             //System.out.println("network: " + ap.isNetwork());
-            System.out.println("size: " + size);
-            System.out.println("graphic: " + ap.isGraphic());
+            System.out.println("Board size: " + size);
+            System.out.println("Graphic output enabled: " + ap.isGraphic());
+            System.out.println("Rounds to play: " + tournamentRounds);
 
             /*initialize red player*/
             if (ap.getRed() == PlayerType.HUMAN) {
@@ -86,29 +89,13 @@ public class AgeOfTowers {
 
         }
         catch (ArgumentParserException e) {
-            e.printStackTrace();
+            System.out.println(e);
         }
         catch (Exception e) {
-            e.printStackTrace();
+            System.out.println(e);
         }
 
 
-
-        /*
-        initialize two player-objects with given settings from interface towerwarspp.preset.Player;
-            both players are using the same object from a class implementing Requestable-Interface
-
-          request alternately moves from both players, check validity and inform other player
-
-          do move on board
-
-          output current gamestatus (graphic/textual)
-
-          tell output if move is leading to end of game
-
-          possibility to play with a network player
-
-         */
         int redWins = 0;
         int blueWins = 0;
 
@@ -116,8 +103,11 @@ public class AgeOfTowers {
             try {
                 if (i > 1) {
                     board = new Board(size);
+                    viewer = board.viewer();
+                    io = new TextIO((BViewer) viewer);
                     bluePlayer.init(size, PlayerColor.BLUE);
                     redPlayer.init(size, PlayerColor.RED);
+                    status = Status.OK;
                 }
             }
             catch (Exception e) {
@@ -132,12 +122,13 @@ public class AgeOfTowers {
             Move currentMove = null;
             PlayerColor currentColor = PlayerColor.RED;
 
-            while (status == Status.OK) {
+            while (status == OK) {
                 System.out.println(currentColor + "'s turn: ");
 
                 try {
                     /*request move*/
-                    currentMove = currentPlayer.request();
+                    if (currentPlayer != null)
+                        currentMove = currentPlayer.request();
 
                     if (board != null && currentMove != null) {
                         /*make move on board*/
@@ -157,9 +148,9 @@ public class AgeOfTowers {
                     /*if debug-mode is enabled*/
                     if (debugMode && currentMove != null) {
                         System.out.println(currentColor + "'s move: " + currentMove.toString());
-                        //io.visualize();
                         System.out.println("Status: " + status);
                     }
+                    io.visualize();
 
                     /*if delay-mode is enabled*/
                     if (delayTime != 0)
