@@ -49,8 +49,7 @@ public class BViewer implements Viewer {
 		return (ent != null && ent.isTower());
 	}
 	public boolean isStone(Position pos) {
-		Entity ent = getElement(pos);
-		return (ent != null && !ent.isBase() && !ent.isTower());
+		return !isBase(pos) && !getElement(pos).isTower());
 	}
 	public boolean isBlocked(Position pos) {
 		Entity ent = getElement(pos);
