@@ -114,7 +114,7 @@ public class TextIO implements Requestable {
         char headChar = 'A';
         System.out.print("    ");
         for(int top = 0; top < size; ++top) {
-            System.out.print(headChar + "   ");
+            System.out.print(headChar + "  ");
             ++headChar;
         }
         System.out.print("\n");
@@ -150,7 +150,7 @@ public class TextIO implements Requestable {
                 } else {
                     System.out.print(" o ");
                 }
-                System.out.print(" ");
+                //System.out.print(" ");
             }
             tap += "  ";
             System.out.print("  " + y + "\n");//!!!!
@@ -159,7 +159,7 @@ public class TextIO implements Requestable {
         tap += "   ";
         System.out.print(tap);
         for(int top = 0; top < size; ++top) {
-            System.out.print(headChar + "   ");
+            System.out.print(headChar + "  ");
             ++headChar;
         }
         System.out.println("");
