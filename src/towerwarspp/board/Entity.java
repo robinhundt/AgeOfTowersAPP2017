@@ -91,7 +91,7 @@ public class Entity {
 	private int distance (Position a, Position b) {
 		int x = a.getLetter() - b.getLetter();
 		int y = a.getNumber() - b.getNumber();
-		int z = x - y;
+		int z = x + y;
 		return (Math.abs(x) + Math.abs(y) + Math.abs(z))/2;
 
 	}

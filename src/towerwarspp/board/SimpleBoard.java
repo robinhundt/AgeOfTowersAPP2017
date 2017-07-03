@@ -145,9 +145,8 @@ public class SimpleBoard implements Viewable {
 	protected int distance (Position a, Position b) {
 		int x = a.getLetter() - b.getLetter();
 		int y = a.getNumber() - b.getNumber();
-		int z = x - y;
+		int z = x + y;
 		return (Math.abs(x) + Math.abs(y) + Math.abs(z))/2;
-
 	}
 
 	/**
@@ -308,7 +307,8 @@ public class SimpleBoard implements Viewable {
 		}
 		if (opponent.getColor() != ent.getColor()) {
 			if(opponent.isTower()) {
-				if(distance(start, end) > 1) {
+				int dist = distance(start, end);
+				if( dist > 1) {
 					blockTower(opponent, ent);
 				}
 				else {
@@ -316,8 +316,7 @@ public class SimpleBoard implements Viewable {
 				}
 			}
 			else {
-				setElement(ent, end);
-				removeFromList(opponent);
+				removeFigure(opponent, ent);
 			}
 			return;
 		}
@@ -340,15 +339,24 @@ public class SimpleBoard implements Viewable {
 		positionClosed(tower.getPosition(), blockingStone.getColor(), false);
 	}
 	/**
-	* Removes the specified tower replacing it with the figure removingStone on the board.
+	* Removes the specified tower from the board replacing it with the stone removingStone.
 	* Commits all the necessary changes. 
 	* @param tower the tower to be removed.
 	* @param removingStone the stone which is going to beat the tower and take its place. 
 	*/
 	private void removeTower(Entity tower, Entity removingStone) {
-		setElement(removingStone, tower.getPosition());
-		removeFromList(tower);
+		removeFigure(tower, removingStone);
 		actualiseTowerRemoved(tower);
+	}
+	/**
+	* Removes the specified figure from the board replacing it with the stone removingStone.
+	* Commits all the necessary changes. 
+	* @param ent the figure to be removed.
+	* @param removingStone the stone which is going to beat the specified figure and take its place. 
+	*/
+	private void removeFigure(Entity ent, Entity removingStone) {
+		setElement(removingStone, ent.getPosition());
+		removeFromList(ent);
 		findStoneMoves(removingStone);
 	}
 	/**
@@ -401,7 +409,7 @@ public class SimpleBoard implements Viewable {
 			Entity ent = it.next();
 			int dist = distance(closedPos, ent.getPosition());
 			if (!forAll && dist == 1) 
-				return;
+				continue;
 			if(ent.hasMove(closedPos, dist)) {
 				ent.removeMove(closedPos, dist);
 			}
