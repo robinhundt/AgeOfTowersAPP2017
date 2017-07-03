@@ -13,7 +13,7 @@ abstract class BasePlayer implements Player {
     /**
      * State represents the point in the request - confirm - update cycle of the Player
      */
-    PlayerState state;
+    private PlayerState state;
     PlayerColor color;
 
     abstract Move deliverMove() throws Exception;

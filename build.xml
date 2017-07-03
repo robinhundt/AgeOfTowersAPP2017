@@ -6,7 +6,7 @@
 
 	<target name="init" description="Clean output directories and recreate directories">
 		<delete includeemptydirs="true" quiet="true">
-			<fileset dir="${build.dir}"/>
+			<fileset dir="${build.dir}" includes="**/*"/>
 		</delete>
 		<mkdir dir="${build.dir}"/>
 	</target>
