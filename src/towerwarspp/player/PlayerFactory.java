@@ -12,9 +12,7 @@ public class PlayerFactory {
     private PlayerFactory(){}
 
     public static Player makeHumanPlayer(int boardSize, PlayerColor playerColor, Requestable moveDeliver) throws Exception {
-        Player player = new HumanPlayer(moveDeliver);
-        player.init(boardSize, playerColor);
-        return player;
+        return new HumanPlayer(moveDeliver);
     }
 
     public static Player makePlayer(int boardSize, PlayerColor playerColor, PlayerType playerType) throws Exception {
@@ -26,7 +24,6 @@ public class PlayerFactory {
             case ADVANCED_AI_1: player = new AdvPlayer();   break;
             default: throw new IllegalArgumentException("Unsupported PlayerType");
         }
-        player.init(boardSize, playerColor);
         return player;
     }
 
