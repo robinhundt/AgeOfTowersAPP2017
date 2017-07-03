@@ -235,6 +235,10 @@ public class ArgumentParser {
         return getFlag("debug");
     }
 
+    public boolean isHost() throws ArgumentParserException {
+        return getFlag("host");
+    }
+
     public int getSize() throws ArgumentParserException {
         return Integer.parseInt((String) getSetting("size"));
     }
@@ -252,7 +256,7 @@ public class ArgumentParser {
     }
 
     public int getRounds() throws ArgumentParserException {
-        return Integer.parseInt((String) getSetting("tournament"));
+        return Integer.parseInt((String) getSetting("rounds"));
     }
 
     // ********************************************************************
