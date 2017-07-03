@@ -598,6 +598,7 @@ public class SimpleBoard implements Viewable {
 			if(neighbour != null && neighbour.isTower() && !neighbour.isBlocked()) {
 				if(neighbour.getColor() == stone.getColor()) {
 					addSteps += neighbour.getHigh();
+					neighbour.addMove(stone.getPosition(), 1);
 				} 
 				else {
 					neighbour.removeMove(stone.getPosition(), 1);
