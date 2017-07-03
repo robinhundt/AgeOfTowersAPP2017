@@ -119,9 +119,9 @@ public class TextIO implements Requestable {
         }
         System.out.print("\n");
         String tap = "  ";
-        for(int x = 1; x <= size; ++x) {
-            System.out.print(tap + x + ((x>=10) ? " " : "  "));
-            for(int y = 1; y <= size; ++y) {
+        for(int y = 1; y <= size; ++y) {//!!!!
+            System.out.print(tap + y + ((y>=10) ? " " : "  "));
+            for(int x = 1; x <= size; ++x) {//!!!!!
                 if(isTower(x, y)) {
                     if(getPlayerColor(x, y) == PlayerColor.RED) {
                         System.out.print(RED);
@@ -153,7 +153,7 @@ public class TextIO implements Requestable {
                 System.out.print(" ");
             }
             tap += "  ";
-            System.out.print("  " + x + "\n");
+            System.out.print("  " + y + "\n");//!!!!
         }
         headChar = 'A';
         tap += "   ";
