@@ -43,8 +43,8 @@ public class Game {
         this.delayTime = delayTime;
         this.board = new Board(boardSize);
         switch (outputType) {
-            //case GRAPHIC: io = (IO) new GraphicIO(board.viewer());
-            case TEXTUAL: io = (IO) new TextIO(board.viewer());
+            //case GRAPHIC: io = (IO) new GraphicIO(board.viewer()); break;
+            case TEXTUAL: io = (IO) new TextIO(board.viewer()); break;
         }
 
         try {

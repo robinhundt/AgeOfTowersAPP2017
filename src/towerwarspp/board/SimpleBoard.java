@@ -643,8 +643,10 @@ public class SimpleBoard implements Viewable {
 				return BLUE_WIN;
 			}
 		}
-		else if (!hasMoves (listBlue.listIterator())) {
-			return RED_WIN;
+		else {
+			if (!hasMoves (listBlue.listIterator())) {
+				return RED_WIN;
+			}
 		}
 		return OK;
 	}

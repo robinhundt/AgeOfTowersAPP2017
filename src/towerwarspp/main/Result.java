@@ -15,4 +15,9 @@ public class Result {
         this.winnerMoves = winnerMoves;
         this.winType = winType;
     }
+
+    @Override
+    public String toString() {
+        return winner + " wins in " + winnerMoves + " moves by " + winType;
+    }
 }
