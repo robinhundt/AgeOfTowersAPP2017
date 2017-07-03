@@ -14,9 +14,13 @@ abstract class BasePlayer implements Player {
      * State represents the point in the request - confirm - update cycle of the Player
      */
     private PlayerState state;
-    PlayerColor color;
+    private PlayerColor color;
 
     abstract Move deliverMove() throws Exception;
+
+    public PlayerColor getColor() {
+        return color;
+    }
 
     @Override
     public Move request() throws Exception, RemoteException {
