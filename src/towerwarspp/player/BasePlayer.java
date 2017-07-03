@@ -14,7 +14,7 @@ abstract class BasePlayer implements Player {
      * State represents the point in the request - confirm - update cycle of the Player
      */
     private PlayerState state;
-    private PlayerColor color;
+    PlayerColor color;
 
     abstract Move deliverMove() throws Exception;
 

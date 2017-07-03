@@ -11,13 +11,14 @@ import towerwarspp.preset.Requestable;
 public class PlayerFactory {
     private PlayerFactory(){}
 
-    public static Player makeHumanPlayer(int boardSize, PlayerColor playerColor, Requestable moveDeliver) throws Exception {
-        return new HumanPlayer(moveDeliver);
-    }
+//    public static Player makeHumanPlayer(int boardSize, PlayerColor playerColor, Requestable moveDeliver) throws Exception {
+//        return new HumanPlayer(moveDeliver);
+//    }
 
-    public static Player makePlayer(int boardSize, PlayerColor playerColor, PlayerType playerType) throws Exception {
+    public static Player makePlayer(int boardSize, PlayerColor playerColor, PlayerType playerType, Requestable moveDeliver) throws Exception {
         Player player;
         switch (playerType) {
+            case HUMAN: player = new HumanPlayer(moveDeliver);
             // case REMOTE: player = new NetPlayer() /*TODO implement Remote*/ break;
             case RANDOM_AI: player = new RndPlayer();       break;
             case SIMPLE_AI: player =  new SimplePlayer();   break;
