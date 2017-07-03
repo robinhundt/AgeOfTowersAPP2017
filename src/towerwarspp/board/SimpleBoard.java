@@ -167,10 +167,11 @@ public class SimpleBoard implements Viewable {
 		}
 		--firstX; 
 		++y;
-		for (int d = 1; d <= range; ++d, ++y, --firstX) {
+		for (; y <= entY; ++y, --firstX) {
 			addPositionToResult(firstX, y, res);
 			addPositionToResult(lastX, y, res);
 		}
+		++firstX;
 		--lastX;
 		for (int d = 1; d < range; ++d, ++y, --lastX) {
 			addPositionToResult(firstX, y, res);
