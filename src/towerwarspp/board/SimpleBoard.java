@@ -346,8 +346,8 @@ public class SimpleBoard implements Viewable {
 	* @param removingStone the stone which is going to beat the tower and take its place. 
 	*/
 	private void removeTower(Entity tower, Entity removingStone) {
-		removeFigure(tower, removingStone);
 		actualiseTowerRemoved(tower);
+		removeFigure(tower, removingStone);
 	}
 	/**
 	* Removes the specified figure from the board replacing it with the stone removingStone.
