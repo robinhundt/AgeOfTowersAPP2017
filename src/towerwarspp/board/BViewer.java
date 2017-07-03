@@ -49,11 +49,12 @@ public class BViewer implements Viewer {
 		return (ent != null && ent.isTower());
 	}
 	public boolean isStone(Position pos) {
-		return !isEmpty(pos) && !isBase(pos) && !getElement(pos).isTower();
+		Entity ent = getElement(pos);
+		return !(ent == null || ent.isBase() || ent.isTower());
 	}
 	public boolean isBlocked(Position pos) {
 		Entity ent = getElement(pos);
-		return (ent != null && !ent.isBlocked());
+		return (ent != null && ent.isBlocked());
 	}
 	public int getHeight(Position pos) {
 		Entity ent = getElement(pos);
@@ -67,7 +68,8 @@ public class BViewer implements Viewer {
 		return getElement(pos) == null;
 	}
 	public boolean isBase(Position pos) {
-		return !isEmpty(pos) && getElement(pos).isBase();
+		Entity ent = getElement(pos);
+		return ent != null && ent.isBase();
 	}
 	/**
 	* Returns an element located on the specified position on the board.
