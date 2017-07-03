@@ -18,7 +18,7 @@ public class PlayerFactory {
     public static Player makePlayer(int boardSize, PlayerColor playerColor, PlayerType playerType, Requestable moveDeliver) throws Exception {
         Player player;
         switch (playerType) {
-            case HUMAN: player = new HumanPlayer(moveDeliver);
+            case HUMAN: player = new HumanPlayer(moveDeliver); break;
             // case REMOTE: player = new NetPlayer() /*TODO implement Remote*/ break;
             case RANDOM_AI: player = new RndPlayer();       break;
             case SIMPLE_AI: player =  new SimplePlayer();   break;
