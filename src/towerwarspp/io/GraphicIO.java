@@ -7,14 +7,14 @@ import towerwarspp.preset.Viewer;
 /**
  * Class {@link GraphicIO} creates the graphic in- output
  *
- * @version 0.2 20th June 2017
+ * @version 0.3 July 03th 2017
  * @author Kai Kuhlmann
  */
-public class GraphicIO implements Requestable {
+public class GraphicIO implements IO {
 
     private BoardViewer viewer;
 
-    public GraphicIO(BoardViewer viewer) {
+    public GraphicIO(BoardViewer viewer, boolean isDebug) {
         this.viewer = viewer;
     }
 
@@ -51,6 +51,11 @@ public class GraphicIO implements Requestable {
     private int getSize() {
         //return viewer.getSize();
         return 10;
+    }
+
+    @Override
+    public void visualize() {
+
     }
 
     @Override

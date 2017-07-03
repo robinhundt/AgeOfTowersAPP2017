@@ -7,5 +7,4 @@ import towerwarspp.preset.Requestable;
  */
 public interface IO extends Requestable {
     public void visualize();
-    public void setDebug(boolean isDebug);
 }

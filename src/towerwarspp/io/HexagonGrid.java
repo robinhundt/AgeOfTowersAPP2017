@@ -1,35 +1,36 @@
 package towerwarspp.io;
 
-import towerwarspp.main.AgeOfTowers;
-
+import towerwarspp.preset.Position;
 import javax.swing.*;
 import java.awt.*;
 
 /**
  * Class {@link HexagonGrid} creates the Grid of the Hexagons
  *
- * @version 0.2 June 29th 2017
+ * @version 0.3 July 03th 2017
  * @author Kai Kuhlmann
  */
 public class HexagonGrid extends JFrame {
     private Hexagon[][] hexagons;
 
 
-    private HexagonGrid(int size) {
-        for(int row = 0; row < size; ++row) {
-            for (int col = 0; col < size; ++col) {
-                this.hexagons[row][col] = this.hexagons[row][col].getHexagon(row, col, 20);
-            }
-        }
+    public HexagonGrid(int size) {
+        this.hexagons = new Hexagon[size][size];
+        this.hexagons[1][1] = new Hexagon(1, 1, 20, new Position(1, 1));
+
+
         this.setTitle("Age of Towers");
         this.setSize(800, 800);
         this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        paintGrid(size);
+        this.setVisible(true);
     }
 
-    public void paintGrid(Graphics graphics) {
-        Corner[] corner = null;
-        Graphics2D graphics2D = (Graphics2D) graphics;
-        corner = hexagons[0][0].getCorners();
-        //graphics2D.drawLine(corner[0].getX(), corner[0].getY(), corner[1].getX(), corner[1].getY());
+    private void paintGrid(int size) {
+        Polygon polygon = new Polygon();
+        Corner[] corners = this.hexagons[1][1].getCorners();
+        for(int i = 0; i < 6; ++i) {
+            polygon.addPoint(corners[i].getX(), corners[i].getY());
+        }
     }
 }

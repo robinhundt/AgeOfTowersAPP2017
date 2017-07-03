@@ -1,18 +1,18 @@
 package towerwarspp.io;
 
-import javax.swing.*;
+import towerwarspp.preset.Position;
 
 /**
  * Class {@link Hexagon} creates a single Hexagon
  *
- * @version 0.2 June 29th 2017
+ * @version 0.3 July 03th 2017
  * @author Kai Kuhlmann
  */
 public class Hexagon {
     /**
      * Private x and y Coordinate(not pixels)
      */
-    private int x, y;
+    private Position position;
     /**
      * Private Array of corners
      */
@@ -27,10 +27,12 @@ public class Hexagon {
      * @param x X-Coordinate of center
      * @param y Y-Coordinate of center
      * @param size Size of Hexagon
+     * @param position Position of the Hexagon
      */
-    private Hexagon (int x, int y, int size) {
+    public Hexagon (int x, int y, int size, Position position) {
         setCenter(x, y);
         setConers(this.center, size);
+        setPosition(position);
     }
 
     /**
@@ -39,7 +41,7 @@ public class Hexagon {
      * @param y Y-Coordinate of center
      */
     private void setCenter(int x, int y) {
-        this.center = this.center.getCenter(x, y);
+        this.center = new Center(x, y);
     }
 
     /**
@@ -48,9 +50,18 @@ public class Hexagon {
      * @param size Size of the Hexagon
      */
     private void setConers(Center center, int size) {
+        this.corners = new Corner[size];
         for (int i = 0; i < 6; ++i) {
-            this.corners[i] = this.corners[i].getCorner(center, size, i);
+            this.corners[i] = new Corner(center, size, i);
         }
+    }
+
+    /**
+     * Setter of the position of the Hexagon
+     * @param position Position of the Hexagon
+     */
+    private void setPosition(Position position){
+        this.position = position;
     }
 
     /**
@@ -62,14 +73,11 @@ public class Hexagon {
     }
 
     /**
-     * Getter of the Hexagon which initialize the Hexagon
-     * @param x X-Coordinate of the center of the Hexagon
-     * @param y Y-Coordinate of the center of the Hexagon
-     * @param size Size of the Hexagon
-     * @return Retuns the Hexagon
+     * Getter of the Position of the Hexagon
+     * @return Returns the Position of the Hexagon
      */
-    public Hexagon getHexagon(int x, int y, int size) {
-        return new Hexagon(x, y, size);
+    public Position getPosition() {
+        return this.position;
     }
 }
 
@@ -80,23 +88,25 @@ class Corner {
     /**
      * Private x and y Coordinate of the Corner
      */
-    private double x, y;
+    private int x, y;
 
     /**
      * Constructor
-     * @param x X-Coordinate of the Corner
-     * @param y Y-Coordinate of the Corner
      */
-    private Corner(double x, double y) {
-        setX(x);
-        setY(y);
+    public Corner(Center center, int size, int i) {
+        int angle_degree = 60 * i + 30;
+        double angle_radius = Math.PI / 180 * angle_degree;
+        Double x = center.getX() + size * Math.cos(angle_radius);
+        Double y = center.getY() + size * Math.sin(angle_radius);
+        setX(x.intValue());
+        setY(y.intValue());
     }
 
     /**
      * Setter of the X-Coordinate of the Corner
      * @param x X-Coordinate of the Corner
      */
-    private void setX(double x) {
+    private void setX(int x) {
         this.x = x;
     }
 
@@ -104,7 +114,7 @@ class Corner {
      * Setter of the Y-Coordinate of the Corner
      * @param y Y-Coordinate of the Corner
      */
-    private void setY(double y) {
+    private void setY(int y) {
         this.y = y;
     }
 
@@ -112,7 +122,7 @@ class Corner {
      * Getter of the X-Coordinate of the Corner
      * @return X-Coordinate of the Corner
      */
-    public double getX() {
+    public int getX() {
         return this.x;
     }
 
@@ -120,22 +130,8 @@ class Corner {
      * Getter of the Y-Coordinate of the Corner
      * @return Y-Coordinate of the Corner
      */
-    public double getY() {
+    public int getY() {
         return this.y;
-    }
-
-    /**
-     * Getter of the Corner
-     * @param center Center of the Hexagon
-     * @param size Size of the Hexagon
-     * @param i Number of the Corner (beginning at 0)
-     * @return the Corner
-     */
-    public Corner getCorner(Center center, int size, int i) {
-        int angle_degree = 60 * i + 30;
-        double angle_radius = Math.PI / 180 * angle_degree;
-        return new Corner(center.getX() + size * Math.cos(angle_radius),
-                center.getY() + size * Math.sin(angle_radius));
     }
 }
 
@@ -153,7 +149,7 @@ class Center {
      * @param x X-Coordinate of the Center
      * @param y Y-Coordinate of the Center
      */
-    private Center(int x, int y) {
+    public Center(int x, int y) {
         setX(x);
         setY(y);
     }
@@ -188,15 +184,5 @@ class Center {
      */
     public int getY() {
         return this.y;
-    }
-
-    /**
-     * Getter of the Center
-     * @param x X-Coordinate of the Center
-     * @param y Y-Coordinate of the Center
-     * @return the Center
-     */
-    public Center getCenter(int x, int y) {
-        return new Center(x, y);
     }
 }

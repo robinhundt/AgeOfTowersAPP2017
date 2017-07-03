@@ -8,10 +8,10 @@ import towerwarspp.preset.*;
 /**
  * Class {@link TextIO} control the Input over the Command Line Interface
  *
- * @version 0.5 June 29th 2017
+ * @version 0.6 July 03th 2017
  * @author Kai Kuhlmann
  */
-public class TextIO implements Requestable {
+public class TextIO implements IO {
     /**
      * Normal Command Line Color
      */
