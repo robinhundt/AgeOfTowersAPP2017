@@ -5,6 +5,6 @@ import towerwarspp.preset.Requestable;
 /**
  * Created by robin on 03.07.17.
  */
-public interface IO extends Requestable {
-    public void visualize();
+public interface IO extends Requestable, View{
+
 }

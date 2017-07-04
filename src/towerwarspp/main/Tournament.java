@@ -36,7 +36,7 @@ public class Tournament {
             }
             catch (Exception e) {
                 e.printStackTrace();
-            };
+            }
         }
         return tResult;
     }

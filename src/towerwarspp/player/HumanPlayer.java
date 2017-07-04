@@ -3,8 +3,6 @@ package towerwarspp.player;
 import towerwarspp.preset.Move;
 import towerwarspp.preset.Requestable;
 
-import java.rmi.RemoteException;
-
 /**
  *
  */
@@ -18,9 +16,11 @@ class HumanPlayer extends BasePlayer {
 
     @Override
     Move deliverMove() throws Exception {
-        // TODO check move for validity, call deliver() again if invalid
-        Move move = moveDeliver.deliver();
-        board.update(move, color);
+        Move move;
+        do {
+            move = moveDeliver.deliver();
+        } while (!board.moveAllowed(move, playerColor));
         return move;
     }
+
 }

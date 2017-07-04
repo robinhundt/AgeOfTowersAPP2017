@@ -235,14 +235,6 @@ public class ArgumentParser {
         return getFlag("debug");
     }
 
-    public boolean isHost() throws ArgumentParserException {
-        return getFlag("host");
-    }
-
-    public boolean isHelp() throws ArgumentParserException {
-        return getFlag("help");
-    }
-
     public int getSize() throws ArgumentParserException {
         return Integer.parseInt((String) getSetting("size"));
     }
@@ -259,12 +251,24 @@ public class ArgumentParser {
         return parsePlayerType((String) getSetting("blue"));
     }
 
+    // ********************************************************************
+    //  Hier koennen weitere Schalter und Einstellungen ergaenzt werden...
+    // ********************************************************************
+
+    public boolean isHost() throws ArgumentParserException {
+        return getFlag("host");
+    }
+
+    public boolean isHelp() throws ArgumentParserException {
+        return getFlag("help");
+    }
+
     public int getRounds() throws ArgumentParserException {
         return Integer.parseInt((String) getSetting("rounds"));
     }
 
-    // ********************************************************************
-    //  Hier koennen weitere Schalter und Einstellungen ergaenzt werden...
-    // ********************************************************************
+    public PlayerType getOfferedPlayer() throws ArgumentParserException {
+        return parsePlayerType((String) getSetting("offer"));
+    }
 
 }
