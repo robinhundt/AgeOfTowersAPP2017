@@ -59,29 +59,18 @@ public class AgeOfTowers {
             }
 
             /*check if tournament mode is enabled*/
-            int rounds = 1;
+
             if (ap.isSet("rounds")) {
-                rounds = ap.getRounds();
+                /*create tournament object*/
             }
-
-            /*create String to store statistics*/
-            String allResults = "";
-
-
-            /*start as many games as wished*/
-            for (int i=1; i<=rounds; i++) {
-                if (rounds > 1) System.out.println("Round No.: " + i);
+            else {
                 /*create a new game object with the given players and settings*/
                 Game game = new Game(firstPlayer, secondPlayer, OutputType.TEXTUAL, true,
                         ap.isSet("delay") ? ap.getDelay() : 0, ap.getSize());
 
-                /*start game and save game result in result object*/
-                Result result = game.play();
-                allResults += "Round " + i + ": " + result.toString() + "\n";
+                /*output game result*/
+                System.out.println(game.play().toString());
             }
-
-            /*output game result*/
-            System.out.println(allResults);
         }
         catch (ArgumentParserException e) {
             System.out.println(e);
