@@ -8,7 +8,7 @@ import javax.swing.*;
 /**
  * Class {@link GraphicIO} creates the graphic in- output
  *
- * @version 0.3 July 03th 2017
+ * @version 0.4 July 04th 2017
  * @author Kai Kuhlmann
  */
 public class GraphicIO extends JFrame implements IO {
@@ -58,11 +58,6 @@ public class GraphicIO extends JFrame implements IO {
     @Override
     public void visualize() {
         this.hexagonGrid = new HexagonGrid(getBoardSize(), 20);
-        this.setTitle("Age of Towers");
-        this.setDefaultCloseOperation(EXIT_ON_CLOSE);
-        this.setSize(800, 800);
-        this.add(this);
-        this.setVisible(true);
     }
 
     @Override
