@@ -1,8 +1,9 @@
 package towerwarspp.io;
 
+import towerwarspp.board.BViewer;
 import towerwarspp.preset.Move;
-import towerwarspp.preset.Requestable;
-import towerwarspp.preset.Viewer;
+
+import javax.swing.*;
 
 /**
  * Class {@link GraphicIO} creates the graphic in- output
@@ -10,11 +11,12 @@ import towerwarspp.preset.Viewer;
  * @version 0.3 July 03th 2017
  * @author Kai Kuhlmann
  */
-public class GraphicIO implements IO {
+public class GraphicIO extends JFrame implements IO {
 
-    private BoardViewer viewer;
+    private BViewer viewer;
+    private HexagonGrid hexagonGrid;
 
-    public GraphicIO(BoardViewer viewer, boolean isDebug) {
+    public GraphicIO(BViewer viewer) {
         this.viewer = viewer;
     }
 
@@ -48,14 +50,19 @@ public class GraphicIO implements IO {
      * Get the size of the Board
      * @return Size of Board
      */
-    private int getSize() {
+    private int getBoardSize() {
         //return viewer.getSize();
         return 10;
     }
 
     @Override
     public void visualize() {
-
+        this.hexagonGrid = new HexagonGrid(getBoardSize(), 20);
+        this.setTitle("Age of Towers");
+        this.setDefaultCloseOperation(EXIT_ON_CLOSE);
+        this.setSize(800, 800);
+        this.add(this);
+        this.setVisible(true);
     }
 
     @Override
