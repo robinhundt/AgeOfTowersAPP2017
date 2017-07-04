@@ -239,6 +239,10 @@ public class ArgumentParser {
         return getFlag("host");
     }
 
+    public boolean isHelp() throws ArgumentParserException {
+        return getFlag("help");
+    }
+
     public int getSize() throws ArgumentParserException {
         return Integer.parseInt((String) getSetting("size"));
     }
