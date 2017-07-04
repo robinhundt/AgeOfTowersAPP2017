@@ -3,10 +3,15 @@ package towerwarspp.main;
 import static towerwarspp.preset.PlayerColor.*;
 
 /**
- * Created by niklas on 04.07.17.
+ * Class TResult to provide a statistic about a {@link Tournament}.
+ * Information are: number of wins, number of wins per {@link WinType}, average number of moves per win
+ *
+ * @author Niklas Mueller
+ * @version 07-04-2017
  */
 public class TResult {
 
+    /*variable to store information in, initialized with zero*/
     int redWins = 0;
     int blueWins = 0;
     int redBaseDestroyed = 0;
@@ -21,10 +26,18 @@ public class TResult {
     int blueAverageMoves = 0;
 
 
+    /**
+     * Constructor, just creating a new object with already initialized variables
+     */
     public TResult() {
 
     }
 
+    /**
+     * Method addResult to include a {@link Result} in the statistic
+     *
+     * @param result {@link Result} information to be added
+     */
     public void addResult(Result result) {
         if (result.winner == RED) {
             redWins++;
@@ -49,6 +62,11 @@ public class TResult {
     }
 
     @Override
+    /**
+     * Method toString returning a string with all information about this {@link TResult}
+     *
+     * @return String
+     */
     public String toString() {
         return "Red:\n" +
                 "-total wins: " + redWins + "\n" +

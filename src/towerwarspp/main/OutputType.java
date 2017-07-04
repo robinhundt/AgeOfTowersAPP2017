@@ -1,7 +1,10 @@
 package towerwarspp.main;
 
 /**
- * Created by niklas on 03.07.17.
+ * Enumeration OutputType providing options for ways to visualize a {@link Game}
+ *
+ * @author Niklas Mueller
+ * @version 07-03-2017
  */
 public enum OutputType {
     GRAPHIC, TEXTUAL, NONE
