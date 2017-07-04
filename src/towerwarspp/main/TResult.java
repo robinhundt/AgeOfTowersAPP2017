@@ -34,7 +34,7 @@ public class TResult {
                 case NO_POSSIBLE_MOVES: redNoPosMoves++;
                 case SURRENDER: redSurrender++;
             }
-            redAverageMoves = (redAverageMoves + result.winnerMoves)/2;
+            redAverageMoves = (redAverageMoves * (redWins-1) + (result.winnerMoves))/redWins;
         }
         else {
             blueWins++;
@@ -44,7 +44,26 @@ public class TResult {
                 case NO_POSSIBLE_MOVES: blueNoPosMoves++;
                 case SURRENDER: blueSurrender++;
             }
-            blueAverageMoves = (blueAverageMoves + result.winnerMoves)/2;
+            blueAverageMoves = (blueAverageMoves *(blueWins-1) + (result.winnerMoves))/blueWins;
         }
+    }
+
+    @Override
+    public String toString() {
+        return "Red:\n" +
+                "-total wins: " + redWins + "\n" +
+                "-wins per base destruction: " + redBaseDestroyed + "\n" +
+                "-wins per surrender of blue: " + redSurrender + "\n" +
+                "-wins per illegal move of blue: " + redIllegalMove + "\n" +
+                "-wins per immobility of blue: " + redNoPosMoves + "\n" +
+                "-average amount of moves per win: " + redAverageMoves + "\n" +
+                "\n" +
+                "Blue:\n" +
+                "-total wins: " + blueWins + "\n" +
+                "-wins per base destruction: " + blueBaseDestroyed + "\n" +
+                "-wins per surrender of red: " + blueSurrender + "\n" +
+                "-wins per illegal move of red: " + blueIllegalMove + "\n" +
+                "-wins per immobility of red: " + blueNoPosMoves + "\n" +
+                "-average amount of moves per win: " + blueAverageMoves + "\n";
     }
 }
