@@ -17,12 +17,12 @@ abstract class BasePlayer implements Player {
      * State represents the point in the request - confirm - update cycle of the Player
      */
     private PlayerState state;
-    PlayerColor playerColor;
+    PlayerColor color;
 
     abstract Move deliverMove() throws Exception;
 
-    public PlayerColor getPlayerColor() {
-        return playerColor;
+    public PlayerColor getColor() {
+        return color;
     }
 
     @Override
@@ -31,7 +31,7 @@ abstract class BasePlayer implements Player {
             throw new Exception("Illegal PlayerState. Request can only be called after after init or update");
         state = state.next();
         Move move = deliverMove();
-        board.update(move, playerColor);
+        board.update(move, color);
         return move;
     }
 
@@ -61,7 +61,7 @@ abstract class BasePlayer implements Player {
     public void update(Move opponentMove, Status boardStatus) throws Exception {
         if(state != PlayerState.UPDATE)
             throw new Exception("Illegal PlayerState. update can only be called after confirm or at first if Player is Blue");
-        board.update(opponentMove, playerColor == BLUE ? RED : BLUE);
+        board.update(opponentMove, color == BLUE ? RED : BLUE);
         if(!board.getStatus().equals(boardStatus) || board.getStatus() == ILLEGAL)
             throw new Exception("Illegal PlayerState. Confirmation unsuccessful. Illegal or non matching status of player board and passed status");
         state = state.next();
@@ -70,7 +70,7 @@ abstract class BasePlayer implements Player {
     @Override
     public void init(int size, PlayerColor playerColor) throws Exception {
         board = new Board(size);
-        this.playerColor = playerColor;
+        this.color = playerColor;
         if(playerColor == RED)
             state = PlayerState.REQUEST;
         else if(playerColor == BLUE)

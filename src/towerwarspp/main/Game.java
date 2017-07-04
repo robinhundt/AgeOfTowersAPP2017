@@ -1,10 +1,9 @@
 package towerwarspp.main;
 
-import towerwarspp.board.BViewer;
 import towerwarspp.board.Board;
-import towerwarspp.io.GraphicIO;
 import towerwarspp.io.IO;
 import towerwarspp.io.TextIO;
+import towerwarspp.io.View;
 import towerwarspp.preset.*;
 
 import java.rmi.RemoteException;
@@ -20,7 +19,7 @@ public class Game {
     Player redPlayer;
     Player bluePlayer;
     Board board;
-    IO io;
+    View view;
     boolean debug;
     int delayTime;
 
@@ -28,12 +27,12 @@ public class Game {
      *
      * @param redPlayer
      * @param bluePlayer
+     * @param board
      * @param outputType null is interpreted as {@link OutputType} NONE
      * @param debug
-     * @param boardSize
      * @param delayTime in millisecond
      */
-    Game(Player redPlayer, Player bluePlayer, OutputType outputType, boolean debug, int delayTime, int boardSize) {
+    Game(Player redPlayer, Player bluePlayer, Board board, OutputType outputType, boolean debug, int delayTime) {
         if (redPlayer == null || bluePlayer == null) {
             throw new IllegalArgumentException("Player cannot be null!");
         }
@@ -41,15 +40,15 @@ public class Game {
         this.bluePlayer = bluePlayer;
         this.debug = debug;
         this.delayTime = delayTime;
-        this.board = new Board(boardSize);
+        this.board = board;
         switch (outputType) {
-            //case GRAPHIC: io = (IO) new GraphicIO(board.viewer()); break;
-            case TEXTUAL: io = (IO) new TextIO(board.viewer()); break;
+            //case GRAPHIC: view = (IO) new GraphicIO(board.viewer()); break;
+            case TEXTUAL: view = new TextIO(board.viewer()); break;
         }
 
         try {
-            this.redPlayer.init(boardSize, RED);
-            this.bluePlayer.init(boardSize, BLUE);
+            this.redPlayer.init(board.getSize(), RED);
+            this.bluePlayer.init(board.getSize(), BLUE);
         }
         catch (Exception e) {
             System.out.println(e);
@@ -92,7 +91,7 @@ public class Game {
                 e.printStackTrace();
                 System.exit(1);
             }
-            io.visualize();
+            view.visualize();
         }
 
         if (board.getStatus() == RED_WIN) {

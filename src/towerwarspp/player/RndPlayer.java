@@ -10,10 +10,10 @@ import java.util.Vector;
 /**
  *
  */
-class RndPlayer extends BasePlayer {
+public class RndPlayer extends BasePlayer {
     private Random rnd;
 
-    RndPlayer() {
+    public RndPlayer() {
         // seed 42 for obvious reasons (error reproducibility)
         //TODO change seed to current system time
         rnd = new Random(42);
@@ -21,7 +21,7 @@ class RndPlayer extends BasePlayer {
 
     @Override
     Move deliverMove() throws Exception {
-        Vector<MoveList> moveLists = board.getAllPossibleMoves(playerColor);
+        Vector<MoveList> moveLists = board.getAllPossibleMoves(color);
         MoveList moveList = moveLists.get(rnd.nextInt(moveLists.size()));
         Move move = rndMove(moveList);
         while (move == null)

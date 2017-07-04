@@ -1,5 +1,8 @@
 package towerwarspp.preset;
 
+import com.sun.org.apache.xpath.internal.Arg;
+import towerwarspp.main.OutputType;
+
 import java.util.HashMap;
 
 /**
@@ -225,6 +228,23 @@ public class ArgumentParser {
         }
     }
 
+    /**
+     *
+     * @param type
+     * @return
+     * @throws ArgumentParserException
+     */
+
+    private OutputType parseOutputType(String type) throws ArgumentParserException {
+        switch (type) {
+            case "none": return OutputType.NONE;
+            case "text": return OutputType.TEXTUAL;
+            case "graphic": return OutputType.GRAPHIC;
+
+            default: throw new ArgumentParserException("Unknown OutputType: " + type);
+        }
+    }
+
     // ------------------------------------------------------------
 
     public boolean isGraphic() throws ArgumentParserException {
@@ -255,8 +275,20 @@ public class ArgumentParser {
     //  Hier koennen weitere Schalter und Einstellungen ergaenzt werden...
     // ********************************************************************
 
-    public boolean isHost() throws ArgumentParserException {
-        return getFlag("host");
+    public String getHost() throws ArgumentParserException {
+        return (String) getSetting("host");
+    }
+
+    public String getPort() throws ArgumentParserException {
+        return (String) getSetting("port");
+    }
+
+    public String getName() throws ArgumentParserException {
+        return (String) getSetting("name");
+    }
+
+    public OutputType getOutputType() throws ArgumentParserException {
+        return parseOutputType((String) getSetting("output"));
     }
 
     public boolean isHelp() throws ArgumentParserException {
@@ -267,7 +299,7 @@ public class ArgumentParser {
         return Integer.parseInt((String) getSetting("rounds"));
     }
 
-    public PlayerType getOfferedPlayer() throws ArgumentParserException {
+    public PlayerType getOfferedType() throws ArgumentParserException {
         return parsePlayerType((String) getSetting("offer"));
     }
 

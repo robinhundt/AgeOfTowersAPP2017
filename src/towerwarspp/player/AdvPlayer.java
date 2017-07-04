@@ -7,7 +7,7 @@ import java.rmi.RemoteException;
 /**
  * Created by robin on 23.06.17.
  */
-public class AdvPlayer extends BasePlayer {
+class AdvPlayer extends BasePlayer {
 
     @Override
     Move deliverMove() throws Exception {

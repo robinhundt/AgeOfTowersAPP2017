@@ -9,25 +9,25 @@ import towerwarspp.preset.Requestable;
  * Created by robin on 23.06.17.
  */
 public class PlayerFactory {
-    private PlayerFactory(){}
-
-//    public static Player makeHumanPlayer(int boardSize, PlayerColor playerColor, Requestable moveDeliver) throws Exception {
-//        return new HumanPlayer(moveDeliver);
+//    private PlayerFactory(){}
+//
+////    public static Player makeHumanPlayer(int boardSize, PlayerColor color, Requestable moveDeliver) throws Exception {
+////        return new HumanPlayer(moveDeliver);
+////    }
+//
+//    public static Player makePlayer(PlayerType playerType, Requestable moveDeliver) throws Exception {
+//        Player player;
+//        switch (playerType) {
+//            case HUMAN: player = new HumanPlayer(moveDeliver); break;
+//            //case REMOTE: player = new NetPlayer(); /*TODO implement Remote*/ break;
+//            case RANDOM_AI: player = new RndPlayer();       break;
+//            case SIMPLE_AI: player =  new SimplePlayer();   break;
+//            case ADVANCED_AI_1: player = new AdvPlayer();   break;
+//            default: throw new IllegalArgumentException("Unsupported PlayerType");
+//        }
+//        return player;
 //    }
-
-    public static Player makePlayer(int boardSize, PlayerColor playerColor, PlayerType playerType, Requestable moveDeliver) throws Exception {
-        Player player;
-        switch (playerType) {
-            case HUMAN: player = new HumanPlayer(moveDeliver); break;
-            // case REMOTE: player = new NetPlayer() /*TODO implement Remote*/ break;
-            case RANDOM_AI: player = new RndPlayer();       break;
-            case SIMPLE_AI: player =  new SimplePlayer();   break;
-            case ADVANCED_AI_1: player = new AdvPlayer();   break;
-            default: throw new IllegalArgumentException("Unsupported PlayerType");
-        }
-        return player;
-    }
-
+//
 
 
 }

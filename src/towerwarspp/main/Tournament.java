@@ -1,5 +1,6 @@
 package towerwarspp.main;
 
+import towerwarspp.board.Board;
 import towerwarspp.preset.Player;
 
 /**
@@ -23,12 +24,12 @@ public class Tournament {
         this.boardSize = boardSize;
         this.rounds = rounds;
     }
-
+    // TODO fix tournament cuz this won't work in case one of the players is human (probably)
     public TResult play() {
         tResult = new TResult();
         for (int i=1; i<=rounds; i++) {
             System.out.println("Round No.: " + i);
-            Game game = new Game(firstPlayer, secondPlayer, outputType, debug, delayTime, boardSize);
+            Game game = new Game(firstPlayer, secondPlayer, new Board(boardSize), outputType, debug, delayTime);
 
             try {
                 Result result = game.play();

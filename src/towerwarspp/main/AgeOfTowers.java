@@ -2,22 +2,27 @@ package towerwarspp.main;
 
 import towerwarspp.board.BViewer;
 import towerwarspp.board.Board;
-import towerwarspp.io.GraphicIO;
 import towerwarspp.io.IO;
 import towerwarspp.io.TextIO;
+import towerwarspp.io.View;
+import towerwarspp.network.Remote;
+import towerwarspp.player.HumanPlayer;
+import towerwarspp.player.NetPlayer;
+import towerwarspp.player.RndPlayer;
 import towerwarspp.preset.*;
-import towerwarspp.player.PlayerFactory;
 
-import static towerwarspp.player.PlayerFactory.makePlayer;
 import static towerwarspp.preset.PlayerColor.*;
 
 public class AgeOfTowers {
-    public static void main(String[] args) {
-        Player firstPlayer, secondPlayer;
-        IO io;
+    private ArgumentParser ap;
+    private OutputType outputType = OutputType.TEXTUAL;
+    private Player[] players;
+    private Board board;
+    private IO io;
+
+    private AgeOfTowers(String[] args) {
         try {
-            /*create new ArgumentParse object*/
-            ArgumentParser ap = new ArgumentParser(args);
+            ap = new ArgumentParser(args);
 
             /*check if no parameters have been given, or flag --help is activated*/
             if (args.length == 0 || ap.isHelp()) {
@@ -25,60 +30,197 @@ public class AgeOfTowers {
                 System.exit(0);
             }
 
-            /*check if board size is valid*/
-            if (ap.getSize() < 4 || ap.getSize() > 26) {
-                System.out.println("Board size needs to be between 4 and 26!");
+            if(ap.isSet("output")) {
+                outputType = ap.getOutputType();
+            }
+
+
+            if(ap.isSet("offer")) {
+                findRemotePlay();
+            } else if(ap.isSet("blue") && ap.isSet("red") && ap.isSet("size")) {
+                if(ap.getSize() >= 4 && ap.getSize() <= 26) {
+                    board = new Board(ap.getSize());
+                } else {
+                    System.out.println("-size of Board must be between 4 and 26");
+                    System.exit(1);
+                }
+                players = createPlayers();
+                if(ap.isSet("rounds") && ap.getRounds() > 1) {
+                    startTournament();
+                } else {
+                    System.out.println("here");
+                    startGame(players[0], players[1]);
+                }
+            } else {
+                System.out.println("Invalid combination of Arguments. See following --help");
+                System.out.println(helpOutput());
                 System.exit(1);
             }
 
-            /*create new board and viewer object*/
-            Board board = new Board(ap.getSize());
-            BViewer viewer = board.viewer();
-
-            /*check if graphic output should be enabled*/
-            if (ap.isGraphic()) {
-                io = new TextIO(viewer);
-            }
-            /*otherwise do output on standard output*/
-            else {
-                io = new TextIO(viewer);
-            }
-
-            /*check if red and blue player types are given, then initialize them*/
-            if (ap.isSet("red")) {
-                firstPlayer = makePlayer(ap.getSize(), RED, ap.getRed(), io);
-            }
-            else {
-                firstPlayer = null;
-            }
-            if (ap.isSet("blue")) {
-                secondPlayer = makePlayer(ap.getSize(), BLUE, ap.getBlue(), (Requestable) io);
-            }
-            else {
-                secondPlayer = null;
-            }
-
-            /*check if tournament mode is enabled*/
-
-            if (ap.isSet("rounds")) {
-                /*create tournament object*/
-            }
-            else {
-                /*create a new game object with the given players and settings*/
-                Game game = new Game(firstPlayer, secondPlayer, OutputType.TEXTUAL, true,
-                        ap.isSet("delay") ? ap.getDelay() : 0, ap.getSize());
-
-                /*output game result*/
-                System.out.println(game.play().toString());
-            }
-        }
-        catch (ArgumentParserException e) {
-            System.out.println(e);
-        }
-        catch (Exception e) {
-            e.printStackTrace();
+        } catch (ArgumentParserException e) {
+            System.out.println(e.getMessage());
+            System.out.println(helpOutput());
+            System.exit(1);
         }
     }
+
+
+
+    private void findRemotePlay() {
+
+    }
+
+    private Player getRemotePlayer() {
+        //TODO find remote player depending on arguments
+        return null;
+    }
+
+    private Player[] createPlayers() {
+        Player[] players = new Player[2];
+        players[0] = createPlayer(RED);
+        players[1] = createPlayer(BLUE);
+        return players;
+    }
+
+    private Player createPlayer(PlayerColor playerColor) {
+        try {
+            switch (playerColor == RED ? ap.getRed() : ap.getBlue()) {
+                // TODO Split TextIO
+                case HUMAN: return new HumanPlayer((Requestable) new TextIO(board.viewer()));
+                case RANDOM_AI: return new RndPlayer();
+                case REMOTE: return getRemotePlayer();
+                default: System.out.println("Unsupported PlayerType."); System.exit(1);
+            }
+
+        } catch (ArgumentParserException e) {
+            System.out.println(e.getMessage());
+            System.exit(1);
+        }
+        // TODO change this, looks hacky
+        return null;
+    }
+
+    private void startGame(Player redPlayer, Player bluePlayer) {
+        Game game = new Game(redPlayer, bluePlayer, board, outputType, true, 0);
+        try {
+            game.play();
+        } catch (Exception e) {
+            e.printStackTrace();
+            System.exit(1);
+        }
+    }
+
+    private void startTournament() {
+
+    }
+
+
+
+    public static void main(String[] args) {
+
+        new AgeOfTowers(args);
+//
+//
+//
+//
+//        Player firstPlayer, secondPlayer;
+//        Requestable requestable;
+//        View view;
+//        IO io;
+//        OutputType outputType = OutputType.TEXTUAL;
+//        try {
+//            /*create new ArgumentParse object*/
+//            ArgumentParser ap = new ArgumentParser(args);
+//
+//            /*check if no parameters have been given, or flag --help is activated*/
+//            if (args.length == 0 || ap.isHelp()) {
+//                System.out.println(helpOutput());
+//                System.exit(0);
+//            }
+//
+//            /*check if board size is valid*/
+//            if (ap.getSize() < 4 || ap.getSize() > 26) {
+//                System.out.println("Board size needs to be between 4 and 26!");
+//                System.exit(1);
+//            }
+//
+//            /*create new board and viewer object*/
+//            Board board = new Board(ap.getSize());
+//            BViewer viewer = board.viewer();
+//
+//            // Determine OutputType of this instance
+//            if(ap.isSet("output"))
+//                outputType = ap.getOutputType();
+//
+//            /*check if graphic output should be enabled*/
+//            if (outputType == OutputType.GRAPHIC) {
+//                // TODO change to graphicIO once completed
+//                io = new TextIO(viewer);
+//                requestable = io;
+//                view = io;
+//            }
+//            /*otherwise do output on standard output*/
+//            else if (outputType == OutputType.TEXTUAL){
+//                io = new TextIO(viewer);
+//                requestable = io;
+//                view = io;
+//            } else {
+//                requestable =  new TextIO();
+//            }
+//
+//            /*check if red and blue player types are given, then initialize them*/
+//            if (ap.isSet("red") && ap.getRed() != PlayerType.REMOTE) {
+//                firstPlayer = makePlayer(ap.getRed(), requestable);
+//            }
+//            else {
+//                firstPlayer = null;
+//            }
+//            if (ap.isSet("blue") && ap.getBlue() != PlayerType.REMOTE) {
+//                secondPlayer = makePlayer(ap.getBlue(), requestable);
+//            }
+//            else {
+//                secondPlayer = null;
+//            }
+//
+//            if(ap.isSet("blue") && ap.getBlue() == PlayerType.REMOTE) {
+//                System.out.println("Looking for player " + ap.getName());
+//                secondPlayer = Remote.find(ap.getHost(), ap.getName());
+//            }
+//
+//            /*check if tournament mode is enabled*/
+//
+//            if(ap.isSet("offer")) {
+//                Player player = makePlayer(ap.getOfferedType(), requestable);
+//                player = new NetPlayer(player);
+//                Remote.offer(player, ap.getName());
+//            } else {
+//
+//                Game game = new Game(firstPlayer, secondPlayer, board, outputType, true, 0);
+//                game.play();
+//            }
+//
+//
+////            if (ap.isSet("rounds")) {
+////                /*create tournament object*/
+////            }
+////            else {
+////                /*create a new game object with the given players and settings*/
+////                Game game = new Game(firstPlayer, secondPlayer, OutputType.TEXTUAL, true,
+////                        ap.isSet("delay") ? ap.getDelay() : 0, ap.getSize());
+////
+////                /*output game result*/
+////                System.out.println(game.play().toString());
+////            }
+//        }
+//        catch (ArgumentParserException e) {
+//            System.out.println(e);
+//        }
+//        catch (Exception e) {
+//            e.printStackTrace();
+//        }
+    }
+
+
 
 
     private static String helpOutput() {

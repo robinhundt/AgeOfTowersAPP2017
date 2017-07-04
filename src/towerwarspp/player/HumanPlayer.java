@@ -7,10 +7,10 @@ import towerwarspp.preset.Requestable;
  *
  */
 
-class HumanPlayer extends BasePlayer {
+public class HumanPlayer extends BasePlayer {
     private Requestable moveDeliver;
 
-    HumanPlayer(Requestable moveDeliver) {
+    public HumanPlayer(Requestable moveDeliver) {
         this.moveDeliver = moveDeliver;
     }
 
@@ -19,7 +19,7 @@ class HumanPlayer extends BasePlayer {
         Move move;
         do {
             move = moveDeliver.deliver();
-        } while (!board.moveAllowed(move, playerColor));
+        } while (!board.moveAllowed(move, color));
         return move;
     }
 
