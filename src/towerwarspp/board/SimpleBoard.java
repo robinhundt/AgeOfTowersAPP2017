@@ -691,9 +691,7 @@ public class SimpleBoard implements Viewable {
 	private boolean hasMoves (ListIterator<Entity> it) {
 		while(it.hasNext()) {
 			Entity ent = it.next();
-			System.out.println(ent);
 			if(ent.canMove()) {
-				System.out.println(ent.getPosition());
 				return true;
 			}
 		}
