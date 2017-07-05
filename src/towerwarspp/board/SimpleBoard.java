@@ -238,8 +238,8 @@ public class SimpleBoard implements Viewable {
 		}
 		ent = changeStart(ent, start);
 		changeEnd(ent, start, end);
-		turn = (turn == RED? BLUE: RED);
 		status = checkWin(end);
+		turn = (turn == RED? BLUE: RED);
 		return status;
 	}
 	/**
@@ -689,8 +689,12 @@ public class SimpleBoard implements Viewable {
 	*/
 	private boolean hasMoves (ListIterator<Entity> it) {
 		while(it.hasNext()) {
-			if(it.next().canMove())
+			Entity ent = it.next();
+			System.out.println(ent);
+			if(ent.canMove()) {
+				System.out.println(ent.getPosition());
 				return true;
+			}
 		}
 		return false;
 	}

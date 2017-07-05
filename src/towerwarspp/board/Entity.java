@@ -20,13 +20,12 @@ public class Entity {
 /**
 * Includes information about possible moves
 */
-	private int[] canGo;
+	private int[][] movesIntRepr;
 /**
 * Includes information about amount of step which this Entity needs to rich other positions:
 * canReach[i][j] == 0 -> this Entity can NOT reach the position (i, j);
 * canReach[i][j] = x -> this Entity can reach the position (i,j) in x soteps
 */
-	private int[][] nSteps;
 	//private PlayerColor color;	// color of this Entity
 	int size;
 	private int high = 0;	// 0 - the high of a single stone
@@ -43,7 +42,7 @@ public class Entity {
 		this.size = size;
 		moves = new Vector<Position>();
 		maxHigh = size/3;
-		nSteps = new int[size+1][size+1];
+		movesIntRepr = new int[size*2+1][size+1];
 	}
 	public Entity(Position p, PlayerColor col, int size, boolean isBase) {
 		position = p;
@@ -52,7 +51,7 @@ public class Entity {
 		this.size = size;
 		moves = new Vector<Position>();
 		maxHigh = size/3;
-		nSteps = new int[size+1][size+1];
+		movesIntRepr = new int[size*2+1][size+1];
 	}
 /**
 * Ensures that the move with end position {@link moveEnd} is in the list of possible moves.
@@ -63,8 +62,6 @@ public class Entity {
 * 1. prooves, if the move is already in the list;
 * 	if so - return, else - DO:
 * 2. add the move to the list of possible moves {@link moves}
-* 3. add the move to {@link canGo}
-* 4. add stps to {@link nSteps}
 */
 	public void addMove(Position moveEnd, int stps) {
 		if(!moves.contains(moveEnd)) {
@@ -105,7 +102,7 @@ public class Entity {
 		return color;
 	}	
 /**
-* For example: creates new {@link moves},  {@link canGo}, {@link nSteps}.
+* 
 */
 	public void removeAllMoves() {
 		moves = new Vector<Position>();
@@ -167,6 +164,25 @@ public class Entity {
 	}
 	public void setBlocked(boolean bl) {
 		blocked = bl;
+	}
+	
+	public Vector<Position> getStep(int st) {
+		Vector<Position> res = new Vector<Position>();
+		ListIterator<Position> it = moves.listIterator();
+		while(it.hasNext()) {
+			Position endPos = it.next(); 
+			if(distance(position, endPos) == st) {
+				res.add(endPos);
+			}
+		}
+		return res;
+	}
+	public int[] getStepRepr(int st) {
+		return movesIntRepr[st];
+	}
+	public void setStep(Vector<Position> newMoves, int[] intRepr, int st) {
+		moves.addAll(newMoves);
+		movesIntRepr[st] = intRepr;
 	}
 /**
 * Removes all positions which can be reached in {@link step} steps from the list of possible moves.
