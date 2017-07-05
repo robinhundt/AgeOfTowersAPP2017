@@ -59,11 +59,9 @@ public class AgeOfTowers {
                 players = createPlayers();
                 /*check if tournament mode is enabled*/
                 if(ap.isSet("rounds") && ap.getRounds() > 1) {
-                    TResult tResult = startTournament(players, ap.getRounds());
-                    System.out.println(tResult);
+                    startTournament(players);
                 } else {
-                    Result result = startGame(players[0], players[1]);
-                    System.out.println(result);
+                    startGame(players[0], players[1]);
                 }
 
             } else {
@@ -134,13 +132,13 @@ public class AgeOfTowers {
     }
 
     /**
-     * Method startGame to create a new {@link Game} object, with given {@link Player}s
+     * Method startGame to create a new {@link Game} object, with given {@link Player}s.
+     * Outputs information about this {@link Game}
      *
      * @param redPlayer {@link Player} set as red player
      * @param bluePlayer {@link Player} set as blue player
-     * @return {@link Result} providing information about this {@link Game}
      */
-    private Result startGame(Player redPlayer, Player bluePlayer) {
+    private void startGame(Player redPlayer, Player bluePlayer) {
         Result result = null;
         Game game = new Game(redPlayer, bluePlayer, board, outputType, true, 0);
         try {
@@ -149,47 +147,28 @@ public class AgeOfTowers {
             e.printStackTrace();
             System.exit(1);
         }
-        return result;
+        System.out.println(result);
     }
 
     /**
-     * Method startTournament to start a tournament starting as many {@link Game}s as wished
+     * Method startTournament to start a tournament starting as many {@link Game}s as wished.
+     * Outputs statistic about this {@link Tournament}.
      *
      * @param players array of {@link Player}
-     * @param rounds number of {@link Game}s
-     * @return {@link TResult} providing a statistic about this tournament
      */
-    private TResult startTournament(Player[] players, int rounds) {
+    private void startTournament(Player[] players) {
         TResult tResult = new TResult();
-        for (int i=1; i<=rounds; i++) {
-            System.out.println("Round No.: " + i);
-            int red, blue;
-            if (i%2 == 0) {
-                red = 0;
-                blue = 1;
-            }
-            else {
-                red = 1;
-                blue = 0;
-            }
-            try {
-                initBoard(ap.getSize());
-            }
-            catch (ArgumentParserException e) {
-                System.out.println(e.getMessage());
-                System.out.println(helpOutput());
-                System.exit(1);
-            }
-            tResult.addResult(startGame(players[red], players[blue]));
-
-            try {
-                Thread.sleep(2000);
-            }
-            catch (Exception e) {
-
-            }
+        Tournament tournament = null;
+        try {
+            tournament = new Tournament(players, outputType, ap.isDebug(),
+                    ap.isSet("delay") ? ap.getDelay() : 0, board.getSize(), ap.getRounds());
         }
-        return tResult;
+        catch (Exception e) {
+            e.printStackTrace();
+            System.exit(1);
+        }
+        tResult = tournament.play();
+        System.out.println(tResult);
     }
 
 
