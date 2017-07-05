@@ -16,7 +16,7 @@ public class RndPlayer extends BasePlayer {
     public RndPlayer() {
         // seed 42 for obvious reasons (error reproducibility)
         //TODO change seed to current system time
-        rnd = new Random(42);
+        rnd = new Random();
     }
 
     @Override

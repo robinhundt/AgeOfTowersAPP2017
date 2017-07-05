@@ -202,7 +202,6 @@ public class Entity {
 * Adds all positions which can be reached in {@link step}+1 steps to the list of possible moves.
 * Increases current {@link step} by 1.
 */
-
 	public void addStep() {
 		++step;
 	}

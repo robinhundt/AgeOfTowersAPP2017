@@ -51,7 +51,7 @@ public class EntityNew {
 	/**
 	 * this array of vectors shows, which moves are available for every range
 	 */
-	private Vector<Vector<Position>> stepMoves = new Vector<Vector<Position>>(60);
+	private Vector<Vector<Position>> rangeMoves = new Vector<Vector<Position>>(60);
 	
 	/**
 	 * size of the gamefield
@@ -74,6 +74,36 @@ public class EntityNew {
 	 * @param color color of the stone
 	 * @param size size of the field (size*size)
 	 */
+
+	/**
+	 * ANSI_RED for toString
+	 */
+	public static final String ANSI_RED = "\u001B[31m";
+	/**
+	 * ANSI_BLUE for toString
+	 */
+	public static final String ANSI_BLUE = "\u001B[34m";
+	/**
+	 * ANSI_PURPLE for toString
+	 */
+	public static final String ANSI_PURPLE = "\u001B[35m";
+	/**
+	 * ANSI_YELLOW for toString
+	 */
+	public static final String ANSI_YELLOW = "\u001B[33m";
+	/**
+	 * ANSI_CYAN for toString
+	 */
+	public static final String ANSI_CYAN = "\u001B[36m";
+	/**
+	 * ANSI_WHITE for toString
+	 */
+	public static final String ANSI_WHITE = "\u001B[37m";
+
+	/**
+	 * The RESET-Variable for toString
+	 */
+	private static final String RESET = "\u001B[0m";
 	public EntityNew (Position pos, PlayerColor color, int size) {
 		this.pos = pos;
 		this.color = color;
@@ -98,7 +128,7 @@ public class EntityNew {
 	 * @return the Vector of positions
 	 */
 	public Vector<Position> getRangeMoves(int range) {
-		return stepMoves.elementAt(range);
+		return rangeMoves.elementAt(range);
 	}
 
 	/**
@@ -114,7 +144,7 @@ public class EntityNew {
 	 * returns the Position
 	 * @return the Position
 	 */
-	public Position getPos() {
+	public Position getPosition() {
 		return pos;
 	}
 
@@ -148,11 +178,50 @@ public class EntityNew {
 	}
 
 	/**
+	 * returns the Vector of Vector of the possible Moves
+	 */
+	public Vector<Vector<Position>> getMoves() {
+		return rangeMoves;
+	}
+
+	/**
 	 * checks if this entity is a base or not
 	 * @return true if base, false if not
 	 */
 	public boolean isBase () {
 		return base;
+	}
+
+	/**
+	 * returns the Movecounter
+	 * @return moveCounter
+	 */
+	public int getMoveCounter() {
+		return moveCounter;
+	}
+
+	/**
+	 * checks if the entity is a Tower
+	 * @return true if height != 0, false if height == 0
+	 */
+	public boolean isTower() {
+		return height != 0;
+	}
+	
+	/**
+	 * checks if the tower has maxheight
+	 * @return true if maxHeight
+	 */
+	public boolean isMaxHeight() {
+		return height == maxHeight;
+	}
+
+	/**
+	 * sets the Variable blocked
+	 * @param blocked the new status of blocked
+	 */
+	public void setBlocked(boolean blocked) {
+		this.blocked = blocked;
 	}
 
 	/**
@@ -182,8 +251,8 @@ public class EntityNew {
 	 * posssible anymore 
 	 */
 	public void decRange() {
-		moveCounter-= stepMoves.elementAt(range).size();
-		stepMoves.set(range, new Vector<Position>());
+		moveCounter-= rangeMoves.elementAt(range).size();
+		rangeMoves.set(range, new Vector<Position>());
 		for(int i = 0; i < size; i++) {
 			reachable[range][i] = 0;
 		}
@@ -200,8 +269,21 @@ public class EntityNew {
 	}
 
 	/**
+	 * same as incRange but uses given vector and int-array
+	 * @param rangeVector movevector for specific range
+	 * @param reachableRange reachable-array for specific range
+	 */
+	public void incRange(Vector<Position> rangeVector, int[] reachableRange) {
+		range++;
+		rangeMoves.set(range, rangeVector);
+		for(int i = 0; i < size; i++) {
+			reachable[range][i] = reachableRange[i];
+		}
+	}
+
+	/**
 	 * This Method adds a possible move to the Entity.
-	 * It is added in reachable, stepMoves and stepMoves
+	 * It is added in reachable, rangeMoves and rangeMoves
 	 * @param end endposition of the move
 	 * @param range distance of the endposition
 	 */
@@ -209,22 +291,22 @@ public class EntityNew {
 		int temp = 1 << end.getLetter();
 		if(hasMove(end, range)){
 			reachable[range][end.getNumber()] |=  temp;
-			stepMoves.elementAt(range).add(end);
+			rangeMoves.elementAt(range).add(end);
 			moveCounter++;
 		}		
 	}
 
 	/**
 	 * This Method removes a move from the Entity.
-	 * It is removed in reachable and stepMoves
+	 * It is removed in reachable and rangeMoves
 	 * @param end endposition of the move
 	 * @param range distance of the endposition
 	 */
 	public void removeMove(Position end, int range) {
 		int temp = 1 << end.getLetter();
 		if(!hasMove(end, range)) {
-			reachable[range][end.getNumber()] = reachable[range][end.getNumber()] ^ temp;
-			stepMoves.elementAt(range).remove(end);
+			reachable[range][end.getNumber()] ^=  temp;
+			rangeMoves.elementAt(range).remove(end);
 			moveCounter--;
 		}		
 	}
@@ -237,8 +319,63 @@ public class EntityNew {
 	public boolean hasMove(Position end, int range) {
 		int temp = 1 << end.getLetter();
 		if((reachable[range][end.getNumber()] & temp) == 0){
-			return true;
+			return false;
 		}
-		return false;
+		return true;
+	}
+
+	/**
+	 * checks, if the Entity is movable 
+	 * @return true, if movable, false if not
+	 */
+	public boolean movable() {
+		return !(blocked || moveCounter == 0);
+	}
+
+	/**
+	 * removes all moves of the entity and sets the range to 1
+	 */
+	public void removeAllMoves() {
+		rangeMoves = new Vector<Vector<Position>>(60);
+	}
+
+	
+	/**
+	 * Method used for TextIO and BViewer. Checks, which type of entity we have and gives
+	 * the right color and symbol
+	 */
+	public String toString() {
+		String col;
+		String s;
+		if(color == PlayerColor.RED) { 
+			if(blocked) {
+				col = ANSI_WHITE;
+			}
+			else if (height == maxHeight) {
+				col = ANSI_YELLOW;
+			}
+			else {
+				col = ANSI_RED;
+			}
+		}
+		else {
+			if(blocked) {
+				col = ANSI_CYAN;
+			}
+			else if (height == maxHeight){
+				col = ANSI_PURPLE;
+			}
+			else {
+				col = ANSI_BLUE;
+			}
+
+		}
+		if(base) {
+			s = col + " B " + RESET;
+		}
+		else  {
+			s = col + (height != 0 ? " T " + height : " S ") + RESET;
+		}
+		return s;
 	}
 }
