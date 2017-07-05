@@ -140,8 +140,9 @@ public class AgeOfTowers {
      */
     private void startGame(Player redPlayer, Player bluePlayer) {
         Result result = null;
-        Game game = new Game(redPlayer, bluePlayer, board, outputType, true, 0);
         try {
+            Game game = new Game(redPlayer, bluePlayer, board, outputType, ap.isDebug(),
+                    ap.isSet("delay") ? ap.getDelay() : 0);
             result = game.play();
         } catch (Exception e) {
             e.printStackTrace();
