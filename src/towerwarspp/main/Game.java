@@ -65,6 +65,8 @@ public class Game {
         Move currentMove;
         int moveCounter = 0;
 
+        view.visualize();
+
         while (board.getStatus() == OK) {
             moveCounter++;
             System.out.println(currentColor + "'s turn");

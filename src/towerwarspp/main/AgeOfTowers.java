@@ -48,7 +48,6 @@ public class AgeOfTowers {
                 if(ap.isSet("rounds") && ap.getRounds() > 1) {
                     startTournament();
                 } else {
-                    System.out.println("here");
                     startGame(players[0], players[1]);
                 }
             } else {
