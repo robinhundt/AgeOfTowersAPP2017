@@ -1,6 +1,7 @@
 package towerwarspp.main;
 
 import towerwarspp.board.Board;
+import towerwarspp.io.GraphicIO;
 import towerwarspp.io.IO;
 import towerwarspp.io.TextIO;
 import towerwarspp.io.View;

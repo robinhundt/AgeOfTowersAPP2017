@@ -83,7 +83,7 @@ public class BViewer implements Viewer {
 	public String positionToString(Position pos) {
 		Entity ent = getElement(pos);
 		if (ent == null)
-			return "."; 
+			return " o ";
 		else 
 			return ent.toString();
 	}

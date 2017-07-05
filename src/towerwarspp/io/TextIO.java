@@ -57,41 +57,15 @@ public class TextIO implements IO {
         }
         System.out.print("\n");
         String tap = "  ";
-        for(int y = 1; y <= size; ++y) {//!!!!
+
+        for (int y=1; y <= size; y++) {
             System.out.print(tap + y + ((y>=10) ? " " : "  "));
-            for(int x = 1; x <= size; ++x) {//!!!!!
-                if(this.viewer.isTower(new Position(x, y))) {
-                    if(this.viewer.getPlayerColor(new Position(x, y)) == PlayerColor.RED) {
-                        System.out.print(RED);
-                    } else {
-                        System.out.print(BLUE);
-                    }
-                    System.out.print(" T" + this.viewer.getHeight(new Position(x, y)) + RESET);
-                } else if(x == 1 && y == 1) {
-                    System.out.print(RED + " B " + RESET);
-                } else if(x == size && y == size) {
-                    System.out.print(BLUE + " B " + RESET);
-                } else if(this.viewer.isStone(new Position(x, y))) {
-                    if(this.viewer.getPlayerColor(new Position(x, y)) == PlayerColor.RED) {
-                        System.out.print(RED);
-                    } else {
-                        System.out.print(BLUE);
-                    }
-                    System.out.print(" S " + RESET);
-                } else if(this.viewer.isBlocked(new Position(x, y))) {
-                    if(this.viewer.getPlayerColor(new Position(x, y)) == PlayerColor.RED) {
-                        System.out.print(RED);
-                    } else {
-                        System.out.print(BLUE);
-                    }
-                    System.out.print(" X " + RESET);
-                } else {
-                    System.out.print(" o ");
-                }
-                //System.out.print(" ");
+            for (int x=1; x <=size; x++) {
+                System.out.print(this.viewer.positionToString(new Position(x, y)));
             }
+            System.out.print("  " + y);
+            System.out.println();
             tap += "  ";
-            System.out.print("  " + y + "\n");//!!!!
         }
         headChar = 'A';
         tap += "   ";

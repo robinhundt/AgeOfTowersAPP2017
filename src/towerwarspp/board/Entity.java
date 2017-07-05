@@ -12,6 +12,7 @@ public class Entity {
 	public static final String ANSI_YELLOW = "\u001B[33m";
 	public static final String ANSI_CYAN = "\u001B[36m";
 	public static final String ANSI_WHITE = "\u001B[37m";
+	public static final String ANSI_RESET = "\u001B[0m";
 
 	private Position position;
 	private PlayerColor color;
@@ -232,10 +233,10 @@ public class Entity {
 
 		}
 		if(base) {
-			s = col + "B";
+			s = col + " B " + ANSI_RESET;
 		}
 		else {
-			s = col + high;
+			s = col  + (high!=0 ? " T" + high : " S ") + ANSI_RESET;
 		}
 		return s;
 	}
