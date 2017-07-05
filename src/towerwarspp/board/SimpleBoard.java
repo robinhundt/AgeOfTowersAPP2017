@@ -26,8 +26,16 @@ public class SimpleBoard implements Viewable {
                 board = new Entity[n+1][n+1];
 				size = n;
                 initialiseBoard();
-                
         }
+	public SimpleBoard(int size, PlayerColor turn, Vector<Entity> lRed, Vector<Entity> lBlue, Entity[][] board, Position redB, Position blueB) {
+		this.size = size;
+		this.turn = turn;
+		this.listRed = lRed;
+		this.listBlue = lBlue;
+		this.board = board;
+		this.redBase = redB;
+		this.blueBase = blueB; 
+	}
 	public Entity[][] getBoard(){
 		return board;
 	}
@@ -83,22 +91,22 @@ public class SimpleBoard implements Viewable {
 	}
 	private void initialiseEntityMoves(Entity ent, int x, int y) {
 		if (y > 1) {
-			ent.addMove(new Position(x, y-1), 1);
+			addMove(ent, new Position(x, y-1), 1);
 			if (x < size) {
-				ent.addMove(new Position(x+1, y-1), 1);
+				addMove(ent, new Position(x+1, y-1), 1);
 			}
 		}
 		if (x > 1) {
-			ent.addMove(new Position(x-1, y), 1);
+			addMove(ent, new Position(x-1, y), 1);
 			if (y < size) {
-				ent.addMove(new Position(x-1, y+1), 1);
+				addMove(ent, new Position(x-1, y+1), 1);
 			}
 		}
 		if (x < size) {
-			ent.addMove(new Position(x+1, y), 1);
+			addMove(ent, new Position(x+1, y), 1);
 		}
 		if (y < size) {
-			ent.addMove(new Position(x, y+1), 1);
+			addMove(ent, new Position(x, y+1), 1);
 		}
 	}
 	/**
@@ -233,7 +241,7 @@ public class SimpleBoard implements Viewable {
 			status = ILLEGAL;
 			return status;
 		}
-		if(! moveAllowed(move, col)) {
+		if(!moveAllowed(move, col)) {
 			status = ILLEGAL;
 			return status;
 		}
@@ -298,7 +306,7 @@ public class SimpleBoard implements Viewable {
 	* @param end the position to which the figure in question has to be moved. 
 	*/
 	private void changeEnd(Entity ent, Position start, Position end) {
-		ent.setPosition(end);
+		setPosition(ent, end);
 		Entity opponent = getElement(end);
 		if(opponent == null || opponent.isBase()) {
 			setElement(ent, end);
@@ -335,7 +343,7 @@ public class SimpleBoard implements Viewable {
 	* @param blockingStone the stone which is going to block the tower.
 	*/
 	private void blockTower(Entity tower, Entity blockingStone) {
-		tower.setBlocked(true);
+		block(tower);
 		actualiseTowerBlockedOrDecreased(tower, tower.getHigh());
 		removeFromList(blockingStone);
 		positionClosed(tower.getPosition(), blockingStone.getColor(), false);
@@ -367,7 +375,7 @@ public class SimpleBoard implements Viewable {
 	* @param unblockingStone the stone which is going to unblock the tower.
 	*/
 	private void unblockTower(Entity tower, Entity unblockingStone) {
-			tower.setBlocked(false);
+			unblock(tower);
 			removeFromList(unblockingStone);
 			findTowerMoves(tower);
 			actualiseTowerUnblockedOrIncreased(tower, tower.getHigh());
@@ -393,7 +401,7 @@ public class SimpleBoard implements Viewable {
 	private void actualiseTowerNeighbourIsEmpty(Position emptyPos, Position pos, PlayerColor col) {
 		Entity ent = getElement(pos);
 		if(ent != null && ent.getColor() != col && ent.isTower() && !ent.isBlocked()) {
-			ent.addMove(emptyPos, 1);
+			addMove(ent, emptyPos, 1);
 		}
 	}
 	/**
@@ -413,7 +421,7 @@ public class SimpleBoard implements Viewable {
 			if (!forAll && dist == 1) 
 				continue;
 			if(ent.hasMove(closedPos, dist)) {
-				ent.removeMove(closedPos, dist);
+				removeMove(ent, closedPos, dist);
 			}
 		}
 	}
@@ -430,7 +438,7 @@ public class SimpleBoard implements Viewable {
 			if(!ent.isBlocked()) {
 				int dist = distance(openedPos, ent.getPosition());
 				if(ent.getStep() >= dist) {
-					ent.addMove(openedPos, dist);
+					addMove(ent, openedPos, dist);
 				}
 			}
 		}
@@ -443,7 +451,7 @@ public class SimpleBoard implements Viewable {
 	*/
 	private void removeSteps(Entity ent, int n) {
 		for(int i = 0; i < n; ++i) {
-			ent.removeStep();
+			removeStep(ent);
 		}
 	}
 	/**
@@ -470,25 +478,6 @@ public class SimpleBoard implements Viewable {
 		}
 		if(tower.maxHigh()) {
 			positionOpened(tower.getPosition(), tower.getColor());
-		}
-	}
-	/**
-	* Increases the step width of the specified figure (stone) by n and adds 
-	* newly available positions in the new range to its list of possible moves.
-	* @param stone the figure (stone) whose step width has to be increased.
-	* @param n amount of steps that has to be added.
-	*/
-	private void addSteps(Entity stone, int n) {
-		for(int i = 0; i < n; ++i) {
-			stone.addStep();
-			Vector<Position> opponents = findPositionsInRange(stone.getPosition(), stone.getStep());
-			ListIterator<Position> it = opponents.listIterator();
-			while(it.hasNext()) {
-				Position opponentPos = it.next(); 
-				if(checkMoveForStone(opponentPos, stone.getColor(), stone.getStep() )) {
-					stone.addMove(opponentPos, stone.getStep());
-				}
-			}
 		}
 	}
 	/**
@@ -533,7 +522,7 @@ public class SimpleBoard implements Viewable {
 	* @param tower the tower whose height has been increased with a new stone.
 	*/
 	private void actualiseTowerAddStone(Entity tower) {
-		tower.addStone();
+		addStone(tower);
 		if(tower.getHigh() == 1) {
 			findTowerMoves(tower);
 		}
@@ -544,7 +533,7 @@ public class SimpleBoard implements Viewable {
 	* @param tower the tower whose top stone has been removed.
 	*/
 	private void actualiseTowerRemoveStone(Entity tower) {
-		tower.removeStone();
+		removeStone(tower);
 		actualiseTowerBlockedOrDecreased(tower, 1);
 		if(tower.getHigh() < 1) {
 			findStoneMoves(tower);
@@ -562,7 +551,7 @@ public class SimpleBoard implements Viewable {
 		while(it.hasNext()) {
 			Position pos = it.next();
 			if(checkMoveForTower(pos, tower.getColor())) {
-				tower.addMove(pos, 1);
+				addMove(tower, pos, 1);
 			}
 		}
 	}
@@ -594,15 +583,15 @@ public class SimpleBoard implements Viewable {
 			Position neighbourPos = it.next();
 			Entity neighbour = getElement(neighbourPos);
 			if(checkMoveForStone(neighbourPos, stone.getColor(), 1) ) {
-				stone.addMove(neighbourPos, 1);
+				addMove(stone, neighbourPos, 1);
 			}
 			if(neighbour != null && neighbour.isTower() && !neighbour.isBlocked()) {
 				if(neighbour.getColor() == stone.getColor()) {
 					addSteps += neighbour.getHigh();
-					neighbour.addMove(stone.getPosition(), 1);
+					addMove(neighbour, stone.getPosition(), 1);
 				} 
 				else {
-					neighbour.removeMove(stone.getPosition(), 1);
+					removeMove(neighbour, stone.getPosition(), 1);
 				}
 			}
 		}
@@ -615,7 +604,7 @@ public class SimpleBoard implements Viewable {
 	* @param dist distance from the stone position to the position in question. If dist == 1, it is a close move, else - a remote one.
 	* @return true if the stone in question can go to the specified position.  
 	*/
-	private boolean checkMoveForStone(Position pos, PlayerColor col, int dist) { // 	boolean checkMoveForStone(opponentPos, PlayerColor col)) { checkOpponent
+	protected boolean checkMoveForStone(Position pos, PlayerColor col, int dist) { // 	boolean checkMoveForStone(opponentPos, PlayerColor col)) { checkOpponent
 		Entity opponent = getElement(pos);
 		if(opponent == null
 			|| (opponent.getColor() != col && (opponent.isBase() || !opponent.isBlocked() || dist == 1) )
@@ -666,6 +655,52 @@ public class SimpleBoard implements Viewable {
 	*/
 	private Entity getElement(Position pos) {
 		return board[pos.getLetter()][pos.getNumber()];
+	}
+	private void block(Entity tower) {
+		tower.setBlocked(true);
+	}
+	private void unblock(Entity tower) {
+		tower.setBlocked(false);
+	}
+	private void addMove(Entity ent, Position pos, int range) {
+		ent.addMove(pos, range);
+	}
+	private void removeMove(Entity ent, Position pos, int range) {
+		ent.removeMove(pos, range);
+	}
+	/**
+	* Increases the step width of the specified figure (stone) by n and adds 
+	* newly available positions in the new range to its list of possible moves.
+	* @param stone the figure (stone) whose step width has to be increased.
+	* @param n amount of steps that has to be added.
+	*/
+	private void addSteps(Entity stone, int n) {
+		for(int i = 0; i < n; ++i) {
+			addStep(stone);
+			Vector<Position> opponents = findPositionsInRange(stone.getPosition(), stone.getStep());
+			ListIterator<Position> it = opponents.listIterator();
+			while(it.hasNext()) {
+				Position opponentPos = it.next(); 
+				if(checkMoveForStone(opponentPos, stone.getColor(), stone.getStep() )) {
+					addMove(stone, opponentPos, stone.getStep());
+				}
+			}
+		}
+	}
+	private void addStep(Entity ent) {
+		ent.removeStep();
+	}
+	private void removeStep(Entity ent) {
+		ent.removeStep();
+	}
+	private void addStone(Entity tower) {
+		tower.addStone();
+	}
+	private void removeStone(Entity tower) {
+		tower.removeStone();
+	}
+	private void setPosition(Entity ent, Position pos) {
+		ent.setPosition(pos);
 	}
 	/**
 	* Adds the specified figure to the list of movable figures of the corresponding color.

@@ -33,7 +33,7 @@ public class Board extends SimpleBoard {
 	*	a score of the move.
 	*/
 	public int scoreMove(Move move, PlayerColor col) {
-		Evaluator evaluator = new Evaluator();
+		Evaluator evaluator = new Evaluator(size, turn, listRed, listBlue, board, redBase, blueBase);
 		Position endPos = move.getEnd();
 		if (col == RED && endPos.equals(blueBase)) {
 			return Integer.MAX_VALUE;
