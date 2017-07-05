@@ -87,7 +87,7 @@ public class Board extends SimpleBoard {
 	public Move[] stoneMoves(Position p) throws Exception {
 		return null;
 	}
-	public Vector<Move> allPossibleMoves(PlayerColor col) throws Exception {
+	public Vector<Move> allPossibleMoves(PlayerColor col) {
 		Vector<Move> moves = new Vector<Move>();
 		ListIterator<Entity> it = (col == RED? listRed.listIterator(): listBlue.listIterator());
 		while(it.hasNext()) {
