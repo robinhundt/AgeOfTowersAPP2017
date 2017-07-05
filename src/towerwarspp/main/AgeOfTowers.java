@@ -39,17 +39,20 @@ public class AgeOfTowers {
                 findRemotePlay();
             } else if(ap.isSet("blue") && ap.isSet("red") && ap.isSet("size")) {
                 if(ap.getSize() >= 4 && ap.getSize() <= 26) {
-                    board = new Board(ap.getSize());
+                    initBoard(ap.getSize());
                 } else {
                     System.out.println("-size of Board must be between 4 and 26");
                     System.exit(1);
                 }
                 players = createPlayers();
                 if(ap.isSet("rounds") && ap.getRounds() > 1) {
-                    startTournament();
+                    TResult tResult = startTournament(players, ap.getRounds());
+                    System.out.println(tResult);
                 } else {
-                    startGame(players[0], players[1]);
+                    Result result = startGame(players[0], players[1]);
+                    System.out.println(result);
                 }
+
             } else {
                 System.out.println("Invalid combination of Arguments. See following --help");
                 System.out.println(helpOutput());
@@ -63,6 +66,9 @@ public class AgeOfTowers {
         }
     }
 
+    private void initBoard(int boardSize) {
+        board = new Board(boardSize);
+    }
 
 
     private void findRemotePlay() {
@@ -99,18 +105,49 @@ public class AgeOfTowers {
         return null;
     }
 
-    private void startGame(Player redPlayer, Player bluePlayer) {
+    private Result startGame(Player redPlayer, Player bluePlayer) {
+        Result result = null;
         Game game = new Game(redPlayer, bluePlayer, board, outputType, true, 0);
         try {
-            game.play();
+            result = game.play();
         } catch (Exception e) {
             e.printStackTrace();
             System.exit(1);
         }
+        return result;
     }
 
-    private void startTournament() {
+    private TResult startTournament(Player[] players, int rounds) {
+        TResult tResult = new TResult();
+        for (int i=1; i<=rounds; i++) {
+            System.out.println("Round No.: " + i);
+            int red, blue;
+            if (i%2 == 0) {
+                red = 0;
+                blue = 1;
+            }
+            else {
+                red = 1;
+                blue = 0;
+            }
+            try {
+                initBoard(ap.getSize());
+            }
+            catch (ArgumentParserException e) {
+                System.out.println(e.getMessage());
+                System.out.println(helpOutput());
+                System.exit(1);
+            }
+            tResult.addResult(startGame(players[red], players[blue]));
 
+            try {
+                Thread.sleep(2000);
+            }
+            catch (Exception e) {
+
+            }
+        }
+        return tResult;
     }
 
 

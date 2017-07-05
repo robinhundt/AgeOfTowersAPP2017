@@ -42,20 +42,20 @@ public class TResult {
         if (result.winner == RED) {
             redWins++;
             switch (result.winType) {
-                case BASE_DESTROYED: redBaseDestroyed++;
-                case ILLEGAL_MOVE: redIllegalMove++;
-                case NO_POSSIBLE_MOVES: redNoPosMoves++;
-                case SURRENDER: redSurrender++;
+                case BASE_DESTROYED: redBaseDestroyed++; break;
+                case ILLEGAL_MOVE: redIllegalMove++; break;
+                case NO_POSSIBLE_MOVES: redNoPosMoves++; break;
+                case SURRENDER: redSurrender++; break;
             }
             redAverageMoves = (redAverageMoves * (redWins-1) + (result.winnerMoves))/redWins;
         }
         else {
             blueWins++;
             switch (result.winType) {
-                case BASE_DESTROYED: blueBaseDestroyed++;
-                case ILLEGAL_MOVE: blueIllegalMove++;
-                case NO_POSSIBLE_MOVES: blueNoPosMoves++;
-                case SURRENDER: blueSurrender++;
+                case BASE_DESTROYED: blueBaseDestroyed++; break;
+                case ILLEGAL_MOVE: blueIllegalMove++; break;
+                case NO_POSSIBLE_MOVES: blueNoPosMoves++; break;
+                case SURRENDER: blueSurrender++; break;
             }
             blueAverageMoves = (blueAverageMoves *(blueWins-1) + (result.winnerMoves))/blueWins;
         }
