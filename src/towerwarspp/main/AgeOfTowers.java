@@ -13,6 +13,12 @@ import towerwarspp.preset.*;
 
 import static towerwarspp.preset.PlayerColor.*;
 
+/**
+ * Class AgeOfTower - main class to start a new game of TowerWarsPP
+ *
+ * @author Niklas Mueller
+ * @version 07-05-2017
+ */
 public class AgeOfTowers {
     private ArgumentParser ap;
     private OutputType outputType = OutputType.TEXTUAL;
@@ -20,6 +26,10 @@ public class AgeOfTowers {
     private Board board;
     private IO io;
 
+    /**
+     * Constructor
+     * @param args command line parameters, providing settings for the game
+     */
     private AgeOfTowers(String[] args) {
         try {
             ap = new ArgumentParser(args);
@@ -30,14 +40,16 @@ public class AgeOfTowers {
                 System.exit(0);
             }
 
+            /*check outputType*/
             if(ap.isSet("output")) {
                 outputType = ap.getOutputType();
             }
 
-
+            /*check with way of game needs to be started, network or local*/
             if(ap.isSet("offer")) {
                 findRemotePlay();
             } else if(ap.isSet("blue") && ap.isSet("red") && ap.isSet("size")) {
+                /*check if board size is valid*/
                 if(ap.getSize() >= 4 && ap.getSize() <= 26) {
                     initBoard(ap.getSize());
                 } else {
@@ -45,6 +57,7 @@ public class AgeOfTowers {
                     System.exit(1);
                 }
                 players = createPlayers();
+                /*check if tournament mode is enabled*/
                 if(ap.isSet("rounds") && ap.getRounds() > 1) {
                     TResult tResult = startTournament(players, ap.getRounds());
                     System.out.println(tResult);
@@ -66,6 +79,10 @@ public class AgeOfTowers {
         }
     }
 
+    /**
+     * Method initBoard to initialized the board variable with a new {@link Board}
+     * @param boardSize
+     */
     private void initBoard(int boardSize) {
         board = new Board(boardSize);
     }
@@ -80,6 +97,11 @@ public class AgeOfTowers {
         return null;
     }
 
+    /**
+     * Method createPlayers to get an array of two {@link Player}, first one of {@link PlayerColor} RED, second BLUE
+     *
+     * @return array of {@link Player} with {@link PlayerColor} RED and BLUE
+     */
     private Player[] createPlayers() {
         Player[] players = new Player[2];
         players[0] = createPlayer(RED);
@@ -87,6 +109,12 @@ public class AgeOfTowers {
         return players;
     }
 
+    /**
+     * Method createPlayer to initialize a {@link Player} with given {@link PlayerType}
+     *
+     * @param playerColor {@link PlayerColor}
+     * @return {@link Player} with needed {@link PlayerType}
+     */
     private Player createPlayer(PlayerColor playerColor) {
         try {
             switch (playerColor == RED ? ap.getRed() : ap.getBlue()) {
@@ -105,6 +133,13 @@ public class AgeOfTowers {
         return null;
     }
 
+    /**
+     * Method startGame to create a new {@link Game} object, with given {@link Player}s
+     *
+     * @param redPlayer {@link Player} set as red player
+     * @param bluePlayer {@link Player} set as blue player
+     * @return {@link Result} providing information about this {@link Game}
+     */
     private Result startGame(Player redPlayer, Player bluePlayer) {
         Result result = null;
         Game game = new Game(redPlayer, bluePlayer, board, outputType, true, 0);
@@ -117,6 +152,13 @@ public class AgeOfTowers {
         return result;
     }
 
+    /**
+     * Method startTournament to start a tournament starting as many {@link Game}s as wished
+     *
+     * @param players array of {@link Player}
+     * @param rounds number of {@link Game}s
+     * @return {@link TResult} providing a statistic about this tournament
+     */
     private TResult startTournament(Player[] players, int rounds) {
         TResult tResult = new TResult();
         for (int i=1; i<=rounds; i++) {
@@ -257,26 +299,40 @@ public class AgeOfTowers {
     }
 
 
-
-
+    /**
+     * Method helpOutput to get a {@link String} containing information about how to start a {@link AgeOfTowers} game
+     * @return String containing information
+     */
     private static String helpOutput() {
         return  "Starts a new game of TowerWarsPP with the given settings. \n" +
                 "USAGE: \n --help \tshows this help message \n" +
                 "Settings start with '-' and need a parameter and can be set as followed. \n" +
                 "Flags start with '--' and do not need parameter. All flags are optional.\n" +
+
                 "\nSETTINGS: \n" +
-                "obligatory:\n" +
+                "-offer \t chose player type, none other settings need to be set \n" +
+
+                "if -offer is NOT set, obligatory settings are: \n" +
                 "-red \t chose player type for red \n" +
                 "-blue \t chose player type for blue \n" +
                 "-size \t chose board size \n" +
-                "optional:\n" +
+
+                "optional settings are:\n" +
+                "---- only together and if network game is wanted ---- \n" +
+                "-host \n" +
+                "-name \n" +
+                "-port \n" +
+                "------------ \n" +
                 "-rounds \t activates tournament mode and sets number of rounds for the tournament \n" +
                 "-delay \t sets delay time in milliseconds to slow down the game \n" +
+                "-output \t chose output type, default is textual \n" +
                 "possible parameter:\n" +
                 "player types: human, random, simple, adv1, remote \n" +
                 "size: integer between 4 and 26 \n" +
+                "output: textual, graphic, none \n" +
                 "rounds: integer bigger than 1 \n" +
                 "delay: integer bigger than 0 (in milliseconds) \n" +
+
                 "\nFLAGS: \n" +
                 "--graphic \t activates the graphic output, if not set output will be on the standard-output \n" +
                 "--debug \t activates the debug-mode: shows additional information for every move \n";
