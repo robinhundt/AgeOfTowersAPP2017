@@ -688,7 +688,7 @@ public class SimpleBoard implements Viewable {
 		}
 	}
 	private void addStep(Entity ent) {
-		ent.removeStep();
+		ent.addStep();
 	}
 	private void removeStep(Entity ent) {
 		ent.removeStep();
