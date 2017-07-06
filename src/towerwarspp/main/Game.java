@@ -91,6 +91,11 @@ public class Game {
             currentPlayer.confirm(board.getStatus());
             currentPlayer = currentPlayer == redPlayer ? bluePlayer : redPlayer;
             currentColor = currentColor == RED ? BLUE : RED;
+
+            if(hasView) {
+                view.visualize();
+            }
+
             currentPlayer.update(currentMove, board.getStatus());
 
             try {
