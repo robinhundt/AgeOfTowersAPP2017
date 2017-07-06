@@ -68,6 +68,8 @@ public class Entity {
 	 */
 	private int moveCounter = 0;
 
+	private final int movesMaxN;
+
 	/**
 	 * Constructor for the Entity-Object
 	 * @param pos startposition of the object
@@ -109,6 +111,7 @@ public class Entity {
 		this.color = color;
 		this.size = size;
 		maxHeight = size/3;
+		movesMaxN = 6*maxHeight+2;
 		initialiseMoves();
 		/*reachable = new int[6*maxHeight+2][size+1];
 		rangeMoves = new Vector<Vector<Position>>(6*maxHeight+2);
@@ -258,7 +261,7 @@ public class Entity {
 	public void decRange() {
 		moveCounter-= rangeMoves.elementAt(range).size();
 		rangeMoves.set(range, new Vector<Position>());
-		for(int i = 0; i < size; i++) {
+		for(int i = 0; i <= size; i++) {
 			reachable[range][i] = 0;
 		}
 		range--;
@@ -338,11 +341,11 @@ public class Entity {
 	}
 
 	private void initialiseMoves() {
-		rangeMoves = new Vector<Vector<Position>>(6*maxHeight+2);
-		for(int i = 0; i <= 6*maxHeight+1; ++i) {
+		rangeMoves = new Vector<Vector<Position>>(movesMaxN);
+		for(int i = 0; i < movesMaxN; ++i) {
 			rangeMoves.add(i, new Vector<Position>(i * 6 + 1));
 		}
-		reachable = new int[6*maxHeight+2][size+1];
+		reachable = new int[movesMaxN][size+1];
 	}
 	/**
 	 * removes all moves of the entity and sets the range to 1
