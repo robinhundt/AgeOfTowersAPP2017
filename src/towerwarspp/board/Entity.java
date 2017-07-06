@@ -8,7 +8,7 @@ import java.util.Vector;
  * Towers of the Game
  *
  * @author Alexander Wähling - 28.07.2017
- * @version 0.1.1.1
+ * @version 0.2.2.8
  */
 public class Entity {
 
