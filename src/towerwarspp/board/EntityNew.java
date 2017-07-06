@@ -6,7 +6,7 @@ import java.util.Vector;
 /**
  * This Class provides several Functions, used for TowerwarsPP. It's instances are the Stones and
  * Towers of the Game
- * 
+ *
  * @author Alexander Wähling - 28.07.2017
  * @version 0.1.1.1
  */
@@ -24,7 +24,7 @@ public class EntityNew {
 
 	/**
 	 * height of the Entity. 0 == normal stone. >0 == Tower
-	 */	
+	 */
 	private int height;
 
 	/**
@@ -51,8 +51,8 @@ public class EntityNew {
 	/**
 	 * this array of vectors shows, which moves are available for every range
 	 */
-	private Vector<Vector<Position>> rangeMoves = new Vector<Vector<Position>>(60);
-	
+	private Vector<Vector<Position>> rangeMoves;
+
 	/**
 	 * size of the gamefield
 	 */
@@ -69,7 +69,7 @@ public class EntityNew {
 	private int moveCounter = 0;
 
 	/**
-	 * Constructor for the Entity-Object 
+	 * Constructor for the Entity-Object
 	 * @param pos startposition of the object
 	 * @param color color of the stone
 	 * @param size size of the field (size*size)
@@ -108,7 +108,8 @@ public class EntityNew {
 		this.pos = pos;
 		this.color = color;
 		this.size = size;
-		reachable = new int[size*2][size];
+		reachable = new int[6*maxHeight+2][size+1];
+		rangeMoves = = new Vector<Vector<Position>>(6*maxHeight+2);
 		maxHeight = size/3;
 	}
 	/**
@@ -135,8 +136,8 @@ public class EntityNew {
 	 * returns the reachable fields for a specific range
 	 * @return the int[] of reachable fields
 	 */
-	public int[] getRangeReachable(int range) {	
-		int [] out = reachable[range].clone();
+	public int[] getRangeReachable(int range) {
+		int[] out = reachable[range].clone();
 		return out;
 	}
 
@@ -207,7 +208,7 @@ public class EntityNew {
 	public boolean isTower() {
 		return height != 0;
 	}
-	
+
 	/**
 	 * checks if the tower has maxheight
 	 * @return true if maxHeight
@@ -247,8 +248,8 @@ public class EntityNew {
 	}
 
 	/**
-	 * This method decreases the possible range and removes all moves, which aren't 
-	 * posssible anymore 
+	 * This method decreases the possible range and removes all moves, which aren't
+	 * posssible anymore
 	 */
 	public void decRange() {
 		moveCounter-= rangeMoves.elementAt(range).size();
@@ -261,7 +262,7 @@ public class EntityNew {
 	}
 
 	/**
-	 * This Method increases the range. The now possible moves have to be added by 
+	 * This Method increases the range. The now possible moves have to be added by
 	 * the board
 	 */
 	public void incRange() {
@@ -293,7 +294,7 @@ public class EntityNew {
 			reachable[range][end.getNumber()] |=  temp;
 			rangeMoves.elementAt(range).add(end);
 			moveCounter++;
-		}		
+		}
 	}
 
 	/**
@@ -308,7 +309,7 @@ public class EntityNew {
 			reachable[range][end.getNumber()] ^=  temp;
 			rangeMoves.elementAt(range).remove(end);
 			moveCounter--;
-		}		
+		}
 	}
 
 	/**
@@ -325,7 +326,7 @@ public class EntityNew {
 	}
 
 	/**
-	 * checks, if the Entity is movable 
+	 * checks, if the Entity is movable
 	 * @return true, if movable, false if not
 	 */
 	public boolean movable() {
@@ -339,7 +340,7 @@ public class EntityNew {
 		rangeMoves = new Vector<Vector<Position>>(60);
 	}
 
-	
+
 	/**
 	 * Method used for TextIO and BViewer. Checks, which type of entity we have and gives
 	 * the right color and symbol
@@ -347,7 +348,7 @@ public class EntityNew {
 	public String toString() {
 		String col;
 		String s;
-		if(color == PlayerColor.RED) { 
+		if(color == PlayerColor.RED) {
 			if(blocked) {
 				col = ANSI_WHITE;
 			}
