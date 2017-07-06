@@ -6,7 +6,7 @@ import java.util.Vector;
 /**
  * This Class provides several Functions, used for TowerwarsPP. It's instances are the Stones and
  * Towers of the Game
- *
+ *test
  * @author Alexander Wähling - 28.07.2017
  * @version 0.2.2.8
  */
