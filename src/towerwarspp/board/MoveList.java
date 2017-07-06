@@ -1,8 +1,8 @@
 package towerwarspp.board;
 
 import towerwarspp.preset.*;
-import java.util.Collection;
 import java.util.Iterator;
+import java.util.Vector;
 import java.lang.Exception; 
 
 /**
@@ -25,11 +25,17 @@ public class MoveList {
 		*/
 		private Iterator<Position> it;
 
+		private Iterator<Vector<Position>> itMoves;
+
+		private int curList;
+
 		/**
 		* Creates a new object of the class {@link MoveListIterator}. 
 		*/
 		public MoveListIterator() {
-			it = moves.iterator();
+			curList = 1;
+			it = moves.get(curList).iterator();
+			actualiseIterator();
 		}
 
 		/**
@@ -52,7 +58,20 @@ public class MoveList {
 		*	NoSuchElementException - if the iteration has no more elements.
 		*/
 		public Move next() {
-			return new Move(start, it.next());
+			Move next = new Move(start, it.next());
+			actualiseIterator();
+			return next;
+		}
+		private void actualiseIterator() {
+			if(it.hasNext() || curList == range) {
+				return;
+			}
+			for (curList += 1; curList <= range && moves.get(curList).isEmpty(); ++curList) {
+				;
+			}
+			if(curList <= range) {
+				it = moves.get(curList).iterator();
+			}
 		}
 	}
 	/*
@@ -63,7 +82,10 @@ public class MoveList {
 	/*
 	* Collection of all positions which the specified figure can reach (end positions of the moves). 
 	*/
-	private Collection<Position> moves;
+	private Vector<Vector<Position>> moves;
+
+	int range;
+	int size;
 
 	/**
 	* Creates a new object of the class {@link MoveList}.
@@ -72,8 +94,9 @@ public class MoveList {
 	public MoveList(Entity ent) {
 		start = ent.getPosition();
 		moves = ent.getMoves();
+		range = ent.getRange();
+		size = ent.getMoveCounter();
 	}
-	
 	/**
 	* Returns an iterator over the elements in this MoveList.
 	* @return 
@@ -89,15 +112,23 @@ public class MoveList {
 	*	true if this MoveList contains no elements.
 	*/
 	public boolean isEmpty() {
-		return moves.isEmpty();
+		return (size == 0);
 	}
 
+	public Move getMoveAt(int index) {
+		int i = 1;
+		for(; moves.get(i).size() < index; ++i) {
+			index -= moves.get(i).size();
+		}
+		Position end = moves.get(i).get(index-1);
+		return new Move(start, end); 
+	}
 	/**
 	* Returns the number of elements in this MoveList.
 	* @return
 	*	the number of elements in this MoveList.
 	*/
 	public int size() {
-		return moves.size();
+		return size;
 	}
 }

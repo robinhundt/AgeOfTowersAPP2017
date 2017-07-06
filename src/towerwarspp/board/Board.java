@@ -67,7 +67,7 @@ public class Board extends SimpleBoard {
 		ListIterator<Entity> it = (col == RED? listRed.listIterator(): listBlue.listIterator());
 		while(it.hasNext()) {
 			Entity ent = it.next();
-			if(ent.canMove()) {
+			if(ent.movable()) {
 				moves.add(new MoveList(ent));
 			}
 		}
@@ -87,12 +87,12 @@ public class Board extends SimpleBoard {
 	/*public Move[] stoneMoves(Position p) throws Exception {
 		return null;
 	}*/
-	public Vector<Move> allPossibleMoves(PlayerColor col) {
+	/*public Vector<Move> allPossibleMoves(PlayerColor col) {
 		Vector<Move> moves = new Vector<Move>();
 		ListIterator<Entity> it = (col == RED? listRed.listIterator(): listBlue.listIterator());
 		while(it.hasNext()) {
 			Entity ent = it.next();
-			if(ent.canMove()) {
+			if(ent.movable()) {
 				ListIterator<Position> itP = ent.getMoves().listIterator();
 				while(itP.hasNext()) {
 					moves.add(new Move(ent.getPosition(), itP.next()));
@@ -100,7 +100,7 @@ public class Board extends SimpleBoard {
 			}
 		}
 		return moves;
-	}
+	}*/
 
 	/**
 	* Creates and returns a new {@link MoveList} object with all possible moves

@@ -58,7 +58,7 @@ public class BViewer implements Viewer {
 	}
 	public int getHeight(Position pos) {
 		Entity ent = getElement(pos);
-		return ent.getHigh();
+		return ent.getHeight();
 	}
     	public PlayerColor getPlayerColor(Position pos) {
 		Entity ent = getElement(pos);

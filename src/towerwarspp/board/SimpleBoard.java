@@ -344,7 +344,7 @@ public class SimpleBoard implements Viewable {
 	*/
 	private void blockTower(Entity tower, Entity blockingStone) {
 		block(tower);
-		actualiseTowerBlockedOrDecreased(tower, tower.getHigh());
+		actualiseTowerBlockedOrDecreased(tower, tower.getHeight());
 		removeFromList(blockingStone);
 		positionClosed(tower.getPosition(), blockingStone.getColor(), false);
 	}
@@ -378,7 +378,7 @@ public class SimpleBoard implements Viewable {
 			unblock(tower);
 			removeFromList(unblockingStone);
 			findTowerMoves(tower);
-			actualiseTowerUnblockedOrIncreased(tower, tower.getHigh());
+			actualiseTowerUnblockedOrIncreased(tower, tower.getHeight());
 			positionOpened(tower.getPosition(), (tower.getColor() == RED? BLUE : RED));
 	}
 	/**
@@ -437,7 +437,7 @@ public class SimpleBoard implements Viewable {
 			Entity ent = it.next();
 			if(!ent.isBlocked()) {
 				int dist = distance(openedPos, ent.getPosition());
-				if(ent.getStep() >= dist) {
+				if(ent.getRange() >= dist) {
 					addMove(ent, openedPos, dist);
 				}
 			}
@@ -451,7 +451,7 @@ public class SimpleBoard implements Viewable {
 	*/
 	private void removeSteps(Entity ent, int n) {
 		for(int i = 0; i < n; ++i) {
-			removeStep(ent);
+			decRange(ent);
 		}
 	}
 	/**
@@ -466,7 +466,7 @@ public class SimpleBoard implements Viewable {
 	*	lose as a result of blocking or dismantling of the tower in question.
 	*/
 	private void actualiseTowerBlockedOrDecreased(Entity tower, int change) {
-		ListIterator<Position> it = tower.getMoves().listIterator();
+		ListIterator<Position> it = tower.getMoves().get(1).listIterator();
 		Position pos;
 		while(it.hasNext()) {
 			pos = it.next();
@@ -476,7 +476,7 @@ public class SimpleBoard implements Viewable {
 			else 
 				removeSteps(ent, change);
 		}
-		if(tower.maxHigh()) {
+		if(tower.isMaxHeight()) {
 			positionOpened(tower.getPosition(), tower.getColor());
 		}
 	}
@@ -492,7 +492,7 @@ public class SimpleBoard implements Viewable {
 	*	gain as a result of creating, increasing or unblocking of the tower in question.
 	*/
 	private void actualiseTowerUnblockedOrIncreased(Entity tower, int change) {
-		ListIterator<Position> it = tower.getMoves().listIterator();
+		ListIterator<Position> it = tower.getMoves().get(1).listIterator();
 		Position pos;
 		while(it.hasNext()) {
 			pos = it.next();
@@ -502,7 +502,7 @@ public class SimpleBoard implements Viewable {
 			else 
 				addSteps(ent, change);
 		}
-		if(tower.maxHigh()) {
+		if(tower.isMaxHeight()) {
 			positionClosed(tower.getPosition(), tower.getColor(), true);
 		}
 	}
@@ -513,7 +513,7 @@ public class SimpleBoard implements Viewable {
 	private void actualiseTowerRemoved(Entity tower) {
 		removeFromList(tower);
 		if(!tower.isBlocked()) {
-			actualiseTowerBlockedOrDecreased(tower, tower.getHigh());
+			actualiseTowerBlockedOrDecreased(tower, tower.getHeight());
 		}
 		else positionOpened(tower.getPosition(), (tower.getColor() == RED? BLUE: RED));
 	}
@@ -522,8 +522,8 @@ public class SimpleBoard implements Viewable {
 	* @param tower the tower whose height has been increased with a new stone.
 	*/
 	private void actualiseTowerAddStone(Entity tower) {
-		addStone(tower);
-		if(tower.getHigh() == 1) {
+		incHeight(tower);
+		if(tower.getHeight() == 1) {
 			findTowerMoves(tower);
 		}
 		actualiseTowerUnblockedOrIncreased(tower, 1);
@@ -533,9 +533,9 @@ public class SimpleBoard implements Viewable {
 	* @param tower the tower whose top stone has been removed.
 	*/
 	private void actualiseTowerRemoveStone(Entity tower) {
-		removeStone(tower);
+		decHeight(tower);
 		actualiseTowerBlockedOrDecreased(tower, 1);
-		if(tower.getHigh() < 1) {
+		if(tower.getHeight() < 1) {
 			findStoneMoves(tower);
 		}
 	}
@@ -544,8 +544,8 @@ public class SimpleBoard implements Viewable {
 	* @param tower the tower whose possible moves have to be found.
 	*/
 	private void findTowerMoves(Entity tower) {
-		tower.removeAllMoves();
-		tower.setMinimalStep();
+		removeAllMoves(tower);
+		//tower.setMinimalStep();
 		Vector<Position> neighbours = findPositionsInRange(tower.getPosition(), 1);
 		ListIterator<Position> it = neighbours.listIterator();
 		while(it.hasNext()) {
@@ -564,7 +564,7 @@ public class SimpleBoard implements Viewable {
 	private boolean checkMoveForTower(Position pos, PlayerColor col) {
 		Entity opponent = getElement(pos);
 		if(opponent == null || (!opponent.isBase() && opponent.getColor() == col && 
-				(!opponent.maxHigh() || opponent.isBlocked() ) ) ){
+				(!opponent.isMaxHeight() || opponent.isBlocked() ) ) ){
 				return true;
 		}
 		return false;
@@ -574,8 +574,8 @@ public class SimpleBoard implements Viewable {
 	* @param stone the stone whose possible moves have to be found.
 	*/
 	private void findStoneMoves(Entity stone) {
-		stone.removeAllMoves();
-		stone.setMinimalStep();
+		removeAllMoves(stone);
+		//stone.setMinimalStep();
 		int addSteps = 0;	//additional steps
 		Vector<Position> closeNeighbours = findPositionsInRange(stone.getPosition(), 1);
 		ListIterator<Position> it = closeNeighbours.listIterator();
@@ -587,7 +587,7 @@ public class SimpleBoard implements Viewable {
 			}
 			if(neighbour != null && neighbour.isTower() && !neighbour.isBlocked()) {
 				if(neighbour.getColor() == stone.getColor()) {
-					addSteps += neighbour.getHigh();
+					addSteps += neighbour.getHeight();
 					addMove(neighbour, stone.getPosition(), 1);
 				} 
 				else {
@@ -608,7 +608,7 @@ public class SimpleBoard implements Viewable {
 		Entity opponent = getElement(pos);
 		if(opponent == null
 			|| (opponent.getColor() != col && (opponent.isBase() || !opponent.isBlocked() || dist == 1) )
-			|| (opponent.getColor() == col && !opponent.isBase() && (!opponent.maxHigh() || opponent.isBlocked() ) ) ) {
+			|| (opponent.getColor() == col && !opponent.isBase() && (!opponent.isMaxHeight() || opponent.isBlocked() ) ) ) {
 			return true;
 		}
 		return false;
@@ -668,6 +668,9 @@ public class SimpleBoard implements Viewable {
 	private void removeMove(Entity ent, Position pos, int range) {
 		ent.removeMove(pos, range);
 	}
+	private void removeAllMoves(Entity ent) {
+		ent.removeAllMoves();
+	}
 	/**
 	* Increases the step width of the specified figure (stone) by n and adds 
 	* newly available positions in the new range to its list of possible moves.
@@ -676,28 +679,28 @@ public class SimpleBoard implements Viewable {
 	*/
 	private void addSteps(Entity stone, int n) {
 		for(int i = 0; i < n; ++i) {
-			addStep(stone);
-			Vector<Position> opponents = findPositionsInRange(stone.getPosition(), stone.getStep());
+			incRange(stone);
+			Vector<Position> opponents = findPositionsInRange(stone.getPosition(), stone.getRange());
 			ListIterator<Position> it = opponents.listIterator();
 			while(it.hasNext()) {
 				Position opponentPos = it.next(); 
-				if(checkMoveForStone(opponentPos, stone.getColor(), stone.getStep() )) {
-					addMove(stone, opponentPos, stone.getStep());
+				if(checkMoveForStone(opponentPos, stone.getColor(), stone.getRange() )) {
+					addMove(stone, opponentPos, stone.getRange());
 				}
 			}
 		}
 	}
-	private void addStep(Entity ent) {
-		ent.addStep();
+	private void incRange(Entity ent) {
+		ent.incRange();
 	}
-	private void removeStep(Entity ent) {
-		ent.removeStep();
+	private void decRange(Entity ent) {
+		ent.decRange();
 	}
-	private void addStone(Entity tower) {
-		tower.addStone();
+	private void incHeight(Entity tower) {
+		tower.incHeight();
 	}
-	private void removeStone(Entity tower) {
-		tower.removeStone();
+	private void decHeight(Entity tower) {
+		tower.decHeight();
 	}
 	private void setPosition(Entity ent, Position pos) {
 		ent.setPosition(pos);
@@ -726,7 +729,7 @@ public class SimpleBoard implements Viewable {
 	private boolean hasMoves (ListIterator<Entity> it) {
 		while(it.hasNext()) {
 			Entity ent = it.next();
-			if(ent.canMove()) {
+			if(ent.movable()) {
 				return true;
 			}
 		}

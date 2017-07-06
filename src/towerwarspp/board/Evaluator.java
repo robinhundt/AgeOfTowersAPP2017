@@ -60,37 +60,7 @@ public class Evaluator extends SimpleBoard{
 	private void removeMove(Entity ent, Position pos, int range) {
 		ent.removeMove(pos, range);
 	}
-	/**
-	* Increases the step width of the specified figure (stone) by n and adds 
-	* newly available positions in the new range to its list of possible moves.
-	* @param stone the figure (stone) whose step width has to be increased.
-	* @param n amount of steps that has to be added.
-	*/
-	private void addSteps(Entity stone, int n) {
-		for(int i = 0; i < n; ++i) {
-			addStep(stone);
-			Vector<Position> opponents = findPositionsInRange(stone.getPosition(), stone.getStep());
-			ListIterator<Position> it = opponents.listIterator();
-			while(it.hasNext()) {
-				Position opponentPos = it.next(); 
-				if(checkMoveForStone(opponentPos, stone.getColor(), stone.getStep() )) {
-					addMove(stone, opponentPos, stone.getStep());
-				}
-			}
-		}
-	}
-	private void addStep(Entity ent) {
-		ent.removeStep();
-	}
-	private void removeStep(Entity ent) {
-		ent.removeStep();
-	}
-	private void addStone(Entity tower) {
-		tower.addStone();
-	}
-	private void removeStone(Entity tower) {
-		tower.removeStone();
-	}
+
 	private void setPosition(Entity ent, Position pos) {
 		ent.setPosition(pos);
 	}
