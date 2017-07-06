@@ -2,10 +2,12 @@ package towerwarspp.preset;
 
 import towerwarspp.board.MoveList;
 
+import java.util.Vector;
+
 
 public interface Viewer {
    	int getSize();
-	int getTurn();
+	PlayerColor getTurn();
 	Status getStatus();
 	MoveList getPossibleMoves(Position p) throws Exception;
 	boolean isTower(Position pos);
@@ -15,4 +17,5 @@ public interface Viewer {
 	PlayerColor getPlayerColor(Position pos);
 	boolean isBase(Position pos);
 	boolean isEmpty(Position pos);
+	Vector<Move> possibleMoves(Position pos) throws Exception;
 }
