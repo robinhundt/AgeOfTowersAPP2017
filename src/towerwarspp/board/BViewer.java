@@ -28,9 +28,9 @@ public class BViewer implements Viewer {
 	public int getTurn() {
 		return boardO.getTurn();
 	}
-    	public Move[] getPossibleMoves(Position position) {
+    	/*public Move[] getPossibleMoves(Position position) {
 		return new Move[2];
-	}
+	}*/
 
 	/**
 	* Creates and returns a new {@link MoveList} object with all possible moves
@@ -39,7 +39,7 @@ public class BViewer implements Viewer {
 	* @return
 	*	a {@link MoveList} with all possible moves which the specified figure has.
 	*/
-	public MoveList possibleMoves(Position p) throws Exception {
+	public MoveList getPossibleMoves(Position p) throws Exception {
 		Entity ent = getElement(p);
 		if (ent == null) throw new Exception ("Position is empty");
 		return new MoveList(ent);

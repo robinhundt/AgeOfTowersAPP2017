@@ -108,9 +108,9 @@ public class EntityNew {
 		this.pos = pos;
 		this.color = color;
 		this.size = size;
-		reachable = new int[6*maxHeight+2][size+1];
-		rangeMoves = = new Vector<Vector<Position>>(6*maxHeight+2);
 		maxHeight = size/3;
+		reachable = new int[6*maxHeight+2][size+1];
+		rangeMoves = new Vector<Vector<Position>>(6*maxHeight+2);
 	}
 	/**
 	 * Constructor for Bases

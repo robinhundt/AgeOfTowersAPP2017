@@ -7,8 +7,8 @@ public interface Viewer {
    	int getSize();
 	int getTurn();
 	Status getStatus();
-	Move[] getPossibleMoves(Position position);
-	MoveList possibleMoves(Position p) throws Exception;
+	//Move[] getPossibleMoves(Position position);
+	MoveList getPossibleMoves(Position p) throws Exception;
 	boolean isTower(Position pos);
 	boolean isStone(Position pos);
 	boolean isBlocked(Position pos);	

@@ -84,9 +84,9 @@ public class Board extends SimpleBoard {
 		Entity ent = board[p.getLetter()][p.getNumber()];
 		return ent.getMoves().toArray(new Move[ent.getMovesNumber()]);
 	}*/
-	public Move[] stoneMoves(Position p) throws Exception {
+	/*public Move[] stoneMoves(Position p) throws Exception {
 		return null;
-	}
+	}*/
 	public Vector<Move> allPossibleMoves(PlayerColor col) {
 		Vector<Move> moves = new Vector<Move>();
 		ListIterator<Entity> it = (col == RED? listRed.listIterator(): listBlue.listIterator());
