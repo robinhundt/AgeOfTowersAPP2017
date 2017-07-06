@@ -2,6 +2,7 @@ package towerwarspp.main;
 
 import towerwarspp.board.BViewer;
 import towerwarspp.board.Board;
+import towerwarspp.io.GraphicIO;
 import towerwarspp.io.IO;
 import towerwarspp.io.TextIO;
 import towerwarspp.io.View;
@@ -21,10 +22,13 @@ import static towerwarspp.preset.PlayerColor.*;
  */
 public class AgeOfTowers {
     private ArgumentParser ap;
-    private OutputType outputType = OutputType.TEXTUAL;
     private Player[] players;
     private Board board;
     private IO io;
+    private Requestable requestable;
+
+
+    private int gameTimeOut = 0;
 
     /**
      * Constructor
@@ -42,7 +46,13 @@ public class AgeOfTowers {
 
             /*check outputType*/
             if(ap.isSet("output")) {
-                outputType = ap.getOutputType();
+                setUpIO(ap.getOutputType());
+            } else {
+                setUpIO(OutputType.TEXTUAL);
+            }
+
+            if(ap.isSet("timeout")) {
+                gameTimeOut = ap.getTimeOut();
             }
 
             /*check with way of game needs to be started, network or local*/
@@ -58,7 +68,7 @@ public class AgeOfTowers {
                 }
                 players = createPlayers();
                 /*check if tournament mode is enabled*/
-                if(ap.isSet("rounds") && ap.getRounds() > 1) {
+                if(ap.isSet("games") && ap.getGameCount() > 1) {
                     startTournament(players);
                 } else {
                     startGame(players[0], players[1]);
@@ -95,6 +105,18 @@ public class AgeOfTowers {
         return null;
     }
 
+    private void setUpIO(OutputType outputType) {
+        switch (outputType) {
+            case NONE: requestable = new TextIO(); break;
+            case TEXTUAL:
+                io = new TextIO();
+                requestable = io; break;
+            case GRAPHIC:
+                io = new GraphicIO();
+                requestable = io; break;
+        }
+    }
+
     /**
      * Method createPlayers to get an array of two {@link Player}, first one of {@link PlayerColor} RED, second BLUE
      *
@@ -117,7 +139,7 @@ public class AgeOfTowers {
         try {
             switch (playerColor == RED ? ap.getRed() : ap.getBlue()) {
                 // TODO Split TextIO
-                case HUMAN: return new HumanPlayer((Requestable) new TextIO(board.viewer()));
+                case HUMAN: return new HumanPlayer(requestable);
                 case RANDOM_AI: return new RndPlayer();
                 case REMOTE: return getRemotePlayer();
                 default: System.out.println("Unsupported PlayerType."); System.exit(1);
@@ -141,9 +163,9 @@ public class AgeOfTowers {
     private void startGame(Player redPlayer, Player bluePlayer) {
         Result result = null;
         try {
-            Game game = new Game(redPlayer, bluePlayer, board, outputType, ap.isDebug(),
+            Game game = new Game(redPlayer, bluePlayer, ap.getSize(), io, ap.isDebug(),
                     ap.isSet("delay") ? ap.getDelay() : 0);
-            result = game.play();
+            result = game.play(ap.isSet("timeout") ? ap.getTimeOut() : 0);
         } catch (Exception e) {
             e.printStackTrace();
             System.exit(1);
@@ -161,8 +183,9 @@ public class AgeOfTowers {
         TResult tResult = new TResult();
         Tournament tournament = null;
         try {
-            tournament = new Tournament(players, outputType, ap.isDebug(),
-                    ap.isSet("delay") ? ap.getDelay() : 0, board.getSize(), ap.getRounds());
+
+            tournament = new Tournament(players, io, ap.isDebug(),
+                    ap.isSet("delay") ? ap.getDelay() : 0, board.getSize(), ap.getGameCount(), gameTimeOut);
         }
         catch (Exception e) {
             e.printStackTrace();

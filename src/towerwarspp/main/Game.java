@@ -17,24 +17,26 @@ import static towerwarspp.preset.PlayerColor.RED;
 /**
  * Created by niklas on 03.07.17.
  */
+
 public class Game {
     Player redPlayer;
     Player bluePlayer;
     Board board;
     View view;
     boolean debug;
+    boolean hasView;
     int delayTime;
 
     /**
      *
      * @param redPlayer
      * @param bluePlayer
-     * @param board
-     * @param outputType null is interpreted as {@link OutputType} NONE
+     * @param boardSize
+     * @param view
      * @param debug
      * @param delayTime in millisecond
      */
-    Game(Player redPlayer, Player bluePlayer, Board board, OutputType outputType, boolean debug, int delayTime) {
+    Game(Player redPlayer, Player bluePlayer, int boardSize, View view, boolean debug, int delayTime) {
         if (redPlayer == null || bluePlayer == null) {
             throw new IllegalArgumentException("Player cannot be null!");
         }
@@ -42,10 +44,12 @@ public class Game {
         this.bluePlayer = bluePlayer;
         this.debug = debug;
         this.delayTime = delayTime;
-        this.board = board;
-        switch (outputType) {
-            case GRAPHIC: view = (IO) new GraphicIO(board.viewer()); break;
-            case TEXTUAL: view = new TextIO(board.viewer()); break;
+        this.view = view;
+
+        board = new Board(boardSize);
+        if(view != null) {
+            view.setViewer(board.viewer());
+            hasView = true;
         }
 
         try {
@@ -61,13 +65,15 @@ public class Game {
     }
 
 
-    public Result play() throws RemoteException, Exception {
+    public Result play(int timeOut) throws RemoteException, Exception {
         Player currentPlayer = redPlayer;
         PlayerColor currentColor = RED;
         Move currentMove;
         int moveCounter = 0;
 
-        view.visualize();
+        if(hasView) {
+            view.visualize();
+        }
 
         while (board.getStatus() == OK) {
             moveCounter++;
@@ -95,7 +101,10 @@ public class Game {
                 e.printStackTrace();
                 System.exit(1);
             }
-            view.visualize();
+
+            if(hasView) {
+                view.visualize();
+            }
         }
 
         if (board.getStatus() == RED_WIN) {

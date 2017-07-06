@@ -295,8 +295,12 @@ public class ArgumentParser {
         return getFlag("help");
     }
 
-    public int getRounds() throws ArgumentParserException {
-        return Integer.parseInt((String) getSetting("rounds"));
+    public int getGameCount() throws ArgumentParserException {
+        return Integer.parseInt((String) getSetting("games"));
+    }
+
+    public int getTimeOut() throws ArgumentParserException {
+        return Integer.parseInt((String) getSetting("timeout"));
     }
 
     public PlayerType getOfferedType() throws ArgumentParserException {

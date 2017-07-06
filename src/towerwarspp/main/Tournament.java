@@ -1,6 +1,6 @@
 package towerwarspp.main;
 
-import towerwarspp.board.Board;
+import towerwarspp.io.View;
 import towerwarspp.preset.Player;
 
 /**
@@ -12,9 +12,9 @@ import towerwarspp.preset.Player;
 public class Tournament {
 
     Player[] players;
-    OutputType outputType;
+    View view;
     boolean debug;
-    int delayTime, boardSize, rounds;
+    int delayTime, boardSize, rounds, timeOut;
     TResult tResult;
 
     /**
@@ -27,16 +27,17 @@ public class Tournament {
      * @param boardSize
      * @param rounds number of {@link Game}s
      */
-    public Tournament(Player[] players, OutputType outputType, boolean debug,
-                      int delayTime, int boardSize, int rounds) {
+    public Tournament(Player[] players, View view, boolean debug,
+                      int delayTime, int boardSize, int rounds, int timeOut) {
         this.players = players;
-        this.outputType = outputType;
+        this.view = view;
         this.debug = debug;
         this.delayTime = delayTime;
         this.boardSize = boardSize;
         this.rounds = rounds;
+        this.timeOut = timeOut;
     }
-    // TODO fix tournament cuz (schnauze lisa) this won't work in case one of the players is human (probably)
+    // TODO fix tournament cuz this won't work in case one of the players is human (probably)
 
     /**
      * Method play to start the {@link Tournament}
@@ -56,10 +57,10 @@ public class Tournament {
                 blue = tmp;
             }
 
-            Game game = new Game(players[red], players[blue], new Board(boardSize), outputType, debug, delayTime);
+            Game game = new Game(players[red], players[blue], boardSize, view, debug, delayTime);
 
             try {
-                Result result = game.play();
+                Result result = game.play(timeOut);
                 System.out.println(result);
                 tResult.addResult(result);
             }

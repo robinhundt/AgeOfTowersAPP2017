@@ -32,6 +32,6 @@ public class Result {
      * @return String containing all informations of this object
      */
     public String toString() {
-        return winner + " wins in " + winnerMoves + " moves by " + winType;
+        return winner + " wins in " + winnerMoves + " moves. Type of win: " + winType.toString();
     }
 }
