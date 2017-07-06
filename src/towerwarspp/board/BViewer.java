@@ -28,9 +28,22 @@ public class BViewer implements Viewer {
 	public int getTurn() {
 		return boardO.getTurn();
 	}
-    	/*public Move[] getPossibleMoves(Position position) {
-		return new Move[2];
-	}*/
+    	public Vector<Move> possibleMoves(Position pos) throws Exception {
+		Entity ent = getElement(pos);
+		if (ent == null) throw new Exception ("Position is empty");
+		Vector<Move> moves = new Vector<Move>();
+		if(ent.movable()) {
+			int range = ent.getRange();
+			Vector<Vector<Position>> entMoves = ent.getMoves();
+			for(int i = 1; i <= range; ++i) {
+				ListIterator<Position> itMoves = entMoves.get(i).listIterator();
+				while(itMoves.hasNext()) {
+					moves.add(new Move(ent.getPosition(), itMoves.next()));
+				}
+			}
+		}
+		return moves;
+	}
 
 	/**
 	* Creates and returns a new {@link MoveList} object with all possible moves

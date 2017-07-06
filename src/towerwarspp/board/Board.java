@@ -79,7 +79,7 @@ public class Board extends SimpleBoard {
 	* @return
 	*	a vector with all possible moves which the specified figure has.
 	*/
-	/*public Move[] stoneMoves(Position p) throws Exception {
+	/*public Vector<Moves> stoneMoves(Position p) throws Exception {
 		if (p == null) throw new Exception("IllegalArgumentException");
 		Entity ent = board[p.getLetter()][p.getNumber()];
 		return ent.getMoves().toArray(new Move[ent.getMovesNumber()]);
@@ -87,20 +87,24 @@ public class Board extends SimpleBoard {
 	/*public Move[] stoneMoves(Position p) throws Exception {
 		return null;
 	}*/
-	/*public Vector<Move> allPossibleMoves(PlayerColor col) {
-		Vector<Move> moves = new Vector<Move>();
+	public Vector<Move> allPossibleMoves(PlayerColor col) {
+		Vector<Move> allMoves = new Vector<Move>(size*size);
 		ListIterator<Entity> it = (col == RED? listRed.listIterator(): listBlue.listIterator());
 		while(it.hasNext()) {
 			Entity ent = it.next();
 			if(ent.movable()) {
-				ListIterator<Position> itP = ent.getMoves().listIterator();
-				while(itP.hasNext()) {
-					moves.add(new Move(ent.getPosition(), itP.next()));
+				int range = ent.getRange();
+				Vector<Vector<Position>> entMoves = ent.getMoves();
+				for(int i = 1; i <= range; ++i) {
+					ListIterator<Position> itMoves = entMoves.get(i).listIterator();
+					while(itMoves.hasNext()) {
+						allMoves.add(new Move(ent.getPosition(), itMoves.next()));
+					}
 				}
 			}
 		}
-		return moves;
-	}*/
+		return allMoves;
+	}
 
 	/**
 	* Creates and returns a new {@link MoveList} object with all possible moves
