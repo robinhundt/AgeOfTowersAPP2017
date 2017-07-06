@@ -60,6 +60,7 @@ public class Tournament {
 
             try {
                 Result result = game.play();
+                System.out.println(result);
                 tResult.addResult(result);
             }
             catch (Exception e) {

@@ -304,6 +304,8 @@ public class AgeOfTowers {
                 "-port \n" +
                 "------------ \n" +
                 "-rounds \t activates tournament mode and sets number of rounds for the tournament \n" +
+                "(beware that at every other game, the player colors are changing, so if you are starting \n" +
+                "whit color red as a human, in the second round, you will be color blue, in terms of fairness) \n" +
                 "-delay \t sets delay time in milliseconds to slow down the game \n" +
                 "-output \t chose output type, default is textual \n" +
                 "possible parameter:\n" +
