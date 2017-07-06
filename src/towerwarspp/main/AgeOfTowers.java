@@ -4,6 +4,7 @@ import towerwarspp.board.Board;
 import towerwarspp.io.GraphicIO;
 import towerwarspp.io.IO;
 import towerwarspp.io.TextIO;
+import towerwarspp.io.View;
 import towerwarspp.main.game.Game;
 import towerwarspp.main.game.Result;
 import towerwarspp.main.tournament.TResult;
@@ -105,7 +106,7 @@ public class AgeOfTowers {
                 int port = ap.isSet("port") ? ap.getPort() : Remote.DEFAULT_PORT;
                 Remote remote = new Remote(port);
                 if(io != null)
-                    remote.offer(new NetPlayer(createPlayer(ap.getOfferedType()), io), ap.getName());
+                    remote.offer(new NetPlayer(createPlayer(ap.getOfferedType())), ap.getName());
                 else
                     remote.offer(new NetPlayer(createPlayer(ap.getOfferedType())), ap.getName());
             }
@@ -150,8 +151,8 @@ public class AgeOfTowers {
     private Player[] createPlayers() {
         Player[] players = new Player[2];
         try {
-            players[RED] = createPlayer(ap.getRed());
-            players[BLUE] = createPlayer(ap.getBlue());
+            players[RED] = createPlayer(ap.getRed(), io);
+            players[BLUE] = createPlayer(ap.getBlue(), io);
         } catch (ArgumentParserException e) {
             System.out.println(e);
             System.exit(1);
@@ -165,16 +166,20 @@ public class AgeOfTowers {
      * @param playerType {@link PlayerType}
      * @return {@link Player} with needed {@link PlayerType}
      */
-    private Player createPlayer(PlayerType playerType) {
+    private Player createPlayer(PlayerType playerType, View view) {
         Player player = null;
         switch (playerType) {
             // TODO Split TextIO
-            case HUMAN: player = new HumanPlayer(requestable); break;
-            case RANDOM_AI: player = new RndPlayer(); break;
+            case HUMAN: player = new HumanPlayer(requestable, view); break;
+            case RANDOM_AI: player = new RndPlayer(view); break;
             case REMOTE: player = getRemotePlayer(); break;
             default: System.out.println("Unsupported PlayerType."); System.exit(1);
         }
         return player;
+    }
+
+    private Player createPlayer(PlayerType playerType) {
+        return createPlayer(playerType, null);
     }
 
     /**

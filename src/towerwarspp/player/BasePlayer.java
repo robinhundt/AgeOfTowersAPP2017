@@ -1,6 +1,7 @@
 package towerwarspp.player;
 
 import towerwarspp.board.Board;
+import towerwarspp.io.View;
 import towerwarspp.preset.*;
 
 import static towerwarspp.preset.Status.*;
@@ -13,6 +14,7 @@ import java.rmi.RemoteException;
  */
 abstract class BasePlayer implements Player {
     Board board;
+    View view;
     /**
      * State represents the point in the request - confirm - update cycle of the Player
      */
@@ -32,6 +34,8 @@ abstract class BasePlayer implements Player {
         state = state.next();
         Move move = deliverMove();
         board.update(move, color);
+        if(view != null)
+            view.visualize();
         return move;
     }
 
@@ -61,9 +65,14 @@ abstract class BasePlayer implements Player {
     public void update(Move opponentMove, Status boardStatus) throws Exception {
         if(state != PlayerState.UPDATE)
             throw new Exception("Illegal PlayerState. update can only be called after confirm or at first if Player is Blue");
+
         board.update(opponentMove, color == BLUE ? RED : BLUE);
-        if(!board.getStatus().equals(boardStatus) || board.getStatus() == ILLEGAL)
+        if(view != null)
+            view.visualize();
+
+        if(!board.getStatus().equals(boardStatus) || board.getStatus() == ILLEGAL) {
             throw new Exception("Illegal PlayerState. Confirmation unsuccessful. Illegal or non matching status of player board and passed status");
+        }
         state = state.next();
     }
 
@@ -75,6 +84,8 @@ abstract class BasePlayer implements Player {
             state = PlayerState.REQUEST;
         else if(playerColor == BLUE)
             state = PlayerState.UPDATE;
+        if(view != null)
+            view.setViewer(board.viewer());
     }
 
 }

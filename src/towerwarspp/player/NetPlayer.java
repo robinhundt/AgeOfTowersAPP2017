@@ -15,7 +15,6 @@ import java.rmi.server.UnicastRemoteObject;
 public class NetPlayer extends UnicastRemoteObject implements Player {
 
     private Player player;
-    private View view;
 
     public NetPlayer(Player player) throws Exception{
         if(player == null)
@@ -24,16 +23,10 @@ public class NetPlayer extends UnicastRemoteObject implements Player {
             this.player = player;
     }
 
-    public NetPlayer(Player player, View view) throws Exception{
-        this(player);
-        this.view = view;
-    }
 
     @Override
     public Move request() throws Exception{
         Move move = player.request();
-        if(view != null)
-            view.visualize();
         return move;
     }
 
@@ -45,8 +38,6 @@ public class NetPlayer extends UnicastRemoteObject implements Player {
     @Override
     public void update(Move opponentMove, Status boardStatus) throws Exception {
         player.update(opponentMove, boardStatus);
-        if(view != null)
-            view.visualize();
     }
 
     @Override
