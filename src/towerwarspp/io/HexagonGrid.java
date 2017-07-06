@@ -24,7 +24,7 @@ public class HexagonGrid {
         int distance = (int) (Math.cos(Math.toRadians(30.0)) * polySize);
         for(int y = 1; y <= boardSize; ++y) {
             for(int x = 1; x <= boardSize; ++x) {
-                this.hexagons[x][y] = new Hexagon(y * (2 * distance) + (x - 1) * distance, x * polySize + (x - 1) * (polySize / 2), polySize, new Position(y, x));
+                this.hexagons[x][y] = new Hexagon(x * (2 * distance) + (y - 1) * distance, y * polySize + (y - 1) * (polySize / 2), polySize, new Position(x, y));
 
                 Corner[] corners = this.hexagons[x][y].getCorners();
 
@@ -41,6 +41,15 @@ public class HexagonGrid {
 
         }
     }
+
+    public int getHexagonCenterX(Position position) {
+        return this.hexagons[position.getLetter()][position.getNumber()].getCenterX();
+    }
+
+    public int getHexagonCenterY(Position position) {
+        return this.hexagons[position.getLetter()][position.getNumber()].getCenterY();
+    }
+
 
     public Polygon[][] getPolygon() {
         return this.polygon;

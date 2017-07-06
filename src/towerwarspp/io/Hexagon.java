@@ -65,6 +65,17 @@ public class Hexagon {
     }
 
     /**
+     * Getter for Center
+     */
+    public int getCenterX() {
+        return this.center.getX();
+    }
+
+    public int getCenterY() {
+        return this.center.getY();
+    }
+
+    /**
      * Getter of the Corners of the Hexagon
      * @return Retruns an Array of the corners of the Hexagon
      */
