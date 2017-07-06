@@ -1,5 +1,7 @@
 package towerwarspp.main;
 
+import towerwarspp.main.game.Game;
+
 /**
  * Enumeration OutputType providing options for ways to visualize a {@link Game}
  *

@@ -279,8 +279,8 @@ public class ArgumentParser {
         return (String) getSetting("host");
     }
 
-    public String getPort() throws ArgumentParserException {
-        return (String) getSetting("port");
+    public int getPort() throws ArgumentParserException {
+        return Integer.parseInt((String) getSetting("port"));
     }
 
     public String getName() throws ArgumentParserException {

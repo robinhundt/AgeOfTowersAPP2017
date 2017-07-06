@@ -1,5 +1,6 @@
-package towerwarspp.main;
+package towerwarspp.main.game;
 
+import towerwarspp.main.WinType;
 import towerwarspp.preset.PlayerColor;
 
 /**
@@ -10,9 +11,9 @@ import towerwarspp.preset.PlayerColor;
  * @version 07-03-2017
  */
 public class Result {
-    final PlayerColor winner;
-    final int winnerMoves;
-    final WinType winType;
+    public final PlayerColor winner;
+    public final int winnerMoves;
+    public final WinType winType;
 
     /**
      * Contructor
@@ -20,7 +21,7 @@ public class Result {
      * @param winnerMoves integer containing number of moves winner needed to win
      * @param winType {@link WinType] of winning {@link towerwarspp.preset.Player}
      */
-    Result(PlayerColor winner, int winnerMoves, WinType winType) {
+    public Result(PlayerColor winner, int winnerMoves, WinType winType) {
         this.winner = winner;
         this.winnerMoves = winnerMoves;
         this.winType = winType;

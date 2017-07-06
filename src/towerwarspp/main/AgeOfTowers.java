@@ -1,11 +1,13 @@
 package towerwarspp.main;
 
-import towerwarspp.board.BViewer;
 import towerwarspp.board.Board;
 import towerwarspp.io.GraphicIO;
 import towerwarspp.io.IO;
 import towerwarspp.io.TextIO;
-import towerwarspp.io.View;
+import towerwarspp.main.game.Game;
+import towerwarspp.main.game.Result;
+import towerwarspp.main.tournament.TResult;
+import towerwarspp.main.tournament.Tournament;
 import towerwarspp.network.Remote;
 import towerwarspp.player.HumanPlayer;
 import towerwarspp.player.NetPlayer;
@@ -27,8 +29,10 @@ public class AgeOfTowers {
     private IO io;
     private Requestable requestable;
 
+    private final int RED = 0;
+    private final int BLUE = 1;
 
-    private int gameTimeOut = 0;
+
 
     /**
      * Constructor
@@ -51,10 +55,6 @@ public class AgeOfTowers {
                 setUpIO(OutputType.TEXTUAL);
             }
 
-            if(ap.isSet("timeout")) {
-                gameTimeOut = ap.getTimeOut();
-            }
-
             /*check with way of game needs to be started, network or local*/
             if(ap.isSet("offer")) {
                 findRemotePlay();
@@ -71,7 +71,7 @@ public class AgeOfTowers {
                 if(ap.isSet("games") && ap.getGameCount() > 1) {
                     startTournament(players);
                 } else {
-                    startGame(players[0], players[1]);
+                    startGame(players[RED], players[BLUE]);
                 }
 
             } else {
@@ -97,12 +97,37 @@ public class AgeOfTowers {
 
 
     private void findRemotePlay() {
+        try {
+            if(ap.getOfferedType() == PlayerType.REMOTE) {
+                System.out.println("Can't offer a remote player type as remote player.");
+                System.exit(1);
+            } else {
+                int port = ap.isSet("port") ? ap.getPort() : Remote.DEFAULT_PORT;
+                Remote remote = new Remote(port);
+                if(io != null)
+                    remote.offer(new NetPlayer(createPlayer(ap.getOfferedType()), io), ap.getName());
+                else
+                    remote.offer(new NetPlayer(createPlayer(ap.getOfferedType())), ap.getName());
+            }
+
+        } catch (Exception e) {
+            System.out.println(e);
+            System.exit(1);
+        }
 
     }
 
     private Player getRemotePlayer() {
-        //TODO find remote player depending on arguments
-        return null;
+        Player player = null;
+        try {
+            Remote remote = ap.isSet("port") ? new Remote(ap.getHost(), ap.getPort()) : new Remote(ap.getHost());
+            player = ap.isSet("name") ? remote.find(ap.getName()) : remote.find();
+        } catch (Exception e) {
+            System.out.println(e);
+            System.exit(1);
+        }
+
+        return player;
     }
 
     private void setUpIO(OutputType outputType) {
@@ -124,33 +149,32 @@ public class AgeOfTowers {
      */
     private Player[] createPlayers() {
         Player[] players = new Player[2];
-        players[0] = createPlayer(RED);
-        players[1] = createPlayer(BLUE);
+        try {
+            players[RED] = createPlayer(ap.getRed());
+            players[BLUE] = createPlayer(ap.getBlue());
+        } catch (ArgumentParserException e) {
+            System.out.println(e);
+            System.exit(1);
+        }
         return players;
     }
 
     /**
      * Method createPlayer to initialize a {@link Player} with given {@link PlayerType}
      *
-     * @param playerColor {@link PlayerColor}
+     * @param playerType {@link PlayerType}
      * @return {@link Player} with needed {@link PlayerType}
      */
-    private Player createPlayer(PlayerColor playerColor) {
-        try {
-            switch (playerColor == RED ? ap.getRed() : ap.getBlue()) {
-                // TODO Split TextIO
-                case HUMAN: return new HumanPlayer(requestable);
-                case RANDOM_AI: return new RndPlayer();
-                case REMOTE: return getRemotePlayer();
-                default: System.out.println("Unsupported PlayerType."); System.exit(1);
-            }
-
-        } catch (ArgumentParserException e) {
-            System.out.println(e.getMessage());
-            System.exit(1);
+    private Player createPlayer(PlayerType playerType) {
+        Player player = null;
+        switch (playerType) {
+            // TODO Split TextIO
+            case HUMAN: player = new HumanPlayer(requestable); break;
+            case RANDOM_AI: player = new RndPlayer(); break;
+            case REMOTE: player = getRemotePlayer(); break;
+            default: System.out.println("Unsupported PlayerType."); System.exit(1);
         }
-        // TODO change this, looks hacky
-        return null;
+        return player;
     }
 
     /**
@@ -185,7 +209,7 @@ public class AgeOfTowers {
         try {
 
             tournament = new Tournament(players, io, ap.isDebug(),
-                    ap.isSet("delay") ? ap.getDelay() : 0, board.getSize(), ap.getGameCount(), gameTimeOut);
+                    ap.isSet("delay") ? ap.getDelay() : 0, board.getSize(), ap.getGameCount(), ap.isSet("timeout") ? ap.getTimeOut() : 0);
         }
         catch (Exception e) {
             e.printStackTrace();
@@ -200,105 +224,6 @@ public class AgeOfTowers {
     public static void main(String[] args) {
 
         new AgeOfTowers(args);
-//
-//
-//
-//
-//        Player firstPlayer, secondPlayer;
-//        Requestable requestable;
-//        View view;
-//        IO io;
-//        OutputType outputType = OutputType.TEXTUAL;
-//        try {
-//            /*create new ArgumentParse object*/
-//            ArgumentParser ap = new ArgumentParser(args);
-//
-//            /*check if no parameters have been given, or flag --help is activated*/
-//            if (args.length == 0 || ap.isHelp()) {
-//                System.out.println(helpOutput());
-//                System.exit(0);
-//            }
-//
-//            /*check if board size is valid*/
-//            if (ap.getSize() < 4 || ap.getSize() > 26) {
-//                System.out.println("Board size needs to be between 4 and 26!");
-//                System.exit(1);
-//            }
-//
-//            /*create new board and viewer object*/
-//            Board board = new Board(ap.getSize());
-//            BViewer viewer = board.viewer();
-//
-//            // Determine OutputType of this instance
-//            if(ap.isSet("output"))
-//                outputType = ap.getOutputType();
-//
-//            /*check if graphic output should be enabled*/
-//            if (outputType == OutputType.GRAPHIC) {
-//                // TODO change to graphicIO once completed
-//                io = new TextIO(viewer);
-//                requestable = io;
-//                view = io;
-//            }
-//            /*otherwise do output on standard output*/
-//            else if (outputType == OutputType.TEXTUAL){
-//                io = new TextIO(viewer);
-//                requestable = io;
-//                view = io;
-//            } else {
-//                requestable =  new TextIO();
-//            }
-//
-//            /*check if red and blue player types are given, then initialize them*/
-//            if (ap.isSet("red") && ap.getRed() != PlayerType.REMOTE) {
-//                firstPlayer = makePlayer(ap.getRed(), requestable);
-//            }
-//            else {
-//                firstPlayer = null;
-//            }
-//            if (ap.isSet("blue") && ap.getBlue() != PlayerType.REMOTE) {
-//                secondPlayer = makePlayer(ap.getBlue(), requestable);
-//            }
-//            else {
-//                secondPlayer = null;
-//            }
-//
-//            if(ap.isSet("blue") && ap.getBlue() == PlayerType.REMOTE) {
-//                System.out.println("Looking for player " + ap.getName());
-//                secondPlayer = Remote.find(ap.getHost(), ap.getName());
-//            }
-//
-//            /*check if tournament mode is enabled*/
-//
-//            if(ap.isSet("offer")) {
-//                Player player = makePlayer(ap.getOfferedType(), requestable);
-//                player = new NetPlayer(player);
-//                Remote.offer(player, ap.getName());
-//            } else {
-//
-//                Game game = new Game(firstPlayer, secondPlayer, board, outputType, true, 0);
-//                game.play();
-//            }
-//
-//
-////            if (ap.isSet("rounds")) {
-////                /*create tournament object*/
-////            }
-////            else {
-////                /*create a new game object with the given players and settings*/
-////                Game game = new Game(firstPlayer, secondPlayer, OutputType.TEXTUAL, true,
-////                        ap.isSet("delay") ? ap.getDelay() : 0, ap.getSize());
-////
-////                /*output game result*/
-////                System.out.println(game.play().toString());
-////            }
-//        }
-//        catch (ArgumentParserException e) {
-//            System.out.println(e);
-//        }
-//        catch (Exception e) {
-//            e.printStackTrace();
-//        }
     }
 
 
@@ -326,7 +251,7 @@ public class AgeOfTowers {
                 "-name \n" +
                 "-port \n" +
                 "------------ \n" +
-                "-rounds \t activates tournament mode and sets number of rounds for the tournament \n" +
+                "-games \t activates tournament mode and sets number of games for the tournament \n" +
                 "(beware that at every other game, the player colors are changing, so if you are starting \n" +
                 "whit color red as a human, in the second round, you will be color blue, in terms of fairness) \n" +
                 "-delay \t sets delay time in milliseconds to slow down the game \n" +
@@ -335,7 +260,7 @@ public class AgeOfTowers {
                 "player types: human, random, simple, adv1, remote \n" +
                 "size: integer between 4 and 26 \n" +
                 "output: textual, graphic, none \n" +
-                "rounds: integer bigger than 1 \n" +
+                "games: integer bigger than 1 \n" +
                 "delay: integer bigger than 0 (in milliseconds) \n" +
 
                 "\nFLAGS: \n" +

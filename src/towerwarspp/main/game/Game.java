@@ -1,11 +1,8 @@
-package towerwarspp.main;
+package towerwarspp.main.game;
 
 import towerwarspp.board.Board;
-import towerwarspp.io.GraphicIO;
-import towerwarspp.io.IO;
-import towerwarspp.io.TextIO;
-import towerwarspp.io.GraphicIO;
 import towerwarspp.io.View;
+import towerwarspp.main.WinType;
 import towerwarspp.preset.*;
 
 import java.rmi.RemoteException;
@@ -36,7 +33,7 @@ public class Game {
      * @param debug
      * @param delayTime in millisecond
      */
-    Game(Player redPlayer, Player bluePlayer, int boardSize, View view, boolean debug, int delayTime) {
+    public Game(Player redPlayer, Player bluePlayer, int boardSize, View view, boolean debug, int delayTime) {
         if (redPlayer == null || bluePlayer == null) {
             throw new IllegalArgumentException("Player cannot be null!");
         }

@@ -1,6 +1,9 @@
-package towerwarspp.main;
+package towerwarspp.main.tournament;
 
 import towerwarspp.io.View;
+import towerwarspp.main.game.Game;
+import towerwarspp.main.OutputType;
+import towerwarspp.main.game.Result;
 import towerwarspp.preset.Player;
 
 /**
@@ -21,7 +24,7 @@ public class Tournament {
      * Constructor
      *
      * @param players array of {@link Player}s
-     * @param outputType {@link OutputType}
+     * @param view
      * @param debug
      * @param delayTime
      * @param boardSize

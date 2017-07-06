@@ -1,5 +1,7 @@
 package towerwarspp.main;
 
+import towerwarspp.main.game.Game;
+
 /**
  * Enumeration WinType providing option for the way to win a {@link Game}
  *
