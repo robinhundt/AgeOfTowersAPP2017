@@ -25,7 +25,7 @@ public class BViewer implements Viewer {
 	public Status getStatus() {
 		return boardO.getStatus();
 	}
-	public int getTurn() {
+	public PlayerColor getTurn() {
 		return boardO.getTurn();
 	}
     	public Vector<Move> possibleMoves(Position pos) throws Exception {
