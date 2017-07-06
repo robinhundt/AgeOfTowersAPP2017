@@ -112,7 +112,7 @@ public class Entity {
 		reachable = new int[6*maxHeight+2][size+1];
 		rangeMoves = new Vector<Vector<Position>>(6*maxHeight+2);
 		for(int i = 0; i <= 6*maxHeight+1; ++i) {
-			rangeMoves.add(new Vector<Position>(i * 6 + 1));
+			rangeMoves.add(i, new Vector<Position>(i * 6 + 1));
 		}
 	}
 	/**
@@ -340,7 +340,13 @@ public class Entity {
 	 * removes all moves of the entity and sets the range to 1
 	 */
 	public void removeAllMoves() {
-		rangeMoves = new Vector<Vector<Position>>(60);
+		rangeMoves = new Vector<Vector<Position>>(6*maxHeight+2);
+		for(int i = 0; i <= 6*maxHeight+1; ++i) {
+			rangeMoves.add(i, new Vector<Position>(i * 6 + 1));
+		}
+		for(int i = 0; i <= 6*maxHeight+1; ++i) {
+			rangeMoves.add(i, new Vector<Position>(i * 6 + 1));
+		}
 		range = 1;
 	}
 
