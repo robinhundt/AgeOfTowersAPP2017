@@ -94,6 +94,7 @@ public class GraphicIO extends JFrame implements IO {
                         for(int x = 1; x <= viewer.getSize(); ++x) {
                             if(polygon[x][y].contains(mouseX, mouseY)) {
                                 deliverMove = new Move(positionStart, new Position(x, y));
+                                possibleMoves = null;
                                 wakeUp();
                             }
                         }
@@ -150,7 +151,7 @@ public class GraphicIO extends JFrame implements IO {
                                     endPosition = move.getEnd();
                                 }
                                 if(endPosition != null) {
-                                    if(viewer.getTurn() == 1 ? viewer.getPlayerColor(new Position(x, y)) == PlayerColor.RED : viewer.getPlayerColor(new Position(x, y)) == PlayerColor.BLUE) {
+                                    if(viewer.getTurn() == 1 && !viewer.isEmpty(new Position(x, y)) ? viewer.getPlayerColor(new Position(x, y)) == PlayerColor.RED : viewer.getPlayerColor(new Position(x, y)) == PlayerColor.BLUE) {
                                         g.setColor(Color.GREEN);
                                         g.fillPolygon(polygon[endPosition.getLetter()][endPosition.getNumber()]);
                                         g.setColor(Color.BLACK);
@@ -244,7 +245,6 @@ public class GraphicIO extends JFrame implements IO {
     @Override
     synchronized public Move deliver() throws Exception {
         wait();
-        visualize();
         return deliverMove;
     }
 }

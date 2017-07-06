@@ -96,42 +96,39 @@ public class TextIO implements IO {
      * @return Returns the Type of the Entity as String
      */
     private String entityToString(Position position) {
-        PlayerColor color = this.viewer.getPlayerColor(position);
-        boolean blocked = this.viewer.isBlocked(position);
-        int height = this.viewer.getHeight(position);
-        int maxHeight = this.viewer.getSize()/3;
-        String col;
-        String s;
-        if(color == PlayerColor.RED) {
-            if(blocked) {
-                col = ANSI_WHITE;
-            }
-            else if (height == maxHeight) {
-                col = ANSI_YELLOW;
-            }
-            else {
-                col = ANSI_RED;
-            }
-        }
-        else {
-            if(blocked) {
-                col = ANSI_CYAN;
-            }
-            else if (height == maxHeight){
-                col = ANSI_PURPLE;
-            }
-            else {
-                col = ANSI_BLUE;
-            }
+        if(!this.viewer.isEmpty(position)) {
+            PlayerColor color = this.viewer.getPlayerColor(position);
+            boolean blocked = this.viewer.isBlocked(position);
+            int height = this.viewer.getHeight(position);
+            int maxHeight = this.viewer.getSize() / 3;
+            String col;
+            String s;
+            if (color == PlayerColor.RED) {
+                if (blocked) {
+                    col = ANSI_WHITE;
+                } else if (height == maxHeight) {
+                    col = ANSI_YELLOW;
+                } else {
+                    col = ANSI_RED;
+                }
+            } else {
+                if (blocked) {
+                    col = ANSI_CYAN;
+                } else if (height == maxHeight) {
+                    col = ANSI_PURPLE;
+                } else {
+                    col = ANSI_BLUE;
+                }
 
+            }
+            if (viewer.isBase(position)) {
+                s = col + " B " + ANSI_RESET;
+            } else {
+                s = col + (height != 0 ? " T" + height : " S ") + ANSI_RESET;
+            }
+            return s;
         }
-        if(viewer.isBase(position)) {
-            s = col + " B " + ANSI_RESET;
-        }
-        else {
-            s = col  + (height!=0 ? " T" + height : " S ") + ANSI_RESET;
-        }
-        return s;
+        return " o ";
     }
 
     /**
