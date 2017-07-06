@@ -109,11 +109,12 @@ public class Entity {
 		this.color = color;
 		this.size = size;
 		maxHeight = size/3;
-		reachable = new int[6*maxHeight+2][size+1];
+		initialiseMoves();
+		/*reachable = new int[6*maxHeight+2][size+1];
 		rangeMoves = new Vector<Vector<Position>>(6*maxHeight+2);
 		for(int i = 0; i <= 6*maxHeight+1; ++i) {
 			rangeMoves.add(i, new Vector<Position>(i * 6 + 1));
-		}
+		}*/
 	}
 	/**
 	 * Constructor for Bases
@@ -336,17 +337,18 @@ public class Entity {
 		return !(blocked || moveCounter == 0);
 	}
 
-	/**
-	 * removes all moves of the entity and sets the range to 1
-	 */
-	public void removeAllMoves() {
+	private void initialiseMoves() {
 		rangeMoves = new Vector<Vector<Position>>(6*maxHeight+2);
 		for(int i = 0; i <= 6*maxHeight+1; ++i) {
 			rangeMoves.add(i, new Vector<Position>(i * 6 + 1));
 		}
-		for(int i = 0; i <= 6*maxHeight+1; ++i) {
-			rangeMoves.add(i, new Vector<Position>(i * 6 + 1));
-		}
+		reachable = new int[6*maxHeight+2][size+1];
+	}
+	/**
+	 * removes all moves of the entity and sets the range to 1
+	 */
+	public void removeAllMoves() {
+		initialiseMoves();
 		range = 1;
 	}
 
