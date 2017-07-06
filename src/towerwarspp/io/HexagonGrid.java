@@ -24,7 +24,6 @@ public class HexagonGrid {
         int distance = (int) (Math.cos(Math.toRadians(30.0)) * polySize);
         for(int y = 1; y <= boardSize; ++y) {
             for(int x = 1; x <= boardSize; ++x) {
-                System.out.println("x: " + x + " size: " + polySize);
                 this.hexagons[x][y] = new Hexagon(y * (2 * distance) + (x - 1) * distance, x * polySize + (x - 1) * (polySize / 2), polySize, new Position(y, x));
 
                 Corner[] corners = this.hexagons[x][y].getCorners();

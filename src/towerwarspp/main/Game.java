@@ -4,6 +4,7 @@ import towerwarspp.board.Board;
 import towerwarspp.io.GraphicIO;
 import towerwarspp.io.IO;
 import towerwarspp.io.TextIO;
+import towerwarspp.io.GraphicIO;
 import towerwarspp.io.View;
 import towerwarspp.preset.*;
 
@@ -43,7 +44,7 @@ public class Game {
         this.delayTime = delayTime;
         this.board = board;
         switch (outputType) {
-            //case GRAPHIC: view = (IO) new GraphicIO(board.viewer()); break;
+            case GRAPHIC: view = (IO) new GraphicIO(board.viewer()); break;
             case TEXTUAL: view = new TextIO(board.viewer()); break;
         }
 
