@@ -106,7 +106,7 @@ public class AgeOfTowers {
                 int port = ap.isSet("port") ? ap.getPort() : Remote.DEFAULT_PORT;
                 Remote remote = new Remote(port);
                 if(io != null)
-                    remote.offer(new NetPlayer(createPlayer(ap.getOfferedType())), ap.getName());
+                    remote.offer(new NetPlayer(createPlayer(ap.getOfferedType(), io)), ap.getName());
                 else
                     remote.offer(new NetPlayer(createPlayer(ap.getOfferedType())), ap.getName());
             }
@@ -151,8 +151,8 @@ public class AgeOfTowers {
     private Player[] createPlayers() {
         Player[] players = new Player[2];
         try {
-            players[RED] = createPlayer(ap.getRed(), io);
-            players[BLUE] = createPlayer(ap.getBlue(), io);
+            players[RED] = createPlayer(ap.getRed());
+            players[BLUE] = createPlayer(ap.getBlue());
         } catch (ArgumentParserException e) {
             System.out.println(e);
             System.exit(1);

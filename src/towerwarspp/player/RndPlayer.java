@@ -28,21 +28,17 @@ public class RndPlayer extends BasePlayer {
 
     @Override
     Move deliverMove() throws Exception {
-        Vector<MoveList> moveLists = board.getAllPossibleMoves(color);
-        MoveList moveList = moveLists.get(rnd.nextInt(moveLists.size()));
-        Move move = rndMove(moveList);
-        while (move == null)
-            move = rndMove(moveList);
-        return move;
+        Vector<Move> moves = board.allPossibleMoves(color);
+        return moves.get(rnd.nextInt(moves.size()));
     }
 
-    private Move rndMove(MoveList moveList) {
-        Move move = null;
-        Iterator<Move> it = moveList.iterator();
-
-        for(int i=0; i<moveList.size(); i++)
-            move = it.next();
-
-        return move;
-    }
+//    private Move rndMove(MoveList moveList) {
+//        Move move = null;
+//        Iterator<Move> it = moveList.iterator();
+//
+//        for(int i=0; i<moveList.size(); i++)
+//            move = it.next();
+//
+//        return move;
+//    }
 }

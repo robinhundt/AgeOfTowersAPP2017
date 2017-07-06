@@ -74,7 +74,8 @@ public class Game {
 
         while (board.getStatus() == OK) {
             moveCounter++;
-            System.out.println(currentColor + "'s turn");
+            if(view != null)
+                System.out.println(currentColor + "'s turn");
 
             currentMove = currentPlayer.request();
 
@@ -89,9 +90,6 @@ public class Game {
             currentPlayer = currentPlayer == redPlayer ? bluePlayer : redPlayer;
             currentColor = currentColor == RED ? BLUE : RED;
 
-            if(hasView) {
-                view.visualize();
-            }
 
             currentPlayer.update(currentMove, board.getStatus());
 
