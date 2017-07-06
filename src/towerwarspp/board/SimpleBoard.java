@@ -130,8 +130,8 @@ public class SimpleBoard implements Viewable {
 	* @return
 	*	the curren turn.
 	*/
-	public int getTurn() {
-		return (turn == RED? 1: 2);
+	public PlayerColor getTurn() {
+		return turn;
 	}
 	/**
 	* Returns the status of the board.
@@ -252,7 +252,7 @@ public class SimpleBoard implements Viewable {
 		return status;
 	}
 	/**
-	* Conducts changes caused by the current move, which is specified for the figure {@link ent}, in respect to its start position.
+	* Conducts changes caused by the current move, which is specified for the figure ent, in respect to its start position.
 	* If the moving figure is a tower;
 	*	1) its height will be decreased;
 	*	2) the step range of all neighbouring stones with the same color will be decreased as well;
@@ -280,7 +280,7 @@ public class SimpleBoard implements Viewable {
 		return ent;
 	}
 	/**
-	* Conducts changes caused by the current move, which is specified for the figure {@link ent}, in respect to its end position.
+	* Conducts changes caused by the current move, which is specified for the figure ent, in respect to its end position.
 	* Case 1: the end position is empty:
 	*	1) the figure in question will be placed on this position on the board;
 	*	2) all corresponding changes will be commited;
@@ -723,7 +723,7 @@ public class SimpleBoard implements Viewable {
 	}
 	/**
 	* Returns true if at least one of the entities returned by the iterator in the argument can be moved.
-	* @param it iterator over a list of Entities ({@link listRed} or {@link listBlue}) for which the move possibility has to be prooved.
+	* @param it iterator over a list of Entities (listRed or listBlue) for which the move possibility has to be prooved.
 	* @return true if at least one of the entities returned by the iterator it can be moved.
 	*/
 	private boolean hasMoves (ListIterator<Entity> it) {
