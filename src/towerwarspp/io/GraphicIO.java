@@ -1,6 +1,5 @@
 package towerwarspp.io;
 
-import towerwarspp.board.MoveList;
 import towerwarspp.preset.Move;
 import towerwarspp.preset.PlayerColor;
 import towerwarspp.preset.Position;
@@ -8,15 +7,16 @@ import towerwarspp.preset.Viewer;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.ComponentEvent;
+import java.awt.event.ComponentListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
-import java.util.Iterator;
 import java.util.Vector;
 
 /**
  * Class {@link GraphicIO} creates the graphic in- output
  *
- * @version 0.5 July 05th 2017
+ * @version 0.6 July 07th 2017
  * @author Kai Kuhlmann
  */
 public class GraphicIO extends JFrame implements IO {
@@ -53,14 +53,61 @@ public class GraphicIO extends JFrame implements IO {
      * deliveMove-Object
      */
     private Move deliverMove;
+    /**
+     * Dimension-Object for screenresolution
+     */
+    private Dimension screenResolution;
 
     /**
      * Constructor
      */
     public GraphicIO() {
-        this.polySize = 20;
-        jFrame = new JFrame();
-        jFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        this.jFrame = new JFrame();
+        this.jFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        this.screenResolution = Toolkit.getDefaultToolkit().getScreenSize();
+        this.jFrame.setSize(this.screenResolution);
+        this.jFrame.addComponentListener(getFrameResize());
+    }
+
+    private ComponentListener getFrameResize() {
+        return new ComponentListener() {
+            @Override
+            public void componentResized(ComponentEvent e) {
+            }
+
+            @Override
+            public void componentMoved(ComponentEvent e) {
+
+            }
+
+            @Override
+            public void componentShown(ComponentEvent e) {
+
+            }
+
+            @Override
+            public void componentHidden(ComponentEvent e) {
+
+            }
+        };
+    }
+
+    private void setPolygonSize() {
+        double frameWidth = this.jFrame.getWidth();
+        double frameHeight = this.jFrame.getHeight();
+        int maxWidthPolygon = 0;
+        int maxWidth = 0;
+        if(frameHeight < frameWidth) {
+            maxWidth = (int)frameWidth / this.viewer.getSize();
+            maxWidthPolygon = maxWidth - (maxWidth / 16 * 11);
+        }
+        this.polySize = maxWidthPolygon;
+        System.out.println("poly: " + this.polySize + " maxW: " + maxWidth + " maxWP: " + maxWidthPolygon);
+        System.out.println("w: " + frameWidth + " h: " + frameHeight);
+    }
+
+    private int getPolygonSize() {
+        return this.hexagonGrid.getPolygonSize();
     }
 
     /**
@@ -86,6 +133,9 @@ public class GraphicIO extends JFrame implements IO {
                                     System.out.println("pos: " + positionStart);
                                     if (!viewer.isEmpty(positionStart) && viewer.getTurn() == viewer.getPlayerColor(positionStart)) {
                                         possibleMoves = viewer.possibleMoves(positionStart);
+                                        visualize();
+                                    } else {
+                                        possibleMoves = null;
                                         visualize();
                                     }
                                 } catch (Exception ex) {
@@ -240,8 +290,7 @@ public class GraphicIO extends JFrame implements IO {
 
             @Override
             public Dimension getPreferredSize() {
-                int distance = (int) (Math.cos(Math.toRadians(30.0)) * polySize);
-                return new Dimension((viewer.getSize()) / 2 * (2 * distance) * viewer.getSize(), 2 * polySize * viewer.getSize());
+                return screenResolution;
             }
         };
     }
@@ -253,6 +302,7 @@ public class GraphicIO extends JFrame implements IO {
     @Override
     public void setViewer(Viewer viewer) {
         this.viewer = viewer;
+        setPolygonSize();
         this.hexagonGrid = new HexagonGrid(this.viewer.getSize(), polySize);
         this.polygon = this.hexagonGrid.getPolygon();
         jPanel = getJPanel();
