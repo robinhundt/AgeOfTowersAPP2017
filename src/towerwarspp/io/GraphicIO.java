@@ -260,7 +260,7 @@ public class GraphicIO extends JFrame implements IO {
                             //g.drawOval(hexagonGrid.getHexagonCenterX(position), hexagonGrid.getHexagonCenterY(position), i2, i3);
 
                             g.drawOval(i, i1, i2, i3);
-                            if(viewer.getHeight(position) >= 0) {
+                            if(!viewer.isEmpty(position) && viewer.getHeight(position) >= 0) {
                                 g.setColor(Color.WHITE);
                                 int intHeight = viewer.getHeight(position);
                                 char zwischen = Character.forDigit(intHeight, 10);
