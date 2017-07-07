@@ -243,7 +243,8 @@ public class AgeOfTowers {
                 "Flags start with '--' and do not need parameter. All flags are optional.\n" +
 
                 "\nSETTINGS: \n" +
-                "-offer \t chose player type, none other settings need to be set \n" +
+                "-offer \t chose player type \n" +
+                "-name  \t chose name for the player, none other settings need to be set" +
 
                 "if -offer is NOT set, obligatory settings are: \n" +
                 "-red \t chose player type for red \n" +
@@ -252,23 +253,24 @@ public class AgeOfTowers {
 
                 "optional settings are:\n" +
                 "---- only together and if network game is wanted ---- \n" +
-                "-host \n" +
-                "-name \n" +
+                "-host \t ip-address of device you want to connect with \n" +
+                "-name \t name of concrete player you want to connect with, if none is given, every offered player are displayed \n" +
                 "-port \n" +
                 "------------ \n" +
-                "-games \t activates tournament mode and sets number of games for the tournament \n" +
-                "(beware that at every other game, the player colors are changing, so if you are starting \n" +
-                "whit color red as a human, in the second round, you will be color blue, in terms of fairness) \n" +
-                "-delay \t sets delay time in milliseconds to slow down the game \n" +
+                "-games  \t activates tournament mode and sets number of games for the tournament \n" +
+                "        \t (beware that at every other game, the player colors are changing, so if you are starting \n" +
+                "        \t with color red as a human, in the second round, you will be color blue, in terms of fairness) \n" +
+                "-delay  \t sets delay time in milliseconds to slow down the game \n" +
                 "-output \t chose output type, default is textual \n" +
                 "possible parameter:\n" +
                 "player types: human, random, simple, adv1, remote \n" +
-                "size: integer between 4 and 26 \n" +
-                "output: textual, graphic, none \n" +
-                "games: integer bigger than 1 \n" +
-                "delay: integer bigger than 0 (in milliseconds) \n" +
+                "size:   \t  integer between 4 and 26 \n" +
+                "output: \t  text, graphic, none \n" +
+                "games:  \t  integer bigger than 0 \n" +
+                "delay:  \t  integer bigger than 0 (in milliseconds) \n" +
 
                 "\nFLAGS: \n" +
+                //TODO remove graphic flag
                 "--graphic \t activates the graphic output, if not set output will be on the standard-output \n" +
                 "--debug \t activates the debug-mode: shows additional information for every move \n";
     }

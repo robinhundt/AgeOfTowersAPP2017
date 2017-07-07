@@ -25,6 +25,7 @@ public class TResult {
     int illegalMove[];
     int surrender[];
     int avgMoves[];
+    int totalMoves[];
 
 
     /**
@@ -37,6 +38,7 @@ public class TResult {
         illegalMove = new int[2];
         surrender = new int[2];
         avgMoves = new int[2];
+        totalMoves = new int[2];
 
 
 
@@ -63,6 +65,7 @@ public class TResult {
             case SURRENDER: surrender[winnerIndex]++; break;
         }
 
+        totalMoves[winnerIndex] += result.winnerMoves;
         avgMoves[winnerIndex] = (avgMoves[winnerIndex] * (wins[winnerIndex] -1) + result.winnerMoves) / wins[winnerIndex];
         swappedPlayers = !swappedPlayers;
 
@@ -82,7 +85,9 @@ public class TResult {
                 "-wins per surrender of blue:\t " + surrender[RED] + "\n" +
                 "-wins per illegal move of blue:\t " + illegalMove[RED] + "\n" +
                 "-wins per immobility of blue:\t " + noPosMoves[RED] + "\n" +
+                "-total moves: \t " + totalMoves[RED] + "\n" +
                 "-average amount of moves per win:\t " + avgMoves[RED] + "\n" +
+
                 "\n" +
                 "Blue:\n" +
                 "-total wins: " + wins[BLUE] + "\n" +
@@ -90,6 +95,9 @@ public class TResult {
                 "-wins per surrender of red:\t " + surrender[BLUE] + "\n" +
                 "-wins per illegal move of red:\t " + illegalMove[BLUE] + "\n" +
                 "-wins per immobility of red:\t " + noPosMoves[BLUE] + "\n" +
+                "-total moves: \t " + totalMoves[BLUE] + "\n" +
                 "-average amount of moves per win:\t " + avgMoves[BLUE] + "\n";
+
+
     }
 }
