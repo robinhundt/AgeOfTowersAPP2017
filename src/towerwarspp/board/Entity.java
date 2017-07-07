@@ -1,6 +1,8 @@
 package towerwarspp.board;
 
 import towerwarspp.preset.*;
+
+import java.util.Arrays;
 import java.util.Vector;
 
 /**
@@ -106,20 +108,24 @@ public class Entity {
 	
 	/**
 	 * Copy-Constructor
-	 * @param copy Entity to b copied 
+	 * @param original Entity to b copied
 	 */
-	public Entity(Entity copy) {
-		this.pos = copy.getPosition();
-		this.color = copy.getColor();
-		this.size = copy.getSize();
+	public Entity(Entity original) {
+		this.pos = original.getPosition();
+		this.color = original.getColor();
+		this.size = original.getSize();
+		this.range = original.getRange();
+		this.blocked = original.isBlocked();
+		this.base = original.isBase();
+
 		maxHeight = size/3;
-		reachable = copy.getReachable();
-		rangeMoves = copy.getCloneMoves();
-		this.range = copy.getRange();
-		this.blocked = copy.isBlocked();
-		this.base = copy.isBase();
 		maxRange = 6*maxHeight+2;
+
+		reachable = original.copyReachable();
+		rangeMoves = original.copyRangeMoves();
 	}
+
+
 
 	/**
 	 * Returns all Moves, which are possible for a specific range
@@ -147,7 +153,7 @@ public class Entity {
 	/**
 	 * returns a clone of the rangeMoves
 	 */
-	private Vector<Vector<Move>> getCloneMoves() {
+	private Vector<Vector<Move>> copyRangeMoves() {
 		Vector<Vector<Move>> out = new Vector<Vector<Move>>();
 		for(Vector<Move> vector : rangeMoves) {
 			out.add(new Vector<>(vector));
@@ -202,6 +208,13 @@ public class Entity {
 
 	public int[][] getReachable() {
 		return reachable;
+	}
+
+	private int[][] copyReachable() {
+		int[][] copy = new int[reachable.length][];
+		for(int i=0; i<copy.length; i++)
+			copy[i] = Arrays.copyOf(reachable[i], reachable[i].length);
+		return copy;
 	}
 
 	/**
@@ -373,5 +386,10 @@ public class Entity {
 	public void setAllMoves(Vector<Vector<Move>> moves, int[][] reach) {
 		rangeMoves = moves;
 		reachable = reach;
+	}
+
+	@Override
+	public Entity clone() {
+		return new Entity(this);
 	}
 }
