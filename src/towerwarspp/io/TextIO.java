@@ -61,33 +61,44 @@ public class TextIO implements IO {
      * Output of the Board
      */
     public void visualize() {
+        StringBuilder output = new StringBuilder();
+
         int size = this.viewer.getSize();
         char headChar = 'A';
-        System.out.print("    ");
-        for(int top = 0; top < size; ++top) {
-            System.out.print(headChar + "  ");
-            ++headChar;
-        }
-        System.out.print("\n");
         String tap = "  ";
 
-        for (int y=1; y <= size; y++) {
-            System.out.print(tap + y + ((y>=10) ? " " : "  "));
-            for (int x=1; x <=size; x++) {
-                System.out.print(entityToString(new Position(x, y)));
+        /*own stringbuilder for the letters*/
+        StringBuilder letters = new StringBuilder();
+        letters.append("    ");
+        /*fill stringbuilder with letters*/
+        for (int j=1; j<=size; j++) {
+            letters.append(headChar++ + "  ");
+        }
+
+        for (int i=0; i<=size+1; i++) {
+            /*first line, only letters*/
+            if (i==0) {
+                output.append(letters.toString() + "\n");
             }
-            System.out.print("  " + y);
-            System.out.println();
-            tap += "  ";
+            /*last line, only letters*/
+            else if (i == size+1) {
+                output.append(tap);
+                output.append(letters.toString() + "\n");
+            }
+            /*every other line, number, board and number*/
+            else if (i<=size) {
+                output.append(tap);
+                output.append(i);
+                output.append("  ");
+                for (int j=1; j<=size; j++) {
+                    output.append(entityToString(new Position(j, i)));
+                }
+                output.append("  ");
+                output.append(i + "\n");
+                tap += "  ";
+            }
         }
-        headChar = 'A';
-        tap += "   ";
-        System.out.print(tap);
-        for(int top = 0; top < size; ++top) {
-            System.out.print(headChar + "  ");
-            ++headChar;
-        }
-        System.out.println("");
+        System.out.println(output.toString());
     }
 
     /**
@@ -149,12 +160,12 @@ public class TextIO implements IO {
     public Move deliver() throws Exception {
         Move move = null;
         String nextMove = null;
-        System.out.println("Bitte geben Sie Ihren Zug an: ");
+        System.out.println("Please enter move: ");
         nextMove = this.scanner.next();
         try {
             move = Move.parseMove(nextMove);
         } catch (Exception e) {
-            System.out.println(e);
+            System.out.println("Couldn't interpret move. Move needs to be like 'A2->A3'");
         }
         return move;
     }
