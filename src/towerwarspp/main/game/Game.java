@@ -110,10 +110,10 @@ public class Game {
         }
 
         if (board.getStatus() == RED_WIN) {
-            return new Result(RED, winnerMoves(moveCounter), board.getWinType()); //TODO WinType
+            return new Result(RED, winnerMoves(moveCounter), board.getWinType());
         }
         else if (board.getStatus() == BLUE_WIN) {
-            return new Result(BLUE, winnerMoves(moveCounter), board.getWinType()); //TODO WinType
+            return new Result(BLUE, winnerMoves(moveCounter), board.getWinType());
         }
         else {
             return new Result(currentColor, winnerMoves(moveCounter), board.getWinType());

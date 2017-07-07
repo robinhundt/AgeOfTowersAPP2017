@@ -89,7 +89,7 @@ public class TextIO implements IO {
             else if (i<=size) {
                 output.append(tap);
                 output.append(i);
-                output.append("  ");
+                output.append(i>=10 ? " " : "  ");
                 for (int j=1; j<=size; j++) {
                     output.append(entityToString(new Position(j, i)));
                 }
