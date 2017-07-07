@@ -103,7 +103,7 @@ public class Entity {
 		this(pos, color, size);
 		this.base = base;
 	}
-
+	
 	/**
 	 * Copy-Constructor
 	 * @param copy Entity to b copied 

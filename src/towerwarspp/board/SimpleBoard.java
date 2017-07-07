@@ -47,10 +47,24 @@ public class SimpleBoard implements Viewable {
                 board[1][1] = new Entity (redBase, RED, size, true);
                 blueBase = new Position(size, size);
                 board[size][size] = new Entity (blueBase, BLUE, size, true);
-		initialiseRedEntities();
-		initialiseBlueEntities();
+		int d = size/2;
+		initialiseEntities(redBase, d, RED, listRed);
+		initialiseEntities(blueBase, d, BLUE,listBlue);
+		//initialiseRedEntities();
+		//initialiseBlueEntities();
 	}
-	private void initialiseRedEntities() {
+	private void initialiseEntities(Position base, int dist, PlayerColor col, Vector<Entity> list) {
+		for(int i = 1; i <= dist; ++i) {
+			Vector<Position> positions = findPositionsInRange(base, i);
+			for(Position pos: positions) {
+ 				Entity ent = new Entity(pos, col, size);
+                        	board[pos.getLetter()][pos.getNumber()] = ent;
+				findStoneMoves(ent);
+                       		list.add(ent);
+			}
+		}
+	}
+	/*private void initialiseRedEntities() {
 		int d = size/2;
                 int y = 1;
                 int lastX = 1 + d;
@@ -91,27 +105,8 @@ public class SimpleBoard implements Viewable {
 				listBlue.add(ent);
 			}
 		}
-	}
-	private void initialiseEntityMoves(Entity ent, int x, int y) {
-		if (y > 1) {
-			addMove(ent, new Position(x, y-1), 1);
-			if (x < size) {
-				addMove(ent, new Position(x+1, y-1), 1);
-			}
-		}
-		if (x > 1) {
-			addMove(ent, new Position(x-1, y), 1);
-			if (y < size) {
-				addMove(ent, new Position(x-1, y+1), 1);
-			}
-		}
-		if (x < size) {
-			addMove(ent, new Position(x+1, y), 1);
-		}
-		if (y < size) {
-			addMove(ent, new Position(x, y+1), 1);
-		}
-	}
+	}*/
+
 	/**
 	* Returns a viewer for this board.
 	* @return
