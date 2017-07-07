@@ -79,36 +79,6 @@ public class Entity {
 	 * @param color color of the stone
 	 * @param size size of the field (size*size)
 	 */
-
-	/**
-	 * ANSI_RED for toString
-	 */
-	public static final String ANSI_RED = "\u001B[31m";
-	/**
-	 * ANSI_BLUE for toString
-	 */
-	public static final String ANSI_BLUE = "\u001B[34m";
-	/**
-	 * ANSI_PURPLE for toString
-	 */
-	public static final String ANSI_PURPLE = "\u001B[35m";
-	/**
-	 * ANSI_YELLOW for toString
-	 */
-	public static final String ANSI_YELLOW = "\u001B[33m";
-	/**
-	 * ANSI_CYAN for toString
-	 */
-	public static final String ANSI_CYAN = "\u001B[36m";
-	/**
-	 * ANSI_WHITE for toString
-	 */
-	public static final String ANSI_WHITE = "\u001B[37m";
-
-	/**
-	 * The RESET-Variable for toString
-	 */
-	private static final String RESET = "\u001B[0m";
 	public Entity (Position pos, PlayerColor color, int size) {
 		this.pos = pos;
 		this.color = color;
@@ -138,17 +108,18 @@ public class Entity {
 	 * Copy-Constructor
 	 * @param copy Entity to b copied 
 	 */
-	/*public Entity(Entity copy) {
+	public Entity(Entity copy) {
 		this.pos = copy.getPosition();
 		this.color = copy.getColor();
 		this.size = copy.getSize();
 		maxHeight = size/3;
 		reachable = copy.getReachable();
-		//rangeMoves = copy.getMoves().clone();
+		rangeMoves = copy.getCloneMoves();
 		this.range = copy.getRange();
 		this.blocked = copy.isBlocked();
 		this.base = copy.isBase();
-	}*/
+		maxRange = 6*maxHeight+2;
+	}
 
 	/**
 	 * Returns all Moves, which are possible for a specific range
@@ -177,9 +148,13 @@ public class Entity {
 	/**
 	 * returns a clone of the rangeMoves
 	 */
-	/*public Vector<Vector<Move>> getCloneMoves() {
-		return rangeMoves.clone();
-	}*/
+	public Vector<Vector<Move>> getCloneMoves() {
+		Vector<Vector<Move>> out = new Vector<Vector<Move>>();
+		for(int i = 0; i < rangeMoves.size(); i++) {
+			out.add((Vector<Move>)rangeMoves.elementAt(i).clone());
+		}
+		return out;
+	}
 
 	/**
 	 * returns the Position
@@ -378,6 +353,9 @@ public class Entity {
 		return !(blocked || moveCounter == 0);
 	}
 
+	/**
+	 * intitalises the rangeMoves-Vector
+	 */
 	private void initialiseMoves() {
 		rangeMoves = new Vector<Vector<Move>>(maxRange);
 		for(int i = 0; i < maxRange; ++i) {
@@ -395,44 +373,5 @@ public class Entity {
 	public void setAllMoves(Vector<Vector<Move>> moves, int[][] reach) {
 		rangeMoves = moves;
 		reachable = reach;
-	}
-
-	/**
-	 * Method used for TextIO and BViewer. Checks, which type of entity we have and gives
-	 * the right color and symbol
-	 */
-	public String toString() {
-		String col;
-		String s;
-		if(color == PlayerColor.RED) {
-			if(blocked) {
-				col = ANSI_WHITE;
-			}
-			else if (height == maxHeight) {
-				col = ANSI_YELLOW;
-			}
-			else {
-				col = ANSI_RED;
-			}
-		}
-		else {
-			if(blocked) {
-				col = ANSI_CYAN;
-			}
-			else if (height == maxHeight){
-				col = ANSI_PURPLE;
-			}
-			else {
-				col = ANSI_BLUE;
-			}
-
-		}
-		if(base) {
-			s = col + " B " + RESET;
-		}
-		else  {
-			s = col + (height != 0 ? " T " + height : " S ") + RESET;
-		}
-		return s;
 	}
 }
