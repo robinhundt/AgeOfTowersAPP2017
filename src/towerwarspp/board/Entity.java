@@ -68,7 +68,10 @@ public class Entity {
 	 */
 	private int moveCounter = 0;
 
-	private final int movesMaxN;
+	/**
+	 * The maximum range, which is possible with this boardsize
+	 */
+	private final int maxRange;
 
 	/**
 	 * Constructor for the Entity-Object
@@ -111,7 +114,7 @@ public class Entity {
 		this.color = color;
 		this.size = size;
 		maxHeight = size/3;
-		movesMaxN = 6*maxHeight+2;
+		maxRange = 6*maxHeight+2;
 		initialiseMoves();
 		/*reachable = new int[6*maxHeight+2][size+1];
 		rangeMoves = new Vector<Vector<Position>>(6*maxHeight+2);
@@ -129,6 +132,22 @@ public class Entity {
 	public Entity (Position pos, PlayerColor color, int size, boolean base) {
 		this(pos, color, size);
 		this.base = base;
+	}
+
+	/**
+	 * Copy-Constructor
+	 * @param copy Entity to b copied 
+	 */
+	public Entity(Enity copy) {
+		this.pos = copy.getPosition();
+		this.color = copy.getColor();
+		this.size = copy.getSize();
+		maxHeight = size/3;
+		reachable = copy.getReachable();
+		rangeMoves = copy.getMoves().clone();
+		this.range = copy.getRange();
+		this.blocked = copy.isBlocked();
+		this.base = copy.isBase();
 	}
 
 	/**
@@ -346,11 +365,11 @@ public class Entity {
 	}
 
 	private void initialiseMoves() {
-		rangeMoves = new Vector<Vector<Move>>(movesMaxN);
-		for(int i = 0; i < movesMaxN; ++i) {
+		rangeMoves = new Vector<Vector<Move>>(maxRange);
+		for(int i = 0; i < maxRange; ++i) {
 			rangeMoves.add(i, new Vector<Move>(i * 6 + 1));
 		}
-		reachable = new int[movesMaxN][size+1];
+		reachable = new int[maxRange][size+1];
 	}
 	/**
 	 * removes all moves of the entity and sets the range to 1
