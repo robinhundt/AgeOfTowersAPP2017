@@ -101,9 +101,7 @@ public class Game {
                 Thread.sleep(delayTime);
             }
             catch (InterruptedException e) {
-                //TODO clarify when this exception is thrown
                 e.printStackTrace();
-                System.exit(1);
             }
 
             if(hasView) {
@@ -112,13 +110,13 @@ public class Game {
         }
 
         if (board.getStatus() == RED_WIN) {
-            return new Result(RED, winnerMoves(moveCounter), WinType.BASE_DESTROYED); //TODO WinType
+            return new Result(RED, winnerMoves(moveCounter), board.getWinType()); //TODO WinType
         }
         else if (board.getStatus() == BLUE_WIN) {
-            return new Result(BLUE, winnerMoves(moveCounter), WinType.BASE_DESTROYED); //TODO WinType
+            return new Result(BLUE, winnerMoves(moveCounter), board.getWinType()); //TODO WinType
         }
         else {
-            return new Result(currentColor, winnerMoves(moveCounter), WinType.ILLEGAL_MOVE);
+            return new Result(currentColor, winnerMoves(moveCounter), board.getWinType());
         }
 
     }

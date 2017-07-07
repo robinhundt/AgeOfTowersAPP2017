@@ -66,7 +66,7 @@ public class TResult {
         }
 
         totalMoves[winnerIndex] += result.winnerMoves;
-        avgMoves[winnerIndex] = (avgMoves[winnerIndex] * (wins[winnerIndex] -1) + result.winnerMoves) / wins[winnerIndex];
+        avgMoves[winnerIndex] = (double) totalMoves[winnerIndex]/wins[winnerIndex];
         swappedPlayers = !swappedPlayers;
 
     }
@@ -86,7 +86,7 @@ public class TResult {
                 "-wins per illegal move of blue:\t " + illegalMove[RED] + "\n" +
                 "-wins per immobility of blue:\t " + noPosMoves[RED] + "\n" +
                 "-total moves: \t " + totalMoves[RED] + "\n" +
-                "-average amount of moves per win:\t " + String.format("%.3f" ,avgMoves[RED]) + "\n" +
+                "-average amount of moves per win:\t " + String.format("%.1f" ,avgMoves[RED]) + "\n" +
 
                 "\n" +
                 "Blue:\n" +
@@ -96,7 +96,7 @@ public class TResult {
                 "-wins per illegal move of red:\t " + illegalMove[BLUE] + "\n" +
                 "-wins per immobility of red:\t " + noPosMoves[BLUE] + "\n" +
                 "-total moves: \t " + totalMoves[BLUE] + "\n" +
-                "-average amount of moves per win:\t " + String.format("%.3f" ,avgMoves[BLUE]) + "\n";
+                "-average amount of moves per win:\t " + String.format("%.1f" ,avgMoves[BLUE]) + "\n";
 
 
     }
