@@ -73,6 +73,7 @@ public class Tournament {
     public TResult play() {
         /*create new TResult object to collect information*/
         tResult = new TResult();
+        int red = 0, blue = 1;
 
         /*start as many games as wanted*/
         for (int i=1; i<=games; i++) {
@@ -83,7 +84,6 @@ public class Tournament {
             //TODO graphic output of game no.
 
             /*switch players to get a fair tournament*/
-            int red = 0, blue = 1;
             if (i>1) {
                 int tmp = red;
                 red = blue;

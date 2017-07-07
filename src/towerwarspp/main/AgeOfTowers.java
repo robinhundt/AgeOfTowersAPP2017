@@ -160,7 +160,8 @@ public class AgeOfTowers {
         Player player = null;
         try {
             /*create remote object with given, or default, port and host*/
-            Remote remote = ap.isSet("port") ? new Remote(ap.getHost(), ap.getPort()) : new Remote(ap.getHost());
+            String host = ap.isSet("host") ? ap.getHost() : "localhost";
+            Remote remote = ap.isSet("port") ? new Remote(host, ap.getPort()) : new Remote(host);
             /*set player as given*/
             player = ap.isSet("name") ? remote.find(ap.getName()) : remote.find();
         } catch (Exception e) {
@@ -300,7 +301,7 @@ public class AgeOfTowers {
                 "Flags start with '--' and do not need parameter. All flags are optional.\n" +
 
                 "\nSETTINGS: \n" +
-                "-offer \t chose player type \n" +
+                "-offer \t chose player type to offer . Can not be remote \n" +
                 "-name  \t chose name for the player, none other settings need to be set" +
 
                 "if -offer is NOT set, obligatory settings are: \n" +
@@ -308,11 +309,11 @@ public class AgeOfTowers {
                 "-blue \t chose player type for blue \n" +
                 "-size \t chose board size \n" +
 
-                "optional settings are:\n" +
+                "optional settings for finding players are:\n" +
                 "---- only together and if network game is wanted ---- \n" +
-                "-host \t ip-address of device you want to connect with \n" +
-                "-name \t name of concrete player you want to connect with, if none is given, every offered player are displayed \n" +
-                "-port \n" +
+                "-host \t ip-address or resolvable name (eg cip name) of device you want to connect with \n" +
+                "-name \t name of concrete player you want to connect with, if none is given, all available players are displayed \n" +
+                "-port \t port to either offer player on or look for player on host\n" +
                 "------------ \n" +
                 "-games  \t activates tournament mode and sets number of games for the tournament \n" +
                 "        \t (beware that at every other game, the player colors are changing, so if you are starting \n" +
