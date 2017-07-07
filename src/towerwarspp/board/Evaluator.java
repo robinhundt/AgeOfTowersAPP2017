@@ -50,60 +50,99 @@ public class Evaluator extends SimpleBoard{
 		while(!stack.empty() && stack.peek().getOrder() == order) {
 			Change change = stack.pop();
 			switch (change.getArt()) {
-				case MOVE_ADDED: undoMoveAdded(); break;
-				case MOVE_REMOVED: undoMoveRemoved(); break;
-				case ALL_MOVES_REMOVED: { undoAllMovesRemoved(); break; }
-				case RANGE_INC: { undoRangeIncrease(); break; }
-				case RANGE_DEC: undoRangeDecrease(); break;
-				case ENTITY_ADDED: undoEntityAdded(); break;
-				case ENTITY_REMOVED: undoEntityRemoved(); break;
-				case POSITION_CHANGED: undoPositionChanged(); break;
-				case ELEMENT_REPLACED: undoElementReplaced(); break;
-				case HEIGHT_INCREASED: undoHeightIncreased(); break;
-				case HEIGHT_DECREASED: undoHeightDecreased(); break;
-				case TOWER_BLOCKED: undoTowerBlocked(); break;
-				case TOWER_UNBLOCKED: undoTowerUnblocked();
+				case MOVE_ADDED: undoMoveAdded(change); break;
+				case MOVE_REMOVED: undoMoveRemoved(change); break;
+				case ALL_MOVES_REMOVED: undoAllMovesRemoved(change); break;
+				case RANGE_INC: undoRangeIncrease(change); break;
+				case RANGE_DEC: undoRangeDecrease(change); break;
+				case ENTITY_ADDED: undoEntityAdded(change); break;
+				case ENTITY_REMOVED: undoEntityRemoved(change); break;
+				case POSITION_CHANGED: undoPositionChanged(change); break;
+				case ELEMENT_REPLACED: undoElementReplaced(change); break;
+				case HEIGHT_INCREASED: undoHeightIncreased(change); break;
+				case HEIGHT_DECREASED: undoHeightDecreased(change); break;
+				case TOWER_BLOCKED: undoTowerBlocked(change); break;
+				case TOWER_UNBLOCKED: undoTowerUnblocked(change);
 			}	 
 		}
 	}
-	private void undoMoveAdded() {
+	private void undoMoveAdded(Change change) {
+		Entity ent = change.getEntity();
+		try{
+			ent.removeMove(change.getMoveEndPos(), change.getRange());
+		}
+		catch(Exception e) {
+			System.out.println("Mistake in Evaluator");
+		}
+	}
+	private void undoMoveRemoved(Change change) {
+		Entity ent = change.getEntity();
+		try{
+			ent.addMove(change.getMoveEndPos(), change.getRange());
+		} 
+		catch(Exception e) {
+			System.out.println("Mistake in Evaluator");
+		}
+	}
+	private void undoAllMovesRemoved(Change change) {
+		Entity ent = change.getEntity();
+		try{
+			ent.setAllMoves(change.getAllMoves(), change.getReachable());
+		} 
+		catch(Exception e) {
+			System.out.println("Mistake in Evaluator");
+		}
+	}
+	private void undoRangeIncrease(Change change) {
+		Entity ent = change.getEntity();
+		ent.decRange();
+	}
+	private void undoRangeDecrease(Change change) {
+		Entity ent = change.getEntity();
+		try {
+			ent.incRange(change.getRangeMoves(), change.getRangeReachable());
+		} 
+		catch(Exception e) {
+			System.out.println("Mistake in Evaluator");
+		}
+	}
+	private void undoEntityAdded(Change change) {
+		Entity ent = change.getEntity();
+		Vector<Entity> list= (ent.getColor() == RED? listRed: listBlue);
+		list.remove(ent);
+	}
+	private void undoEntityRemoved(Change change) {
+		Entity ent = change.getEntity();		
+		Vector<Entity> list = (ent.getColor() == RED? listRed: listBlue);
+		list.add(ent);
+	}
+	private void undoPositionChanged(Change change) {
 
 	}
-	private void undoMoveRemoved() {
-
+	private void undoElementReplaced(Change change) {
+		try {
+			Position pos = change.getPosition();
+			board[pos.getLetter()][pos.getNumber()] = change.getEntity();
+		} 
+		catch(Exception e) {
+			System.out.println("Mistake in Evaluator");
+		}
 	}
-	private void undoAllMovesRemoved() {
-
+	private void undoHeightIncreased(Change change) {
+		Entity tower = change.getEntity();
+		tower.decHeight();
 	}
-	private void undoRangeIncrease() {
-
+	private void undoHeightDecreased(Change change) {
+		Entity tower = change.getEntity();
+		tower.incHeight();
 	}
-	private void undoRangeDecrease() {
-
+	private void undoTowerBlocked(Change change) {
+		Entity tower = change.getEntity();
+		tower.setBlocked(false);
 	}
-	private void undoEntityAdded() {
-
-	}
-	private void undoEntityRemoved() {
-
-	}
-	private void undoPositionChanged() {
-
-	}
-	private void undoElementReplaced() {
-
-	}
-	private void undoHeightIncreased() {
-
-	}
-	private void undoHeightDecreased() {
-
-	}
-	private void undoTowerBlocked() {
-
-	}
-	private void undoTowerUnblocked() {
-
+	private void undoTowerUnblocked(Change change) {
+		Entity tower = change.getEntity();
+		tower.setBlocked(true);
 	}
 	/**
 	* Puts the specified figure on the specified position on the board.
@@ -186,12 +225,8 @@ public class Evaluator extends SimpleBoard{
 	*/
 	private void addToList(Entity ent) {
 		stack.push(new Change(ent, ENTITY_ADDED, order));
-		if(ent.getColor() == RED) {
-			listRed.add(ent);
-		}
-		else {
-			listBlue.add(ent);
-		}
+		Vector<Entity> list = (ent.getColor() == RED? listRed: listBlue);
+		list.add(ent);
 	}
 	/**
 	* Removes the specified figure from the the list of movable figures of the corresponding color.
@@ -199,8 +234,8 @@ public class Evaluator extends SimpleBoard{
 	*/
 	private void removeFromList(Entity ent) {
 		stack.push(new Change(ent, ENTITY_REMOVED, order));
-		if(ent.getColor() == RED) listRed.remove(ent);
-		else listBlue.remove(ent);
+		Vector<Entity> list = (ent.getColor() == RED? listRed: listBlue);
+		list.remove(ent);
 	}
 
 	public Vector<Move> allPossibleMoves(PlayerColor col) {

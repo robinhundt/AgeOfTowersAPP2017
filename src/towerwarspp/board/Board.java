@@ -9,7 +9,8 @@ import java.util.ListIterator;
 import java.lang.Exception;
 
 public class Board extends SimpleBoard {
-
+	public static final int WIN = Integer.MAX_VALUE;
+	public static final int LOSE = Integer.MIN_VALUE;
  	/**
         * Initialises a new object of the class PlayerBoard.
         * @param n - size of the new board.
@@ -34,13 +35,12 @@ public class Board extends SimpleBoard {
 	*/
 	public int scoreMove(Move move, PlayerColor col) {
 		Evaluator evaluator = new Evaluator(size, turn, listRed, listBlue, board, redBase, blueBase);
+		Status prediction = evaluator.evaluate(move, 2);
+		switch(prediction) {
+			case RED_WIN: return (col == RED? WIN: LOSE);
+			case BLUE_WIN: return (col == RED? LOSE: WIN);
+		}
 		Position endPos = move.getEnd();
-		if (col == RED && endPos.equals(blueBase)) {
-			return Integer.MAX_VALUE;
-		}
-		if (col == BLUE && endPos.equals(blueBase)) {
-			return Integer.MAX_VALUE;
-		}
 		Entity opponent = board[endPos.getLetter()][endPos.getNumber()];
 		Position base = (col == RED? blueBase: redBase);
 		int res =  distance(move.getStart(), base) - distance(endPos, base);

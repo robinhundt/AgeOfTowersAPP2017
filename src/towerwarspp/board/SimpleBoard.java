@@ -714,16 +714,16 @@ public class SimpleBoard implements Viewable {
 	* @param ent the figure in question.
 	*/
 	private void addToList(Entity ent) {
-		if(ent.getColor() == RED) listRed.add(ent);
-		else listBlue.add(ent);
+		Vector<Entity> list = (ent.getColor() == RED? listRed: listBlue);
+		list.add(ent);
 	}
 	/**
 	* Removes the specified figure from the the list of movable figures of the corresponding color.
 	* @param ent the figure in question.
 	*/
 	private void removeFromList(Entity ent) {
-		if(ent.getColor() == RED) listRed.remove(ent);
-		else listBlue.remove(ent);
+		Vector<Entity> list = (ent.getColor() == RED? listRed: listBlue);
+		list.remove(ent);
 	}
 	/**
 	* Returns true if at least one of the entities returned by the iterator in the argument can be moved.

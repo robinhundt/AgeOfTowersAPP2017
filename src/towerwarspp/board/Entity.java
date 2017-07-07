@@ -359,7 +359,10 @@ public class Entity {
 		initialiseMoves();
 		range = 1;
 	}
-
+	public void setAllMoves(Vector<Vector<Move>> moves, int[][] reach) {
+		rangeMoves = moves;
+		reachable = reach;
+	}
 
 	/**
 	 * Method used for TextIO and BViewer. Checks, which type of entity we have and gives
