@@ -24,7 +24,7 @@ public class TResult {
     int noPosMoves[];
     int illegalMove[];
     int surrender[];
-    int avgMoves[];
+    double avgMoves[];
     int totalMoves[];
 
 
@@ -37,7 +37,7 @@ public class TResult {
         noPosMoves = new int[2];
         illegalMove = new int[2];
         surrender = new int[2];
-        avgMoves = new int[2];
+        avgMoves = new double[2];
         totalMoves = new int[2];
 
 
@@ -86,7 +86,7 @@ public class TResult {
                 "-wins per illegal move of blue:\t " + illegalMove[RED] + "\n" +
                 "-wins per immobility of blue:\t " + noPosMoves[RED] + "\n" +
                 "-total moves: \t " + totalMoves[RED] + "\n" +
-                "-average amount of moves per win:\t " + avgMoves[RED] + "\n" +
+                "-average amount of moves per win:\t " + String.format("%.3f" ,avgMoves[RED]) + "\n" +
 
                 "\n" +
                 "Blue:\n" +
@@ -96,7 +96,7 @@ public class TResult {
                 "-wins per illegal move of red:\t " + illegalMove[BLUE] + "\n" +
                 "-wins per immobility of red:\t " + noPosMoves[BLUE] + "\n" +
                 "-total moves: \t " + totalMoves[BLUE] + "\n" +
-                "-average amount of moves per win:\t " + avgMoves[BLUE] + "\n";
+                "-average amount of moves per win:\t " + String.format("%.3f" ,avgMoves[BLUE]) + "\n";
 
 
     }
