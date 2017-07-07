@@ -9,7 +9,7 @@ public interface Viewer {
    	int getSize();
 	PlayerColor getTurn();
 	Status getStatus();
-	MoveList getPossibleMoves(Position p) throws Exception;
+	//MoveList getPossibleMoves(Position p) throws Exception;
 	boolean isTower(Position pos);
 	boolean isStone(Position pos);
 	boolean isBlocked(Position pos);	

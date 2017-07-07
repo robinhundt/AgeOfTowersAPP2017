@@ -56,66 +56,14 @@ public class Board extends SimpleBoard {
 		}
 		return res;
 	}
-	/**
-	* Returns all possible moves which a player with the color {@link col} has.
-	* @param col - player's color.
-	* @return
-	*	a vector with all possible moves of the player packed in {@link MoveList} objects or an empty vector if there are no such moves.
-	*/
-	public Vector<MoveList> getAllPossibleMoves(PlayerColor col) throws Exception {
-		Vector<MoveList> moves = new Vector<MoveList>();
-		ListIterator<Entity> it = (col == RED? listRed.listIterator(): listBlue.listIterator());
-		while(it.hasNext()) {
-			Entity ent = it.next();
-			if(ent.movable()) {
-				moves.add(new MoveList(ent));
-			}
-		}
-		return moves;
-	}
-	/**
-	* Returns all possible moves which a figure (stone, tower, base) on the position pos has.
-	* @param p - position of the figure.
-	* @return
-	*	a vector with all possible moves which the specified figure has.
-	*/
-	/*public Vector<Moves> stoneMoves(Position p) throws Exception {
-		if (p == null) throw new Exception("IllegalArgumentException");
-		Entity ent = board[p.getLetter()][p.getNumber()];
-		return ent.getMoves().toArray(new Move[ent.getMovesNumber()]);
-	}*/
-	/*public Move[] stoneMoves(Position p) throws Exception {
-		return null;
-	}*/
+
 	public Vector<Move> allPossibleMoves(PlayerColor col) {
-		Vector<Move> allMoves = new Vector<Move>(size*size);
-		ListIterator<Entity> it = (col == RED? listRed.listIterator(): listBlue.listIterator());
-		while(it.hasNext()) {
-			Entity ent = it.next();
-			if(ent.movable()) {
-				int range = ent.getRange();
-				Vector<Vector<Position>> entMoves = ent.getMoves();
-				for(int i = 1; i <= range; ++i) {
-					ListIterator<Position> itMoves = entMoves.get(i).listIterator();
-					while(itMoves.hasNext()) {
-						allMoves.add(new Move(ent.getPosition(), itMoves.next()));
-					}
-				}
-			}
+		Vector<Move> allMoves = new Vector<Move>();
+		Vector<Entity> list = (col == RED? listRed: listBlue);
+		for(Entity ent: list) {
+			getEntityMoves(ent, allMoves);
 		}
 		return allMoves;
 	}
 
-	/**
-	* Creates and returns a new {@link MoveList} object with all possible moves
-	* which a figure (stone, tower, base) on the position {@link p} has
-	* @param p - position of the figure.
-	* @return
-	*	a {@link MoveList} with all possible moves which the specified figure has.
-	*/
-	public MoveList getStoneMoves(Position p) throws Exception {
-		Entity ent = board[p.getLetter()][p.getNumber()];
-		if (ent == null) throw new Exception ("Position is empty");
-		return new MoveList(ent);
-	}
 }

@@ -191,7 +191,7 @@ public class SimpleBoard implements Viewable {
 		return res;
 	}
 	/**
-	* Prooves if the coordinates x and y in the argument lay on the board. If so, 
+	* Proves if the coordinates x and y in the argument lay on the board. If so, 
 	* a new Position object with these coordinates will be added to the specified vector of positions. 
 	* @x x-coordinate in question.
 	* @y y-coordinate in question.
@@ -392,7 +392,7 @@ public class SimpleBoard implements Viewable {
 			actualiseTowerAddStone(tower);
 	}
 	/**
-	* Prooves if there is a tower on the position pos which is not blocked and has color different from the col.
+	* Proves if there is a tower on the position pos which is not blocked and has color different from the col.
 	* If so, adds a new move - to the position emptyPos - to the tower's possible moves.
 	* @param emptyPos the newly empty position.
 	* @param pos some other position on the board neigbouring to emptyPos.
@@ -414,9 +414,18 @@ public class SimpleBoard implements Viewable {
 	*	of the specified color (forAll == true) or only for those which can reach the position with a remote move (forAll == false).
 	*/
 	private void positionClosed(Position closedPos, PlayerColor col, boolean forAll) {
-		ListIterator<Entity> it = (col == RED? listRed.listIterator(): listBlue.listIterator());
+		/*ListIterator<Entity> it = (col == RED? listRed.listIterator(): listBlue.listIterator());
 		while(it.hasNext()) {
 			Entity ent = it.next();
+			int dist = distance(closedPos, ent.getPosition());
+			if (!forAll && dist == 1) 
+				continue;
+			if(ent.hasMove(closedPos, dist)) {
+				removeMove(ent, closedPos, dist);
+			}
+		}*/
+		Vector<Entity> list = (col == RED? listRed: listBlue);
+		for(Entity ent: list) {
 			int dist = distance(closedPos, ent.getPosition());
 			if (!forAll && dist == 1) 
 				continue;
@@ -466,10 +475,10 @@ public class SimpleBoard implements Viewable {
 	*	lose as a result of blocking or dismantling of the tower in question.
 	*/
 	private void actualiseTowerBlockedOrDecreased(Entity tower, int change) {
-		ListIterator<Position> it = tower.getMoves().get(1).listIterator();
+		Vector<Move> moves = tower.getMoves().get(1);
 		Position pos;
-		while(it.hasNext()) {
-			pos = it.next();
+		for(Move move: moves) {
+			pos = move.getEnd();
 			Entity ent = getElement(pos);
 			if(ent == null || ent.isTower()) 
 				continue;
@@ -492,10 +501,10 @@ public class SimpleBoard implements Viewable {
 	*	gain as a result of creating, increasing or unblocking of the tower in question.
 	*/
 	private void actualiseTowerUnblockedOrIncreased(Entity tower, int change) {
-		ListIterator<Position> it = tower.getMoves().get(1).listIterator();
+		Vector<Move> moves = tower.getMoves().get(1);
 		Position pos;
-		while(it.hasNext()) {
-			pos = it.next();
+		for(Move move: moves) {
+			pos = move.getEnd();
 			Entity ent = getElement(pos);
 			if(ent == null || ent.isTower()) 
 				continue;
@@ -629,12 +638,12 @@ public class SimpleBoard implements Viewable {
 			return BLUE_WIN;
 		}
 		if (turn == BLUE) {
-			if (!hasMoves (listRed.listIterator())) {
+			if (!hasMoves (listRed)) {
 				return BLUE_WIN;
 			}
 		}
 		else {
-			if (!hasMoves (listBlue.listIterator())) {
+			if (!hasMoves (listBlue)) {
 				return RED_WIN;
 			}
 		}
@@ -723,16 +732,30 @@ public class SimpleBoard implements Viewable {
 	}
 	/**
 	* Returns true if at least one of the entities returned by the iterator in the argument can be moved.
-	* @param it iterator over a list of Entities (listRed or listBlue) for which the move possibility has to be prooved.
+	* @param it iterator over a list of Entities (listRed or listBlue) for which the move possibility has to be proved.
 	* @return true if at least one of the entities returned by the iterator it can be moved.
 	*/
-	private boolean hasMoves (ListIterator<Entity> it) {
-		while(it.hasNext()) {
-			Entity ent = it.next();
+	private boolean hasMoves (Vector<Entity> list) {
+		for(Entity ent: list) {
 			if(ent.movable()) {
 				return true;
 			}
 		}
 		return false;
+	}
+	
+	/**
+	* Adds all possible moves of the specified figure to the specified vector moves.
+	* @param ent the figure whose moves are to be added to the vector moves.
+	* @moves vector to which all possible moves of the specified figure have to be added.
+	*/
+	public void getEntityMoves(Entity ent, Vector<Move> moves) {
+		if(ent.movable()) {
+			int range = ent.getRange();
+			Vector<Vector<Move>> entMoves = ent.getMoves();
+			for(int i = 1; i <= range; ++i) {
+				moves.addAll(entMoves.get(i));
+			}
+		}
 	}
 }

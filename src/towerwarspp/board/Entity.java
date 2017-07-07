@@ -51,7 +51,7 @@ public class Entity {
 	/**
 	 * this array of vectors shows, which moves are available for every range
 	 */
-	private Vector<Vector<Position>> rangeMoves;
+	private Vector<Vector<Move>> rangeMoves;
 
 	/**
 	 * size of the gamefield
@@ -135,7 +135,7 @@ public class Entity {
 	 * Returns all Moves, which are possible for a specific range
 	 * @return the Vector of positions
 	 */
-	public Vector<Position> getRangeMoves(int range) {
+	public Vector<Move> getRangeMoves(int range) {
 		return rangeMoves.elementAt(range);
 	}
 
@@ -188,8 +188,12 @@ public class Entity {
 	/**
 	 * returns the Vector of Vector of the possible Moves
 	 */
-	public Vector<Vector<Position>> getMoves() {
+	public Vector<Vector<Move>> getMoves() {
 		return rangeMoves;
+	}
+
+	public int[][] getReachable() {
+		return reachable;
 	}
 
 	/**
@@ -260,7 +264,7 @@ public class Entity {
 	 */
 	public void decRange() {
 		moveCounter-= rangeMoves.elementAt(range).size();
-		rangeMoves.set(range, new Vector<Position>());
+		rangeMoves.set(range, new Vector<Move>());
 		for(int i = 0; i <= size; i++) {
 			reachable[range][i] = 0;
 		}
@@ -281,12 +285,13 @@ public class Entity {
 	 * @param rangeVector movevector for specific range
 	 * @param reachableRange reachable-array for specific range
 	 */
-	public void incRange(Vector<Position> rangeVector, int[] reachableRange) {
+	public void incRange(Vector<Move> rangeVector, int[] reachableRange) {
 		range++;
 		rangeMoves.set(range, rangeVector);
-		for(int i = 0; i < size; i++) {
+		/*for(int i = 0; i < size; i++) {
 			reachable[range][i] = reachableRange[i];
-		}
+		}*/
+		reachable[range] = reachableRange;
 	}
 
 	/**
@@ -299,7 +304,7 @@ public class Entity {
 		int temp = 1 << end.getLetter();
 		if(!hasMove(end, range)){
 			reachable[range][end.getNumber()] |=  temp;
-			rangeMoves.elementAt(range).add(end);
+			rangeMoves.elementAt(range).add(new Move(pos, end));
 			moveCounter++;
 		}
 	}
@@ -314,7 +319,7 @@ public class Entity {
 		int temp = 1 << end.getLetter();
 		if(hasMove(end, range)) {
 			reachable[range][end.getNumber()] ^=  temp;
-			rangeMoves.elementAt(range).remove(end);
+			rangeMoves.elementAt(range).remove(new Move(pos, end));
 			moveCounter--;
 		}
 	}
@@ -341,9 +346,9 @@ public class Entity {
 	}
 
 	private void initialiseMoves() {
-		rangeMoves = new Vector<Vector<Position>>(movesMaxN);
+		rangeMoves = new Vector<Vector<Move>>(movesMaxN);
 		for(int i = 0; i < movesMaxN; ++i) {
-			rangeMoves.add(i, new Vector<Position>(i * 6 + 1));
+			rangeMoves.add(i, new Vector<Move>(i * 6 + 1));
 		}
 		reachable = new int[movesMaxN][size+1];
 	}

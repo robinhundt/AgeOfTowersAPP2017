@@ -28,35 +28,17 @@ public class BViewer implements Viewer {
 	public PlayerColor getTurn() {
 		return boardO.getTurn();
 	}
+	
     	public Vector<Move> possibleMoves(Position pos) throws Exception {
 		Entity ent = getElement(pos);
-		if (ent == null) throw new Exception ("Position is empty");
-		Vector<Move> moves = new Vector<Move>();
-		if(ent.movable()) {
-			int range = ent.getRange();
-			Vector<Vector<Position>> entMoves = ent.getMoves();
-			for(int i = 1; i <= range; ++i) {
-				ListIterator<Position> itMoves = entMoves.get(i).listIterator();
-				while(itMoves.hasNext()) {
-					moves.add(new Move(ent.getPosition(), itMoves.next()));
-				}
-			}
+		if (ent == null) {
+			throw new Exception ("Position is empty");
 		}
+		Vector<Move> moves = new Vector<Move>();
+		boardO.getEntityMoves(ent, moves);
 		return moves;
 	}
 
-	/**
-	* Creates and returns a new {@link MoveList} object with all possible moves
-	* which a figure (stone, tower, base) on the position {@link p} has
-	* @param p - position of the figure.
-	* @return
-	*	a {@link MoveList} with all possible moves which the specified figure has.
-	*/
-	public MoveList getPossibleMoves(Position p) throws Exception {
-		Entity ent = getElement(p);
-		if (ent == null) throw new Exception ("Position is empty");
-		return new MoveList(ent);
-	}
 	public boolean isTower(Position pos) {
 		Entity ent = getElement(pos);
 		return (ent != null && ent.isTower());

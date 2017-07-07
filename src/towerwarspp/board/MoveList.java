@@ -23,9 +23,9 @@ public class MoveList {
 		/**
 		* Iterator over the collection of all positions which the specified figure can reach.
 		*/
-		private Iterator<Position> it;
+		private Iterator<Move> it;
 
-		private Iterator<Vector<Position>> itMoves;
+		private Iterator<Vector<Move>> itMoves;
 
 		private int curList;
 
@@ -58,7 +58,7 @@ public class MoveList {
 		*	NoSuchElementException - if the iteration has no more elements.
 		*/
 		public Move next() {
-			Move next = new Move(start, it.next());
+			Move next = it.next();
 			actualiseIterator();
 			return next;
 		}
@@ -82,7 +82,7 @@ public class MoveList {
 	/*
 	* Collection of all positions which the specified figure can reach (end positions of the moves). 
 	*/
-	private Vector<Vector<Position>> moves;
+	private Vector<Vector<Move>> moves;
 
 	int range;
 	int size;
@@ -120,8 +120,8 @@ public class MoveList {
 		for(; moves.get(i).size() < index; ++i) {
 			index -= moves.get(i).size();
 		}
-		Position end = moves.get(i).get(index-1);
-		return new Move(start, end); 
+		Move move = moves.get(i).get(index);
+		return move; 
 	}
 	/**
 	* Returns the number of elements in this MoveList.

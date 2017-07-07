@@ -10,39 +10,51 @@ import java.util.ListIterator;
 import java.lang.Exception;
 
 public class Change {
-	ChangeArt art;
-	Position position;
-	Entity ent = null;
-	Move move = null;
-	Vector<Move> moves = null;
-	int step = -1;
-//ENTITY_ADDED, ENTITY_REMOVED, TOWER_INCRESE, TOWER_DECREASE, TOWER_BLOCKED, TOWER_UNBLOCKED
-	public Change(Entity ent, ChangeArt art) {
+	private ChangeArt art;
+	private Position position;
+	private Entity ent = null;
+	private Position moveEndPos = null;
+	private Vector<Move> rangeMoves = null;
+	private int[] rangeReachable = null;
+	private Vector<Vector<Move>> allMoves = null;
+	private int[][] reachable = null;
+	private int range = -1;
+	private int order;
+//ENTITY_ADDED, ENTITY_REMOVED, HEIGHT_INCREASED, HEIGHT_DECREASED, TOWER_BLOCKED, TOWER_UNBLOCKED, RANGE_INC
+	public Change(Entity ent, ChangeArt art, int order) {
 		this.ent = ent;
 		this.art = art;
+		this.order = order;
 	}
 //MOVE_ADDED, MOVE_REMOVED
-	public Change(Entity ent, Move move, int step, ChangeArt art) {
-		this.ent = ent;
-		this.move = move;
-		this.step = step;
-		this.art = art; 
+	public Change(Entity ent, Position moveEndPos, int range, ChangeArt art, int order) {
+		this(ent, art,  order);
+		this.moveEndPos = moveEndPos;
+		this.range = range;
 	}
-// STEP_REMOVED	
-	public Change(Entity ent, Vector<Move> moves, int step) {
-		this.ent = ent;
-		this.moves = moves;
-		this.step = step;
-		this.art = STEP_REMOVED;
+// RANGE_DEC	
+	public Change(Entity ent, Vector<Move> rangeMoves, int[] rangeReachable, int range, int order) {
+		this(ent, RANGE_DEC, order);
+		this.rangeMoves = rangeMoves;
+		this.rangeReachable = rangeReachable;
+		this.range = range;
 	}
-// STEP_ADDED
-	public Change(Entity ent, int step) {
-		this.ent = ent;
-		this.step = step;
-		this.art = STEP_ADDED;
+// ALL_MOVES_REMOVED
+	public Change(Entity ent, Vector<Vector<Move>> allMoves, int[][] reachable, int order) {
+		this(ent, ALL_MOVES_REMOVED, order);
+		this.allMoves = allMoves;
+		this.reachable = reachable;
+	}
+// ELEMENT_REPLACED, POSITION_CHANGED
+	public Change(Entity ent, Position pos, ChangeArt art, int order) {
+		this(ent, art, order);
+		this.position = pos;
 	}
 	public ChangeArt getArt() {
 		return art;
+	}
+	public int getOrder() {
+		return order;
 	}
 	public Entity getEntity() {
 		return ent;
@@ -52,29 +64,70 @@ public class Change {
 	*
 	* @throws Exception if this change's art is not MOVE_ADDED or MOVE_REMOVED
 	*/
-	public Move getMove() throws Exception {
-		if (move == null)
+	public Position getMoveEndPos() throws Exception {
+		if (moveEndPos == null)
 			throw new Exception("Illegal operation in Change: move == null");
-		return move;
+		return moveEndPos;
 	}
 	/**
 	*
 	*
-	* @throws Exception if this change's art is not MOVE_ADDED or MOVE_REMOVED
+	* @throws Exception if this change's art is not RANGE_DEC
 	*/
-	public Vector<Move> getMoves() throws Exception {
-		if (moves == null)
-			throw new Exception("Illegal operation in Change: moves == null");
-		return moves;
+	public Vector<Move> getRangeMoves() throws Exception {
+		if (rangeMoves == null)
+			throw new Exception("Illegal operation in Change: rangeMoves == null");
+		return rangeMoves;
+	}
+
+	/**
+	*
+	*
+	* @throws Exception if this change's art is not RANGE_DEC
+	*/
+	public int[] getRangeReachable() throws Exception {
+		if (rangeReachable == null)
+			throw new Exception("Illegal operation in Change: rangeReachable == null");
+		return rangeReachable;
 	}
 	/**
 	*
 	*
-	* @throws Exception if this change's art is not MOVE_ADDED or MOVE_REMOVED
+	* @throws Exception if this change's art is not ALL_MOVES_REMOVED
 	*/
-	public int getStep() throws Exception {
-		if (step < 0)
-			throw new Exception("Illegal operation in Change: step < 0");
-		return step;
+	public Vector<Vector<Move>> getAllMoves() throws Exception{
+		if (allMoves == null)
+			throw new Exception("Illegal operation in Change: allMoves == null");
+		return allMoves;
+	}
+	/**
+	*
+	*
+	* @throws Exception if this change's art is not ALL_MOVES_REMOVED
+	*/
+	public int[][] getReachable() throws Exception{
+		if (reachable == null)
+			throw new Exception("Illegal operation in Change: reachable == null");
+		return reachable;
+	}
+	/**
+	*
+	*
+	* @throws Exception if this change's art is not MOVE_ADDED, MOVE_REMOVED or RANGE_DEC
+	*/
+	public int getRange() throws Exception {
+		if (range < 0)
+			throw new Exception("Illegal operation in Change: range < 0");
+		return range;
+	}
+	/**
+	*
+	*
+	* @throws Exception if this change's art is not ELEMENT_REPLACED or POSITION_CHANGED.
+	*/
+	public Position getPosition() throws Exception {
+		if (position == null)
+			throw new Exception("Illegal operation in Change: position == null");
+		return position;
 	}
 }
