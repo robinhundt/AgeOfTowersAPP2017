@@ -13,6 +13,7 @@ import towerwarspp.network.Remote;
 import towerwarspp.player.HumanPlayer;
 import towerwarspp.player.NetPlayer;
 import towerwarspp.player.RndPlayer;
+import towerwarspp.player.SimplePlayer;
 import towerwarspp.preset.*;
 
 import static towerwarspp.preset.PlayerColor.*;
@@ -172,6 +173,7 @@ public class AgeOfTowers {
             // TODO Split TextIO
             case HUMAN: player = new HumanPlayer(requestable, view); break;
             case RANDOM_AI: player = new RndPlayer(view); break;
+            case SIMPLE_AI: player = new SimplePlayer(); break;
             case REMOTE: player = getRemotePlayer(); break;
             default: System.out.println("Unsupported PlayerType."); System.exit(1);
         }
