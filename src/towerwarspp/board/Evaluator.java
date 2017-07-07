@@ -117,7 +117,13 @@ public class Evaluator extends SimpleBoard{
 		list.add(ent);
 	}
 	private void undoPositionChanged(Change change) {
-
+		try {
+			Position pos = change.getPosition();
+			change.getEntity().setPosition(pos);
+		} 
+		catch(Exception e) {
+			System.out.println("Mistake in Evaluator");
+		}
 	}
 	private void undoElementReplaced(Change change) {
 		try {

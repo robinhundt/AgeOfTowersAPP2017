@@ -23,8 +23,8 @@ public class Board extends SimpleBoard {
 	}
 	public Board clone() {
 		Entity[][] newBoard = new Entity[size+1][size+1];
-		newBoard[1][1] = new Entity(board[1][1]);
-		newBoard[size][size] = new Entity(board[size][size]);
+		newBoard[1][1] = board[1][1].clone();
+		newBoard[size][size] = board[size][size].clone();
 		Vector<Entity> newListRed = cloneEntityList(listRed, newBoard);
 		Vector<Entity> newListBlue = cloneEntityList(listBlue, newBoard);
 		return new Board(size, turn, newListRed, newListBlue, newBoard, redBase, blueBase);
@@ -32,7 +32,7 @@ public class Board extends SimpleBoard {
 	private Vector<Entity> cloneEntityList(Vector<Entity> list, Entity[][] board2) {
 		Vector<Entity> newList = new Vector<Entity>(list.size());
 		for(Entity ent: list) {
-			Entity ent2 = new Entity(ent);
+			Entity ent2 = ent.clone();
 			Position pos = ent2.getPosition();
 			board2[pos.getLetter()][pos.getNumber()] = ent2;
 			newList.add(ent2);
