@@ -144,15 +144,15 @@ public class Entity {
 	public int getSize() {
 		return size;
 	}
-
 	/**
 	 * returns a clone of the rangeMoves
 	 */
-	public Vector<Vector<Move>> getCloneMoves() {
+	private Vector<Vector<Move>> getCloneMoves() {
 		Vector<Vector<Move>> out = new Vector<Vector<Move>>();
-		for(int i = 0; i < rangeMoves.size(); i++) {
-			out.add((Vector<Move>)rangeMoves.elementAt(i).clone());
+		for(Vector<Move> vector : rangeMoves) {
+			out.add(new Vector<>(vector));
 		}
+
 		return out;
 	}
 
