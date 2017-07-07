@@ -122,15 +122,11 @@ public class GraphicIO extends JFrame implements IO {
                 if(e.getButton() == 1) {
                     int mouseX = e.getX();
                     int mouseY = e.getY();
-                    System.out.println("mouse x: " + mouseX + " mouse y: " + mouseY);
                     for(int y = 1; y <= viewer.getSize(); ++y) {
                         for(int x = 1; x <= viewer.getSize(); ++x) {
                             if(polygon[x][y].contains(mouseX, mouseY)) {
-                                System.out.println("x: " + x + " y: " + y);
                                 try {
                                     positionStart = new Position(x, y);
-
-                                    System.out.println("pos: " + positionStart);
                                     if (!viewer.isEmpty(positionStart) && viewer.getTurn() == viewer.getPlayerColor(positionStart)) {
                                         possibleMoves = viewer.possibleMoves(positionStart);
                                         visualize();
@@ -152,7 +148,6 @@ public class GraphicIO extends JFrame implements IO {
                         for(int x = 1; x <= viewer.getSize(); ++x) {
                             if(polygon[x][y].contains(mouseX, mouseY)) {
                                 deliverMove = new Move(positionStart, new Position(x, y));
-                                System.out.println("Move: " + deliverMove);
                                 possibleMoves = null;
                                 wakeUp();
                             }
@@ -195,7 +190,6 @@ public class GraphicIO extends JFrame implements IO {
                 super.paintComponent(g);
                 if (possibleMoves != null) {
                     for (Move move : possibleMoves) {
-                        System.out.println(move + " ");
                         int letter = move.getEnd().getLetter();
                         int number = move.getEnd().getNumber();
 
