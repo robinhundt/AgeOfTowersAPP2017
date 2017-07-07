@@ -1,6 +1,8 @@
 package towerwarspp.main.game;
 
 import towerwarspp.board.Board;
+import towerwarspp.io.GraphicIO;
+import towerwarspp.io.TextIO;
 import towerwarspp.io.View;
 import towerwarspp.main.WinType;
 import towerwarspp.preset.*;
@@ -74,14 +76,16 @@ public class Game {
 
         while (board.getStatus() == OK) {
             moveCounter++;
-            if(view != null)
+            if(view instanceof TextIO) {
                 System.out.println(currentColor + "'s turn");
+            }
 
             currentMove = currentPlayer.request();
 
             board.update(currentMove, currentColor);
 
             if (debug) {
+                if (view instanceof GraphicIO) System.out.println(currentColor + "'s turn");
                 System.out.println(currentColor + "'move :" + currentMove.toString());
                 System.out.println("Status: " + board.getStatus());
             }
