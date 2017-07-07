@@ -4,6 +4,8 @@ import towerwarspp.preset.*;
 import towerwarspp.io.*;
 import static towerwarspp.preset.PlayerColor.*;
 import static towerwarspp.preset.Status.*;
+import static towerwarspp.main.WinType.*;
+import towerwarspp.main.WinType;
 import java.util.Vector;
 import java.util.ListIterator;
 import java.lang.Exception;
@@ -17,6 +19,7 @@ public class SimpleBoard implements Viewable {
         protected Entity[][] board;
         protected Position redBase;
         protected Position blueBase;
+	protected WinType winType = null;
 
         /**
         * Initialises a new object of the Board class.
@@ -141,9 +144,11 @@ public class SimpleBoard implements Viewable {
 	public Status getStatus() {
 		return status;
 	}
-	private void setTurn(PlayerColor t) {
-		turn = t;
+	
+	public WinType getWinType() {
+		return winType;
 	}
+	
 	/**
 	* Calculates the distance between two positions on the board.
 	* @param a the first position.
@@ -239,6 +244,7 @@ public class SimpleBoard implements Viewable {
 		Entity ent = getElement(start);
 		if(col != turn) {
 			status = ILLEGAL;
+			winType = ILLEGAL_MOVE;
 			return status;
 		}
 		if(!moveAllowed(move, col)) {
@@ -441,9 +447,8 @@ public class SimpleBoard implements Viewable {
 	* @param col the of the figures for which the position in question has to be opened.
 	*/
 	private void positionOpened(Position openedPos, PlayerColor col) {
-		ListIterator<Entity> it = (col == RED? listRed.listIterator(): listBlue.listIterator());
-		while(it.hasNext()) {
-			Entity ent = it.next();
+		Vector<Entity> list = (col == RED? listRed: listBlue);
+		for(Entity ent: list) {
 			if(!ent.isBlocked()) {
 				int dist = distance(openedPos, ent.getPosition());
 				if(ent.getRange() >= dist) {
@@ -452,17 +457,7 @@ public class SimpleBoard implements Viewable {
 			}
 		}
 	}
-	/**
-	* Removes the specified number of steps together with all corresponding moves
-	* from the specified figure's list of possible moves.
-	* @param ent the figure in question.
-	* @param n number of steps to be removed. 
-	*/
-	private void removeSteps(Entity ent, int n) {
-		for(int i = 0; i < n; ++i) {
-			decRange(ent);
-		}
-	}
+	
 	/**
 	* Commits changes caused by blocking or dismantling of a tower in respect to its neighbours of the same color.
 	* 1) For each neighbouring stone of the same color: its step width will be decreased and all corresponding
@@ -476,6 +471,10 @@ public class SimpleBoard implements Viewable {
 	*/
 	private void actualiseTowerBlockedOrDecreased(Entity tower, int change) {
 		Vector<Move> moves = tower.getMoves().get(1);
+		if (tower.isBlocked()) {
+			removeAllMoves(tower);
+			System.out.println("tower.isBlocked(): " + tower.isBlocked());
+		}
 		Position pos;
 		for(Move move: moves) {
 			pos = move.getEnd();
@@ -483,7 +482,7 @@ public class SimpleBoard implements Viewable {
 			if(ent == null || ent.isTower()) 
 				continue;
 			else 
-				removeSteps(ent, change);
+				removeRanges(ent, change);
 		}
 		if(tower.isMaxHeight()) {
 			positionOpened(tower.getPosition(), tower.getColor());
@@ -509,7 +508,7 @@ public class SimpleBoard implements Viewable {
 			if(ent == null || ent.isTower()) 
 				continue;
 			else 
-				addSteps(ent, change);
+				addRanges(ent, change);
 		}
 		if(tower.isMaxHeight()) {
 			positionClosed(tower.getPosition(), tower.getColor(), true);
@@ -553,14 +552,10 @@ public class SimpleBoard implements Viewable {
 	* @param tower the tower whose possible moves have to be found.
 	*/
 	private void findTowerMoves(Entity tower) {
-		removeAllMoves(tower);
-		//tower.setMinimalStep();
-		Vector<Position> neighbours = findPositionsInRange(tower.getPosition(), 1);
-		ListIterator<Position> it = neighbours.listIterator();
-		while(it.hasNext()) {
-			Position pos = it.next();
-			if(checkMoveForTower(pos, tower.getColor())) {
-				addMove(tower, pos, 1);
+		Vector<Position> positions = findPositionsInRange(tower.getPosition(), 1);
+		for(Position endPos: positions) {
+			if(checkMoveForTower(endPos, tower.getColor())) {
+				addMove(tower, endPos, 1);
 			}
 		}
 	}
@@ -584,8 +579,7 @@ public class SimpleBoard implements Viewable {
 	*/
 	private void findStoneMoves(Entity stone) {
 		removeAllMoves(stone);
-		//stone.setMinimalStep();
-		int addSteps = 0;	//additional steps
+		int addRanges = 0;	//additional steps
 		Vector<Position> closeNeighbours = findPositionsInRange(stone.getPosition(), 1);
 		ListIterator<Position> it = closeNeighbours.listIterator();
 		while(it.hasNext()) {
@@ -596,7 +590,7 @@ public class SimpleBoard implements Viewable {
 			}
 			if(neighbour != null && neighbour.isTower() && !neighbour.isBlocked()) {
 				if(neighbour.getColor() == stone.getColor()) {
-					addSteps += neighbour.getHeight();
+					addRanges += neighbour.getHeight();
 					addMove(neighbour, stone.getPosition(), 1);
 				} 
 				else {
@@ -604,7 +598,7 @@ public class SimpleBoard implements Viewable {
 				}
 			}
 		}
-		addSteps(stone, addSteps);
+		addRanges(stone, addRanges);
 	}
 	/**
 	* Returns true if a stone of the color col can go to the position pos taking into account the art of the move in question (close or remote one). 
@@ -631,21 +625,13 @@ public class SimpleBoard implements Viewable {
 	*	OK the move was not winning.
 	*/
 	private Status checkWin(Position lastMove) {
-		if (lastMove.equals(blueBase)) {
-			return RED_WIN;
+		if (lastMove.equals((turn == RED? blueBase: redBase))) {
+			winType = BASE_DESTROYED;
+			return (turn == RED? RED_WIN: BLUE_WIN);
 		}
-		if (lastMove.equals(redBase)) {
-			return BLUE_WIN;
-		}
-		if (turn == BLUE) {
-			if (!hasMoves (listRed)) {
-				return BLUE_WIN;
-			}
-		}
-		else {
-			if (!hasMoves (listBlue)) {
-				return RED_WIN;
-			}
+		if (!hasMoves ((turn == RED? listBlue: listRed))) {
+			winType = NO_POSSIBLE_MOVES;
+			return (turn == RED? RED_WIN: BLUE_WIN);
 		}
 		return OK;
 	}
@@ -686,17 +672,26 @@ public class SimpleBoard implements Viewable {
 	* @param stone the figure (stone) whose step width has to be increased.
 	* @param n amount of steps that has to be added.
 	*/
-	private void addSteps(Entity stone, int n) {
+	private void addRanges(Entity stone, int n) {
 		for(int i = 0; i < n; ++i) {
 			incRange(stone);
 			Vector<Position> opponents = findPositionsInRange(stone.getPosition(), stone.getRange());
-			ListIterator<Position> it = opponents.listIterator();
-			while(it.hasNext()) {
-				Position opponentPos = it.next(); 
-				if(checkMoveForStone(opponentPos, stone.getColor(), stone.getRange() )) {
+			for(Position opponentPos: opponents){
+				if(checkMoveForStone(opponentPos, stone.getColor(), stone.getRange())) {
 					addMove(stone, opponentPos, stone.getRange());
 				}
 			}
+		}
+	}
+	/**
+	* Removes the specified number of steps together with all corresponding moves
+	* from the specified figure's list of possible moves.
+	* @param ent the figure in question.
+	* @param n number of steps to be removed. 
+	*/
+	private void removeRanges(Entity ent, int n) {
+		for(int i = 0; i < n; ++i) {
+			decRange(ent);
 		}
 	}
 	private void incRange(Entity ent) {

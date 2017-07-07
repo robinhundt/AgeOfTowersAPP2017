@@ -32,18 +32,77 @@ public class Evaluator extends SimpleBoard{
 	public Status evaluate(Move move, int order) {
 		this.order = order;
 		makeMove(move, turn);
-		int res = 0;
-		if (status == RED_WIN || status == BLUE_WIN) {
-			res = Integer.MAX_VALUE;
-		}
-		else if(order > 1) {
-			//Vector Moves = ;
+		if(order > 1 && !(status == RED_WIN || status == BLUE_WIN)) {
+			Vector<Move> moves = allPossibleMoves(turn);
+			for(Move opponentMove: moves) {
+				evaluate(opponentMove, order-1);
+				if(status == RED_WIN || status == BLUE_WIN) {
+					break;
+				}	
+			}
 		}
 		undoChanges();
+		++order;
 		return status;
 	}
 
 	private void undoChanges() {
+		while(!stack.empty() && stack.peek().getOrder() == order) {
+			Change change = stack.pop();
+			switch (change.getArt()) {
+				case MOVE_ADDED: undoMoveAdded(); break;
+				case MOVE_REMOVED: undoMoveRemoved(); break;
+				case ALL_MOVES_REMOVED: { undoAllMovesRemoved(); break; }
+				case RANGE_INC: { undoRangeIncrease(); break; }
+				case RANGE_DEC: undoRangeDecrease(); break;
+				case ENTITY_ADDED: undoEntityAdded(); break;
+				case ENTITY_REMOVED: undoEntityRemoved(); break;
+				case POSITION_CHANGED: undoPositionChanged(); break;
+				case ELEMENT_REPLACED: undoElementReplaced(); break;
+				case HEIGHT_INCREASED: undoHeightIncreased(); break;
+				case HEIGHT_DECREASED: undoHeightDecreased(); break;
+				case TOWER_BLOCKED: undoTowerBlocked(); break;
+				case TOWER_UNBLOCKED: undoTowerUnblocked();
+			}	 
+		}
+	}
+	private void undoMoveAdded() {
+
+	}
+	private void undoMoveRemoved() {
+
+	}
+	private void undoAllMovesRemoved() {
+
+	}
+	private void undoRangeIncrease() {
+
+	}
+	private void undoRangeDecrease() {
+
+	}
+	private void undoEntityAdded() {
+
+	}
+	private void undoEntityRemoved() {
+
+	}
+	private void undoPositionChanged() {
+
+	}
+	private void undoElementReplaced() {
+
+	}
+	private void undoHeightIncreased() {
+
+	}
+	private void undoHeightDecreased() {
+
+	}
+	private void undoTowerBlocked() {
+
+	}
+	private void undoTowerUnblocked() {
 
 	}
 	/**
@@ -87,7 +146,7 @@ public class Evaluator extends SimpleBoard{
 	* @param stone the figure (stone) whose step width has to be increased.
 	* @param n amount of steps that has to be added.
 	*/
-	private void addSteps(Entity stone, int n) {
+	private void addRanges(Entity stone, int n) {
 		for(int i = 0; i < n; ++i) {
 			incRange(stone);
 			Vector<Position> opponents = findPositionsInRange(stone.getPosition(), stone.getRange());
@@ -142,6 +201,15 @@ public class Evaluator extends SimpleBoard{
 		stack.push(new Change(ent, ENTITY_REMOVED, order));
 		if(ent.getColor() == RED) listRed.remove(ent);
 		else listBlue.remove(ent);
+	}
+
+	public Vector<Move> allPossibleMoves(PlayerColor col) {
+		Vector<Move> allMoves = new Vector<Move>();
+		Vector<Entity> list = (col == RED? listRed: listBlue);
+		for(Entity ent: list) {
+			getEntityMoves(ent, allMoves);
+		}
+		return allMoves;
 	}
 }
 
