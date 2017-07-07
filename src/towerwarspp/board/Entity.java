@@ -138,17 +138,17 @@ public class Entity {
 	 * Copy-Constructor
 	 * @param copy Entity to b copied 
 	 */
-	public Entity(Enity copy) {
+	/*public Entity(Entity copy) {
 		this.pos = copy.getPosition();
 		this.color = copy.getColor();
 		this.size = copy.getSize();
 		maxHeight = size/3;
 		reachable = copy.getReachable();
-		rangeMoves = copy.getMoves().clone();
+		//rangeMoves = copy.getMoves().clone();
 		this.range = copy.getRange();
 		this.blocked = copy.isBlocked();
 		this.base = copy.isBase();
-	}
+	}*/
 
 	/**
 	 * Returns all Moves, which are possible for a specific range
@@ -166,6 +166,20 @@ public class Entity {
 		int[] out = reachable[range].clone();
 		return out;
 	}
+
+	/**
+	 * returns the  boardsize for copy-constructor
+	 */
+	public int getSize() {
+		return size;
+	}
+
+	/**
+	 * returns a clone of the rangeMoves
+	 */
+	/*public Vector<Vector<Move>> getCloneMoves() {
+		return rangeMoves.clone();
+	}*/
 
 	/**
 	 * returns the Position
