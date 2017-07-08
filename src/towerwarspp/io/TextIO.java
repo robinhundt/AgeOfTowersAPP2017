@@ -8,10 +8,10 @@ import towerwarspp.preset.*;
 import static towerwarspp.preset.PlayerColor.RED;
 
 /**
- * Class {@link TextIO} control the Input over the Command Line Interface
+ * Class {@link TextIO} interacting with to user over the command line (standard-input)
  *
- * @version 0.7 July 06th 2017
- * @author Kai Kuhlmann
+ * @version 1.5 July 06th 2017
+ * @author Kai Kuhlmann, Niklas Mueller
  */
 public class TextIO implements IO {
     /**
@@ -29,19 +29,19 @@ public class TextIO implements IO {
     /**
      * Command Line Color = Purple
      */
-    public static final String ANSI_PURPLE = "\u001B[35m";
+    private static final String ANSI_PURPLE = "\u001B[35m";
     /**
      * Command Line Color = Yellow
      */
-    public static final String ANSI_YELLOW = "\u001B[33m";
+    private static final String ANSI_YELLOW = "\u001B[33m";
     /**
      * Command Line Color = Cyan
      */
-    public static final String ANSI_CYAN = "\u001B[36m";
+    private static final String ANSI_CYAN = "\u001B[36m";
     /**
      * Command Line Color = White
      */
-    public static final String ANSI_WHITE = "\u001B[37m";
+    private static final String ANSI_WHITE = "\u001B[37m";
     /**
      * Viewer-Object
      */
@@ -68,25 +68,25 @@ public class TextIO implements IO {
 
         int size = this.viewer.getSize();
         char headChar = 'A';
-        String tap = "  ";
+        StringBuilder tap = new StringBuilder("  ");
 
         /*own stringbuilder for the letters*/
         StringBuilder letters = new StringBuilder();
         letters.append("    ");
         /*fill stringbuilder with letters*/
         for (int j=1; j<=size; j++) {
-            letters.append(headChar++ + "  ");
+            letters.append(headChar++).append("  ");
         }
 
         for (int i=0; i<=size+1; i++) {
             /*first line, only letters*/
             if (i==0) {
-                output.append(letters.toString() + "\n");
+                output.append(letters).append("\n");
             }
             /*last line, only letters*/
             else if (i == size+1) {
                 output.append(tap);
-                output.append(letters.toString() + "\n");
+                output.append(letters).append("\n");
             }
             /*every other line, number, board and number*/
             else if (i<=size) {
@@ -97,11 +97,11 @@ public class TextIO implements IO {
                     output.append(positionToString(new Position(j, i)));
                 }
                 output.append("  ");
-                output.append(i + "\n");
-                tap += "  ";
+                output.append(i).append("\n");
+                tap.append("  ");
             }
         }
-        System.out.println(output.toString());
+        System.out.println(output);
     }
 
     /**
