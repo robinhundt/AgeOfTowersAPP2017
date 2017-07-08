@@ -211,7 +211,7 @@ public class SimpleBoard implements Viewable {
 	* @return true, if the player of the color col can make the specified move.
 	*/
 	public boolean moveAllowed(Move move, PlayerColor col) {
-		if(move == null) return false;
+		if(move == null) return true;
 		Position start = move.getStart();
 		Position end = move.getEnd();
 		Entity ent = getElement(start);
@@ -234,6 +234,11 @@ public class SimpleBoard implements Viewable {
 	*	a status of the board after checking or checking and executing the move.
 	*/
 	public Status update(Move move, PlayerColor col) {
+		if (move == null) {
+			turn = (turn == RED? BLUE: RED);
+			winType = SURRENDER;
+			return status = col == RED ? BLUE_WIN : RED_WIN;
+		}
 		Position start = move.getStart();
 		Position end = move.getEnd();
 		Entity ent = getElement(start);

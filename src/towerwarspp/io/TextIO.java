@@ -1,8 +1,11 @@
 package towerwarspp.io;
 
+import java.util.NoSuchElementException;
 import java.util.Scanner;
 
 import towerwarspp.preset.*;
+
+import static towerwarspp.preset.PlayerColor.RED;
 
 /**
  * Class {@link TextIO} control the Input over the Command Line Interface
@@ -91,7 +94,7 @@ public class TextIO implements IO {
                 output.append(i);
                 output.append(i>=10 ? " " : "  ");
                 for (int j=1; j<=size; j++) {
-                    output.append(entityToString(new Position(j, i)));
+                    output.append(positionToString(new Position(j, i)));
                 }
                 output.append("  ");
                 output.append(i + "\n");
@@ -102,11 +105,12 @@ public class TextIO implements IO {
     }
 
     /**
-     * Defines which Entity is at the position
-     * @param position position of the Entity
-     * @return Returns the Type of the Entity as String
+     * Method positionToString() showing if there is an {@link towerwarspp.board.Entity} at given {@link Position} and what kind
+     *
+     * @param position {@link Position} of the {@link towerwarspp.board.Entity}
+     * @return String containing representation of the {@link Position}
      */
-    private String entityToString(Position position) {
+    private String positionToString(Position position) {
         if(!this.viewer.isEmpty(position)) {
             PlayerColor color = this.viewer.getPlayerColor(position);
             boolean blocked = this.viewer.isBlocked(position);
@@ -114,37 +118,39 @@ public class TextIO implements IO {
             int maxHeight = this.viewer.getSize() / 3;
             String col;
             String s;
-            if (color == PlayerColor.RED) {
-                if (blocked) {
-                    col = ANSI_WHITE;
-                } else if (height == maxHeight) {
-                    col = ANSI_YELLOW;
-                } else {
-                    col = ANSI_RED;
-                }
-            } else {
-                if (blocked) {
-                    col = ANSI_CYAN;
-                } else if (height == maxHeight) {
-                    col = ANSI_PURPLE;
-                } else {
-                    col = ANSI_BLUE;
-                }
 
+            /*check if entity is blocked or has maximum height, otherwise it's a stone*/
+            if (blocked) {
+                /*colors for blocked towers*/
+                col = color == RED ? ANSI_WHITE : ANSI_CYAN;
             }
+            else if (height == maxHeight) {
+                /*colors for towers with maximum height*/
+                col = color == RED ? ANSI_YELLOW : ANSI_PURPLE;
+            }
+            else {
+                /*normal stones*/
+                col = color == RED ? ANSI_RED : ANSI_BLUE;
+            }
+
+            /*check if entity is base*/
             if (viewer.isBase(position)) {
                 s = col + " B " + ANSI_RESET;
             } else {
+                /*otherwise check if height is bigger than zero, so if there's a tower or a stone*/
                 s = col + (height != 0 ? " T" + height : " S ") + ANSI_RESET;
             }
+            /*return representation*/
             return s;
         }
+        /*if position is empty*/
         return " o ";
     }
 
     /**
-     * Setter of the Viewer
-     * @param viewer Viewer-Object
+     * Override method setViewer() to set own {@link Viewer}
+     *
+     * @param viewer {@link Viewer} object to be set as {@link Viewer}
      */
     @Override
     public void setViewer(Viewer viewer) {
@@ -152,20 +158,28 @@ public class TextIO implements IO {
     }
 
     /**
-     * Request an Move from the player and converts to Move
-     * @return Move of the Player
-     * @throws Exception if Move has wrong Format
+     * Overriden method deliver() parsing a textual input from the standard-input into a {@link Move}
+     *
+     * @return {@link Move} user wants to make
+     * @throws Exception if input has wrong format
      */
     @Override
     public Move deliver() throws Exception {
-        Move move = null;
-        String nextMove = null;
+        Move move;
         System.out.println("Please enter move: ");
-        nextMove = this.scanner.next();
+        String nextMove;
+        try {
+            nextMove = this.scanner.nextLine();
+        }
+        catch (NoSuchElementException e) {
+            return null;
+        }
         try {
             move = Move.parseMove(nextMove);
-        } catch (Exception e) {
+        }
+        catch (Exception e) {
             System.out.println("Couldn't interpret move. Move needs to be like 'A2->A3'");
+            return new Move(new Position(1, 1), new Position(1, 1));
         }
         return move;
     }
