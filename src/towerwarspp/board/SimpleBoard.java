@@ -603,7 +603,7 @@ public class SimpleBoard implements Viewable {
 	* @param ent the figure in question.
 	* @param pos position for the speciifiied figure to be placed on.
 	*/
-	private void setElement(Entity ent, Position pos) {
+	protected void setElement(Entity ent, Position pos) {
 		board[pos.getLetter()][pos.getNumber()] = ent;
 	}
 	/**
@@ -614,19 +614,19 @@ public class SimpleBoard implements Viewable {
 	private Entity getElement(Position pos) {
 		return board[pos.getLetter()][pos.getNumber()];
 	}
-	private void block(Entity tower) {
+	protected void block(Entity tower) {
 		tower.setBlocked(true);
 	}
-	private void unblock(Entity tower) {
+	protected void unblock(Entity tower) {
 		tower.setBlocked(false);
 	}
-	private void addMove(Entity ent, Position pos, int range) {
+	protected void addMove(Entity ent, Position pos, int range) {
 		ent.addMove(pos, range);
 	}
-	private void removeMove(Entity ent, Position pos, int range) {
+	protected void removeMove(Entity ent, Position pos, int range) {
 		ent.removeMove(pos, range);
 	}
-	private void removeAllMoves(Entity ent) {
+	protected void removeAllMoves(Entity ent) {
 		ent.removeAllMoves();
 	}
 	/**
@@ -635,7 +635,7 @@ public class SimpleBoard implements Viewable {
 	* @param stone the figure (stone) whose step width has to be increased.
 	* @param n amount of steps that has to be added.
 	*/
-	private void addRanges(Entity stone, int n) {
+	protected void addRanges(Entity stone, int n) {
 		for(int i = 0; i < n; ++i) {
 			incRange(stone);
 			Vector<Position> opponents = findPositionsInRange(stone.getPosition(), stone.getRange());
@@ -657,26 +657,26 @@ public class SimpleBoard implements Viewable {
 			decRange(ent);
 		}
 	}
-	private void incRange(Entity ent) {
+	protected void incRange(Entity ent) {
 		ent.incRange();
 	}
-	private void decRange(Entity ent) {
+	protected void decRange(Entity ent) {
 		ent.decRange();
 	}
-	private void incHeight(Entity tower) {
+	protected void incHeight(Entity tower) {
 		tower.incHeight();
 	}
-	private void decHeight(Entity tower) {
+	protected void decHeight(Entity tower) {
 		tower.decHeight();
 	}
-	private void setPosition(Entity ent, Position pos) {
+	protected void setPosition(Entity ent, Position pos) {
 		ent.setPosition(pos);
 	}
 	/**
 	* Adds the specified figure to the list of movable figures of the corresponding color.
 	* @param ent the figure in question.
 	*/
-	private void addToList(Entity ent) {
+	protected void addToList(Entity ent) {
 		Vector<Entity> list = (ent.getColor() == RED? listRed: listBlue);
 		list.add(ent);
 	}
@@ -684,7 +684,7 @@ public class SimpleBoard implements Viewable {
 	* Removes the specified figure from the the list of movable figures of the corresponding color.
 	* @param ent the figure in question.
 	*/
-	private void removeFromList(Entity ent) {
+	protected void removeFromList(Entity ent) {
 		Vector<Entity> list = (ent.getColor() == RED? listRed: listBlue);
 		list.remove(ent);
 	}

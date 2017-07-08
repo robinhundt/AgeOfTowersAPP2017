@@ -13,6 +13,13 @@ import java.util.Vector;
  * @version 0.2.2.8
  */
 public class Entity {
+	public static final String ANSI_RED = "\u001B[31m";
+	public static final String ANSI_BLUE = "\u001B[34m";
+	public static final String ANSI_PURPLE = "\u001B[35m";
+	public static final String ANSI_YELLOW = "\u001B[33m";
+	public static final String ANSI_CYAN = "\u001B[36m";
+	public static final String ANSI_WHITE = "\u001B[37m";
+
 
 	/**
 	 * This is the Position of the Entity at the Board
@@ -207,7 +214,7 @@ public class Entity {
 	}
 
 	public int[][] getReachable() {
-		return reachable;
+		return reachable.clone();
 	}
 
 	private int[][] copyReachable() {
@@ -383,13 +390,48 @@ public class Entity {
 		initialiseMoves();
 		range = 1;
 	}
-	public void setAllMoves(Vector<Vector<Move>> moves, int[][] reach) {
+	public void setAllMoves(Vector<Vector<Move>> moves, int[][] reach, int r) {
 		rangeMoves = moves;
 		reachable = reach;
+		range = r;
 	}
 
 	@Override
 	public Entity clone() {
 		return new Entity(this);
+	}
+	public String toString() {
+		String col;
+		String s;
+		if(color == PlayerColor.RED) { 
+			if(blocked) {
+				col = ANSI_WHITE;
+			}
+			else if (isMaxHeight()) {
+				col = ANSI_YELLOW;
+			}
+			else {
+				col = ANSI_RED;
+			}
+		}
+		else {
+			if(blocked) {
+				col = ANSI_CYAN;
+			}
+			else if (isMaxHeight()){
+				col = ANSI_PURPLE;
+			}
+			else {
+				col = ANSI_BLUE;
+			}
+
+		}
+		if(base) {
+			s = col + "B" + ANSI_WHITE;
+		}
+		else {
+			s = col + height + ANSI_WHITE;
+		}
+		return s;
 	}
 }

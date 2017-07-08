@@ -13,7 +13,6 @@ public class Change {
 	private ChangeArt art;
 	private Position position;
 	private Entity ent = null;
-	private Position moveEndPos = null;
 	private Vector<Move> rangeMoves = null;
 	private int[] rangeReachable = null;
 	private Vector<Vector<Move>> allMoves = null;
@@ -29,7 +28,7 @@ public class Change {
 //MOVE_ADDED, MOVE_REMOVED
 	public Change(Entity ent, Position moveEndPos, int range, ChangeArt art, int order) {
 		this(ent, art,  order);
-		this.moveEndPos = moveEndPos;
+		this.position = moveEndPos;
 		this.range = range;
 	}
 // RANGE_DEC	
@@ -40,10 +39,11 @@ public class Change {
 		this.range = range;
 	}
 // ALL_MOVES_REMOVED
-	public Change(Entity ent, Vector<Vector<Move>> allMoves, int[][] reachable, int order) {
+	public Change(Entity ent, Vector<Vector<Move>> allMoves, int[][] reachable, int range, int order) {
 		this(ent, ALL_MOVES_REMOVED, order);
 		this.allMoves = allMoves;
 		this.reachable = reachable;
+		this.range = range;
 	}
 // ELEMENT_REPLACED, POSITION_CHANGED
 	public Change(Entity ent, Position pos, ChangeArt art, int order) {
@@ -58,16 +58,6 @@ public class Change {
 	}
 	public Entity getEntity() {
 		return ent;
-	}
-	/**
-	*
-	*
-	* @throws Exception if this change's art is not MOVE_ADDED or MOVE_REMOVED
-	*/
-	public Position getMoveEndPos() throws Exception {
-		if (moveEndPos == null)
-			throw new Exception("Illegal operation in Change: move == null");
-		return moveEndPos;
 	}
 	/**
 	*
@@ -113,7 +103,7 @@ public class Change {
 	/**
 	*
 	*
-	* @throws Exception if this change's art is not MOVE_ADDED, MOVE_REMOVED or RANGE_DEC
+	* @throws Exception if this change's art is not MOVE_ADDED, MOVE_REMOVED, RANGE_DEC or ALL_MOVES_REMOVED
 	*/
 	public int getRange() throws Exception {
 		if (range < 0)
@@ -123,7 +113,7 @@ public class Change {
 	/**
 	*
 	*
-	* @throws Exception if this change's art is not ELEMENT_REPLACED or POSITION_CHANGED.
+	* @throws Exception if this change's art is not MOVE_ADDED, MOVE_REMOVED, ELEMENT_REPLACED or POSITION_CHANGED.
 	*/
 	public Position getPosition() throws Exception {
 		if (position == null)
