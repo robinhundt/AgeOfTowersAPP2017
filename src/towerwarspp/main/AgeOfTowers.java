@@ -26,6 +26,11 @@ import static towerwarspp.preset.PlayerColor.*;
  */
 public class AgeOfTowers {
     /**
+     * Defaullt {@link OutputType} that is used if nothing else is specified.
+     */
+    private final OutputType DEF_OUTPUT = OutputType.GRAPHIC;
+
+    /**
      * {@link ArgumentParser} to get settings and flags from the command line
      */
     private ArgumentParser ap;
@@ -77,7 +82,7 @@ public class AgeOfTowers {
             if(ap.isSet("output")) {
                 setUpIO(ap.getOutputType());
             } else {
-                setUpIO(OutputType.TEXTUAL);
+                setUpIO(DEF_OUTPUT);
             }
 
             /*check which way of game needs to be started: network (hosting or offering) or local*/
