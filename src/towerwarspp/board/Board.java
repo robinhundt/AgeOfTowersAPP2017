@@ -29,6 +29,7 @@ public class Board extends SimpleBoard {
 		Vector<Entity> newListBlue = cloneEntityList(listBlue, newBoard);
 		return new Board(size, turn, newListRed, newListBlue, newBoard, redBase, blueBase);
 	}
+
 	private Vector<Entity> cloneEntityList(Vector<Entity> list, Entity[][] board2) {
 		Vector<Entity> newList = new Vector<Entity>(list.size());
 		for(Entity ent: list) {

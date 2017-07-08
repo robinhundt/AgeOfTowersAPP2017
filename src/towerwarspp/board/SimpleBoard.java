@@ -50,8 +50,6 @@ public class SimpleBoard implements Viewable {
 		int d = size/2;
 		initialiseEntities(redBase, d, RED, listRed);
 		initialiseEntities(blueBase, d, BLUE,listBlue);
-		//initialiseRedEntities();
-		//initialiseBlueEntities();
 	}
 	private void initialiseEntities(Position base, int dist, PlayerColor col, Vector<Entity> list) {
 		for(int i = 1; i <= dist; ++i) {
@@ -64,49 +62,6 @@ public class SimpleBoard implements Viewable {
 			}
 		}
 	}
-	/*private void initialiseRedEntities() {
-		int d = size/2;
-                int y = 1;
-                int lastX = 1 + d;
-                int lastY = 1 + d;
-	 	for(int x = 2; x <= lastX; ++x) {
-                        Entity ent = new Entity(new Position(x, y), RED, size);
-                        board[x][y] = ent;
-			findStoneMoves(ent);
-                        listRed.add(ent);
-                }
-                for (y = 2; y <= lastY; ++y) {
-                         --lastX;
-                        for (int x = 1; x <= lastX; ++x) {
-                                Entity ent = new Entity(new Position(x, y), RED, size);
-                                board[x][y] = ent;
-				findStoneMoves(ent);
-                                listRed.add(ent);
-                        }
-                }
-	}
-	private void initialiseBlueEntities() {
-		int d = size/2;
-       		int y = size;
-		int lastX = size - d;
-		int lastY = size - d;
-		for(int x = size-1; x >= lastX; --x) {
-			Entity ent = new Entity(new Position(x, y), BLUE, size);
-			board[x][y] = ent;
-			findStoneMoves(ent);
-			listBlue.add(ent);
-		}
-		for (y = size - 1; y >= lastY; --y) {
-			++lastX;
-			for (int x = size; x >= lastX; --x) {
-				Entity ent = new Entity(new Position(x, y), BLUE, size);
-				board[x][y] = ent;
-				findStoneMoves(ent);
-				listBlue.add(ent);
-			}
-		}
-	}*/
-
 	/**
 	* Returns a viewer for this board.
 	* @return
@@ -541,8 +496,8 @@ public class SimpleBoard implements Viewable {
 	* @param tower the tower whose top stone has been removed.
 	*/
 	private void actualiseTowerRemoveStone(Entity tower) {
-		decHeight(tower);
 		actualiseTowerBlockedOrDecreased(tower, 1);
+		decHeight(tower);
 		if(tower.getHeight() < 1) {
 			findStoneMoves(tower);
 		}
