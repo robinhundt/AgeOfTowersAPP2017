@@ -39,6 +39,12 @@ public class SimpleBoard implements Viewable {
 		this.redBase = redB;
 		this.blueBase = blueB; 
 	}
+	@Override
+	public SimpleBoard clone() {
+        	// TODO
+        	return null;
+	}
+
 	public Entity[][] getBoard(){
 		return board;
 	}
@@ -172,6 +178,7 @@ public class SimpleBoard implements Viewable {
 		Entity ent = getElement(start);
 		int dist = distance(start, end);
 		if (ent == null || ent.getColor() != col || !ent.hasMove(end, dist)) {
+			System.out.println("");
 			return false;
 		}
 		return true;
