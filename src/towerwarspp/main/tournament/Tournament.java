@@ -60,7 +60,6 @@ public class Tournament {
         this.games = games;
         this.timeOut = timeOut;
     }
-    // TODO fix tournament cuz this won't work in case one of the players is human (probably)
 
     /**
      * Method play to start the {@link Tournament}. Starting as many {@link Game}s as class variable games is indicating.

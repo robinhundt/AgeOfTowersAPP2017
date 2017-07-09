@@ -260,15 +260,18 @@ public class AgeOfTowers {
             Game game = new Game(redPlayer, bluePlayer, ap.getSize(), io, ap.isDebug(),
                     ap.isSet("delay") ? ap.getDelay() : 0);
             result = game.play(ap.isSet("timeout") ? ap.getTimeOut() : 0);
+
         } catch (Exception e) {
             e.printStackTrace();
             System.exit(1);
         }
-        System.out.println(result);
+        if (io != null ) {
+            io.display(result != null ? result.toString() : "Game ended with timeout, because to many moves has been made!");
+        }
     }
 
     /**
-     * Method startTournament to start a tournament starting as many {@link Game}s as wished.
+     * Method startTournament to start a tournament, starting as many {@link Game}s as wished.
      * Outputs statistic about this {@link Tournament} on standard-output.
      *
      * @param players array of {@link Player}
@@ -279,14 +282,14 @@ public class AgeOfTowers {
 
             tournament = new Tournament(players, io, ap.isDebug(),
                     ap.isSet("delay") ? ap.getDelay() : 0, board.getSize(), ap.getGameCount(), ap.isSet("timeout") ? ap.getTimeOut() : 0);
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             e.printStackTrace();
             System.exit(1);
         }
         TResult tResult = tournament.play();
-        //TODO possibility for graphic output
-        System.out.println(tResult);
+        if (io != null) {
+            io.display(tResult != null ? tResult.toString() : "All games have ended with timeout!");
+        }
     }
 
 

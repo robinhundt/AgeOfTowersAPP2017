@@ -114,11 +114,11 @@ public class Game {
         }
 
         /*as long as a valid move has been made and none of the players did not win, ask for next moves*/
-        while (board.getStatus() == OK) {
+        while (board.getStatus() == OK && ((timeOut != 0 && moveCounter < timeOut) || timeOut == 0)) {
             /*increment move count*/
             moveCounter++;
             /*output turn*/
-            view.display(currentColor + "'s turn");
+            view.display(currentColor + "'s turn, Round No.: " + (moveCounter == 1 ? "1" : moveCounter/2));
 
             /*get a move from current player*/
             currentMove = currentPlayer.request();
@@ -153,6 +153,11 @@ public class Game {
             if(hasView) {
                 view.visualize();
             }
+        }
+
+        /*if game ended with timeout, do not create result object*/
+        if (moveCounter == timeOut) {
+            return null;
         }
 
         /*create result object with playercolor, number of moves and type of win*/

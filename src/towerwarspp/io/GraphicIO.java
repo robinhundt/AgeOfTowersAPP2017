@@ -88,7 +88,7 @@ public class GraphicIO extends JFrame implements IO {
      */
     @Override
     public void display(String string) {
-        info.setText(string);
+        info.setText(info.getText() + "\n" + string);
     }
 
     /**
@@ -291,7 +291,7 @@ public class GraphicIO extends JFrame implements IO {
         jPanel.addMouseListener(getMouseListener());
         jPanel.setPreferredSize(new Dimension(this.jFrame.getWidth() - 150, this.jFrame.getHeight()));
         infoPanel = new JPanel(new BorderLayout());
-        infoPanel.setPreferredSize(new Dimension(150, 100));
+        infoPanel.setPreferredSize(new Dimension(135, 100));
         infoPanel.add(surrenderButton, BorderLayout.NORTH);
         infoPanel.add(info, BorderLayout.CENTER);
         jFrame.add(infoPanel, BorderLayout.EAST);
