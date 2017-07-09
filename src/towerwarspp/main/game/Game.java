@@ -118,7 +118,8 @@ public class Game {
             /*increment move count*/
             moveCounter++;
             /*output turn*/
-            view.display(currentColor + "'s turn, Round No.: " + (moveCounter == 1 ? "1" : moveCounter/2));
+            if(hasView)
+                view.display(currentColor + "'s turn, Round No.: " + (moveCounter == 1 ? "1" : moveCounter/2));
 
             /*get a move from current player*/
             currentMove = currentPlayer.request();
@@ -127,7 +128,7 @@ public class Game {
             board.update(currentMove, currentColor);
 
             /*if debug mode is enabled output information*/
-            if (debug && currentMove != null) {
+            if (debug && currentMove != null && hasView) {
                 view.display(currentColor + "'move :" + currentMove);
                 view.display("Status: " + board.getStatus());
             }

@@ -230,7 +230,7 @@ public class AgeOfTowers {
             case HUMAN: player = new HumanPlayer(requestable, view); break;
             case RANDOM_AI: player = new RndPlayer(view); break;
             case SIMPLE_AI: player = new SimplePlayer(); break;
-            case ADVANCED_AI_1: player = new AdvPlayer(500); break;
+            case ADVANCED_AI_1: player = new AdvPlayer(50); break;
             case REMOTE: player = getRemotePlayer(); break;
             default: System.out.println("Unsupported PlayerType."); System.exit(1);
         }
@@ -289,6 +289,8 @@ public class AgeOfTowers {
         TResult tResult = tournament.play();
         if (io != null) {
             io.display(tResult != null ? tResult.toString() : "All games have ended with timeout!");
+        } else {
+            System.out.println(tResult);
         }
     }
 
