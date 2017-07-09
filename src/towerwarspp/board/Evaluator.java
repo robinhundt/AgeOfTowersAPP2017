@@ -94,7 +94,7 @@ Test.showMoves(this, RED);*/
 		Entity ent = change.getEntity();
 		//System.out.println("Entity: " + ent.getPosition());
 		try{
-			ent.setAllMoves(change.getAllMoves(), change.getReachable(), change.getRange());
+			ent.setAllMoves(change.getAllMoves(), change.getReachable(), change.getRange(), change.getMoveCounter());
 			/*System.out.println("\t\tSetze all moves zurueck");
 			Position pos = ent.getPosition();
 			
@@ -214,7 +214,7 @@ Test.showMoves(this, RED);*/
 	}
 	@Override
 	protected void removeAllMoves(Entity ent) {
-		stack.push(new Change(ent, ent.getMoves(), ent.getReachable(), ent.getRange(), order));
+		stack.push(new Change(ent, ent.getMoves(), ent.getReachable(), ent.getRange(), ent.getMoveCounter(),order));
 		ent.removeAllMoves();
 	}
 	/**

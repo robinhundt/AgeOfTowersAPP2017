@@ -142,6 +142,7 @@ public class Entity {
 		this.range = original.getRange();
 		this.blocked = original.isBlocked();
 		this.base = original.isBase();
+		this.moveCounter = original.getMoveCounter();
 
 		maxHeight = size/3;
 		maxRange = 6*maxHeight+2;
@@ -338,6 +339,7 @@ public class Entity {
 			reachable[range][i] = reachableRange[i];
 		}*/
 		reachable[range] = reachableRange;
+		moveCounter += rangeVector.size();
 	}
 
 	/**
@@ -411,13 +413,14 @@ public class Entity {
 
 	/**
 	 * This method gives an Entity all moves
-	 * @param moves the moves in the vector of vectors
-	 * @param reach the reachable-Array
+	 * @param rangeMoves the moves in the vector of vectors
+	 * @param reachable the reachable-Array
 	 */
-	public void setAllMoves(Vector<Vector<Move>> rangeMoves, int[][] reachable, int range) {
+	public void setAllMoves(Vector<Vector<Move>> rangeMoves, int[][] reachable, int range, int moveCounter) {
 		this.rangeMoves = rangeMoves;
 		this.reachable = reachable;
 		this.range = range;
+		this.moveCounter = moveCounter;
 	}
 
 	/**
