@@ -104,6 +104,11 @@ public class TextIO implements IO {
         System.out.println(output);
     }
 
+    @Override
+    public void display(String string) {
+        System.out.println(string);;
+    }
+
     /**
      * Method positionToString() showing if there is an {@link towerwarspp.board.Entity} at given {@link Position} and what kind
      *
@@ -170,6 +175,17 @@ public class TextIO implements IO {
         String nextMove;
         try {
             nextMove = this.scanner.nextLine();
+            if (nextMove.equals("surrender")) {
+                return null;
+            }
+            else if (nextMove.equals("")) {
+                System.out.println("Do you really want to surrender? yes or no");
+                String answer = this.scanner.nextLine();
+                if (answer.equals("yes") || answer.equals("y")) {
+                    return null;
+                }
+                return new Move(new Position(1, 1), new Position(1, 1));
+            }
         }
         catch (NoSuchElementException e) {
             return null;

@@ -10,5 +10,6 @@ import towerwarspp.preset.Viewer;
  */
 public interface View {
     void visualize();
+    void display(String string);
     void setViewer(Viewer viewer);
 }

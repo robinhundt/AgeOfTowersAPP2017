@@ -1,14 +1,10 @@
 package towerwarspp.io;
 
-import towerwarspp.preset.Move;
-import towerwarspp.preset.PlayerColor;
-import towerwarspp.preset.Position;
-import towerwarspp.preset.Viewer;
+import towerwarspp.preset.*;
 
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
-import java.awt.im.InputMethodRequests;
 import java.util.Vector;
 
 /**
@@ -58,6 +54,8 @@ public class GraphicIO extends JFrame implements IO {
 
     private JPanel infoPanel;
 
+    private JLabel info;
+
     /**
      * JButton-Object for surrender Button
      */
@@ -68,13 +66,19 @@ public class GraphicIO extends JFrame implements IO {
      */
     public GraphicIO() {
         this.jFrame = new JFrame();
-        this.jFrame.setLayout(new FlowLayout(FlowLayout.LEFT));
+        this.jFrame.setLayout(new BorderLayout());
         this.jFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         this.screenResolution = Toolkit.getDefaultToolkit().getScreenSize();
         this.jFrame.setTitle("Age of Towers");
         this.jFrame.setSize(this.screenResolution);
         this.jFrame.addComponentListener(getFrameResize());
         this.surrenderButton = getSurrenderButton();
+        this.info = new JLabel();
+    }
+
+    @Override
+    public void display(String string) {
+        info.setText(string);
     }
 
     private ComponentListener getFrameResize() {
@@ -83,6 +87,7 @@ public class GraphicIO extends JFrame implements IO {
             public void componentResized(ComponentEvent e) {
                 setPolygonSize();
                 hexagonGrid.updatePolygonSize(polySize);
+                jPanel.setPreferredSize(new Dimension(jFrame.getWidth() - 100, jFrame.getHeight()));
             }
 
             @Override
@@ -106,7 +111,7 @@ public class GraphicIO extends JFrame implements IO {
      * Setter of the size of a single Polygon
      */
     private void setPolygonSize() {
-        double frameWidth = this.jFrame.getWidth() - 50;
+        double frameWidth = this.jFrame.getWidth() - 150;
         double frameHeight = this.jFrame.getHeight();
         double gridX = (frameWidth / (viewer.getSize() + ((1.0 / 2.0) * (viewer.getSize() - 1)))) / 2.0;
         double gridY = frameHeight / (viewer.getSize() * 2.0);
@@ -118,20 +123,20 @@ public class GraphicIO extends JFrame implements IO {
      * Creates the MouseListener for the JPanel
      * @return MouseListener
      */
-    private MouseListener getMouseListener() {
-        return new MouseListener() {
+    private MouseAdapter getMouseListener() {
+        return new MouseAdapter() {
             Position positionStart = null;
             @Override
             public void mouseClicked(MouseEvent e) {
-                if(e.getButton() == 1) {
+                if (e.getButton() == 1) {
                     int mouseX = e.getX();
                     int mouseY = e.getY();
-                    for(int y = 1; y <= viewer.getSize(); ++y) {
-                        for(int x = 1; x <= viewer.getSize(); ++x) {
-                            if(polygon[x][y].contains(mouseX, mouseY)) {
+                    for (int y = 1; y <= viewer.getSize(); ++y) {
+                        for (int x = 1; x <= viewer.getSize(); ++x) {
+                            if (polygon[x][y].contains(mouseX, mouseY)) {
                                 try {
                                     positionStart = new Position(x, y);
-                                    if (!viewer.isEmpty(positionStart) && viewer.getTurn() == viewer.getPlayerColor(positionStart)) {
+                                    if (!viewer.isEmpty(positionStart) && viewer.getTurn() == viewer.getPlayerColor(positionStart) && viewer.getStatus() == Status.OK) {
                                         possibleMoves = viewer.possibleMoves(positionStart);
                                         visualize();
                                     } else {
@@ -145,12 +150,12 @@ public class GraphicIO extends JFrame implements IO {
                             }
                         }
                     }
-                } else if(e.getButton() == 3) {
+                } else if (e.getButton() == 3) {
                     int mouseX = e.getX();
                     int mouseY = e.getY();
-                    for(int y = 1; y <= viewer.getSize(); ++y) {
-                        for(int x = 1; x <= viewer.getSize(); ++x) {
-                            if(polygon[x][y].contains(mouseX, mouseY)) {
+                    for (int y = 1; y <= viewer.getSize(); ++y) {
+                        for (int x = 1; x <= viewer.getSize(); ++x) {
+                            if (polygon[x][y].contains(mouseX, mouseY)) {
                                 deliverMove = new Move(positionStart, new Position(x, y));
                                 possibleMoves = null;
                                 wakeUp();
@@ -158,26 +163,6 @@ public class GraphicIO extends JFrame implements IO {
                         }
                     }
                 }
-            }
-
-            @Override
-            public void mousePressed(MouseEvent e) {
-
-            }
-
-            @Override
-            public void mouseReleased(MouseEvent e) {
-
-            }
-
-            @Override
-            public void mouseEntered(MouseEvent e) {
-
-            }
-
-            @Override
-            public void mouseExited(MouseEvent e) {
-
             }
         };
     }
@@ -217,34 +202,6 @@ public class GraphicIO extends JFrame implements IO {
                     }
                 }
 
-//                for(int y = 1; y <= viewer.getSize(); ++y) {
-//                    for(int x = 1; x <= viewer.getSize(); ++x){
-//                        if(possibleMoves != null && !possibleMoves.isEmpty()) {
-//                            Iterator<Move> moveListIterator = possibleMoves.iterator();
-//
-//                            Move move = null;
-//                            Position endPosition = null;
-//                            while(moveListIterator.hasNext()) {
-//                                move = moveListIterator.next();
-//                                //if(move.getStart().equals(new Position(x, y))) {
-//                                    endPosition = move.getEnd();
-//                                //}
-//                                if(endPosition != null) {
-//                                    if(viewer.getTurn() == 1 && !viewer.isEmpty(new Position(x, y)) ?
-//                                            viewer.getPlayerColor(new Position(x, y)) == PlayerColor.RED :
-//                                            viewer.getPlayerColor(new Position(x, y)) == PlayerColor.BLUE) {
-//                                        g.setColor(Color.GREEN);
-//                                        g.fillPolygon(polygon[endPosition.getLetter()][endPosition.getNumber()]);
-//                                        g.setColor(Color.BLACK);
-//                                        g.drawPolygon(polygon[endPosition.getLetter()][endPosition.getNumber()]);
-//                                    }
-//                                }
-//                            }
-//                        }
-//                        g.setColor(Color.BLACK);
-//                        g.drawPolygon(polygon[x][y]);
-//                    }
-//                }
                 for(int y = 1; y <= viewer.getSize(); ++y) {
                     g.setFont(new Font("TimesRoman", Font.BOLD, distance / 2));
                     leftNumber = String.valueOf(y);
@@ -316,11 +273,6 @@ public class GraphicIO extends JFrame implements IO {
                     }
                 }
             }
-
-            @Override
-            public Dimension getPreferredSize() {
-                return screenResolution;
-            }
         };
     }
 
@@ -332,31 +284,20 @@ public class GraphicIO extends JFrame implements IO {
     public void setViewer(Viewer viewer) {
         this.viewer = viewer;
         setPolygonSize();
+        display("<html>test<br />sdt</html>");
         this.hexagonGrid = new HexagonGrid(this.viewer.getSize(), polySize);
         this.polygon = this.hexagonGrid.getPolygon();
         jPanel = getJPanel();
         jPanel.addMouseListener(getMouseListener());
-        jFrame.add(jPanel, new FlowLayout(FlowLayout.LEFT));
-        infoPanel = getInfoPanel();
-        infoPanel.add(surrenderButton);
-        jFrame.add(infoPanel, new FlowLayout(FlowLayout.RIGHT));
+        jPanel.setPreferredSize(new Dimension(this.jFrame.getWidth() - 150, this.jFrame.getHeight()));
+        infoPanel = new JPanel(new BorderLayout());
+        infoPanel.setPreferredSize(new Dimension(150, 100));
+        infoPanel.add(surrenderButton, BorderLayout.NORTH);
+        infoPanel.add(info, BorderLayout.CENTER);
+        jFrame.add(infoPanel, BorderLayout.EAST);
+        jFrame.add(jPanel, BorderLayout.WEST);
         jFrame.pack();
         jFrame.setVisible(true);
-    }
-
-    public JPanel getInfoPanel() {
-        return new JPanel() {
-            @Override
-            protected void paintComponent(Graphics graphics) {
-                super.paintComponent(graphics);
-                graphics.drawString("test", 1, 1);
-            }
-
-            @Override
-            public Dimension getPreferredSize() {
-                return new Dimension(50, 100);
-            }
-        };
     }
 
     public JButton getSurrenderButton() {
@@ -375,7 +316,10 @@ public class GraphicIO extends JFrame implements IO {
      */
     @Override
     public void visualize() {
-        jPanel.repaint();
+        if(this.viewer.getStatus() == Status.OK) {
+            jPanel.setPreferredSize(new Dimension(this.jFrame.getWidth() - 150, this.jFrame.getHeight()));
+            jPanel.repaint();
+        }
     }
 
     /**

@@ -27,7 +27,6 @@ public class HexagonGrid {
             }
 
         }
-        System.out.println(this.hexagons.length);
     }
 
     public int getPolygonSize() {
