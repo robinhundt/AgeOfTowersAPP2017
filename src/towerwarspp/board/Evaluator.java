@@ -4,7 +4,7 @@ import towerwarspp.preset.*;
 import towerwarspp.io.*;
 import static towerwarspp.preset.PlayerColor.*;
 import static towerwarspp.preset.Status.*;
-import static towerwarspp.board.ChangeArt.*;
+import static towerwarspp.board.ChangeType.*;
 import java.util.Vector;
 import java.util.Stack;
 import java.util.ListIterator;
@@ -55,7 +55,7 @@ Test.showMoves(this, RED);*/
 		//System.out.println("Stack size: " + stack.size() + " stack order: " + stack.peek().getOrder() + " order " + order);
 		while(!stack.empty() && stack.peek().getOrder() == order) {
 			Change change = stack.pop();
-			switch (change.getArt()) {
+			switch (change.getType()) {
 				case MOVE_ADDED: undoMoveAdded(change); break;
 				case MOVE_REMOVED: undoMoveRemoved(change); break;
 				case ALL_MOVES_REMOVED: undoAllMovesRemoved(change); break;

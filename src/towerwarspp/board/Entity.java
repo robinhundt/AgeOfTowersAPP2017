@@ -13,11 +13,29 @@ import java.util.Vector;
  * @version 0.2.2.8
  */
 public class Entity {
+	/**
+	 * The ANSI-Escape for Red. used for toString
+	 */
 	public static final String ANSI_RED = "\u001B[31m";
+	/**
+	 * The ANSI-Escape for Blue. used for toString
+	 */
 	public static final String ANSI_BLUE = "\u001B[34m";
+	/**
+	 * The ANSI-Escape for Purple. used for toString
+	 */
 	public static final String ANSI_PURPLE = "\u001B[35m";
+	/**
+	 * The ANSI-Escape for Yellow. used for toString
+	 */
 	public static final String ANSI_YELLOW = "\u001B[33m";
+	/**
+	 * The ANSI-Escape for Cyan. used for toString
+	 */
 	public static final String ANSI_CYAN = "\u001B[36m";
+	/**
+	 * The ANSI-Escape for White. used for toString
+	 */
 	public static final String ANSI_WHITE = "\u001B[37m";
 
 
@@ -115,7 +133,7 @@ public class Entity {
 	
 	/**
 	 * Copy-Constructor
-	 * @param original Entity to b copied
+	 * @param original Entity to be copied
 	 */
 	public Entity(Entity original) {
 		this.pos = original.getPosition();
@@ -390,16 +408,31 @@ public class Entity {
 		initialiseMoves();
 		range = 1;
 	}
-	public void setAllMoves(Vector<Vector<Move>> moves, int[][] reach, int r) {
-		rangeMoves = moves;
-		reachable = reach;
-		range = r;
+
+	/**
+	 * This method gives an Entity all moves
+	 * @param moves the moves in the vector of vectors
+	 * @param reach the reachable-Array
+	 */
+	public void setAllMoves(Vector<Vector<Move>> rangeMoves, int[][] reachable, int range) {
+		this.rangeMoves = rangeMoves;
+		this.reachable = reachable;
+		this.range = range;
 	}
 
+	/**
+	 * This method clones this instance of the entity with the copy-constructor
+	 * @return the clones entityt
+	 */
 	@Override
 	public Entity clone() {
 		return new Entity(this);
 	}
+
+	/**
+	 * the to string-method, used for converting an entity to a suseful string
+	 * @return "S", if the entity is stone, "T"+ height, if tower, "B", if base
+	 */
 	public String toString() {
 		String col;
 		String s;

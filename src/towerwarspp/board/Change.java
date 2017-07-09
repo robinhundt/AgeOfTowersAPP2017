@@ -4,13 +4,13 @@ import towerwarspp.preset.*;
 import towerwarspp.io.*;
 import static towerwarspp.preset.PlayerColor.*;
 import static towerwarspp.preset.Status.*;
-import static towerwarspp.board.ChangeArt.*;
+import static towerwarspp.board.ChangeType.*;
 import java.util.Vector;
 import java.util.ListIterator;
 import java.lang.Exception;
 
 public class Change {
-	private ChangeArt art;
+	private ChangeType type;
 	private Position position;
 	private Entity ent = null;
 	private Vector<Move> rangeMoves = null;
@@ -20,14 +20,14 @@ public class Change {
 	private int range = -1;
 	private int order;
 //ENTITY_ADDED, ENTITY_REMOVED, HEIGHT_INCREASED, HEIGHT_DECREASED, TOWER_BLOCKED, TOWER_UNBLOCKED, RANGE_INC
-	public Change(Entity ent, ChangeArt art, int order) {
+	public Change(Entity ent, ChangeType type, int order) {
 		this.ent = ent;
-		this.art = art;
+		this.type = type;
 		this.order = order;
 	}
 //MOVE_ADDED, MOVE_REMOVED
-	public Change(Entity ent, Position moveEndPos, int range, ChangeArt art, int order) {
-		this(ent, art,  order);
+	public Change(Entity ent, Position moveEndPos, int range, ChangeType type, int order) {
+		this(ent, type,  order);
 		this.position = moveEndPos;
 		this.range = range;
 	}
@@ -46,12 +46,12 @@ public class Change {
 		this.range = range;
 	}
 // ELEMENT_REPLACED, POSITION_CHANGED
-	public Change(Entity ent, Position pos, ChangeArt art, int order) {
-		this(ent, art, order);
+	public Change(Entity ent, Position pos, ChangeType type, int order) {
+		this(ent, type, order);
 		this.position = pos;
 	}
-	public ChangeArt getArt() {
-		return art;
+	public ChangeType getType() {
+		return type;
 	}
 	public int getOrder() {
 		return order;
@@ -62,7 +62,7 @@ public class Change {
 	/**
 	*
 	*
-	* @throws Exception if this change's art is not RANGE_DEC
+	* @throws Exception if this change's type is not RANGE_DEC
 	*/
 	public Vector<Move> getRangeMoves() throws Exception {
 		if (rangeMoves == null)
@@ -73,7 +73,7 @@ public class Change {
 	/**
 	*
 	*
-	* @throws Exception if this change's art is not RANGE_DEC
+	* @throws Exception if this change's type is not RANGE_DEC
 	*/
 	public int[] getRangeReachable() throws Exception {
 		if (rangeReachable == null)
@@ -83,7 +83,7 @@ public class Change {
 	/**
 	*
 	*
-	* @throws Exception if this change's art is not ALL_MOVES_REMOVED
+	* @throws Exception if this change's type is not ALL_MOVES_REMOVED
 	*/
 	public Vector<Vector<Move>> getAllMoves() throws Exception{
 		if (allMoves == null)
@@ -93,7 +93,7 @@ public class Change {
 	/**
 	*
 	*
-	* @throws Exception if this change's art is not ALL_MOVES_REMOVED
+	* @throws Exception if this change's type is not ALL_MOVES_REMOVED
 	*/
 	public int[][] getReachable() throws Exception{
 		if (reachable == null)
@@ -103,7 +103,7 @@ public class Change {
 	/**
 	*
 	*
-	* @throws Exception if this change's art is not MOVE_ADDED, MOVE_REMOVED, RANGE_DEC or ALL_MOVES_REMOVED
+	* @throws Exception if this change's type is not MOVE_ADDED, MOVE_REMOVED, RANGE_DEC or ALL_MOVES_REMOVED
 	*/
 	public int getRange() throws Exception {
 		if (range < 0)
@@ -113,7 +113,7 @@ public class Change {
 	/**
 	*
 	*
-	* @throws Exception if this change's art is not MOVE_ADDED, MOVE_REMOVED, ELEMENT_REPLACED or POSITION_CHANGED.
+	* @throws Exception if this change's type is not MOVE_ADDED, MOVE_REMOVED, ELEMENT_REPLACED or POSITION_CHANGED.
 	*/
 	public Position getPosition() throws Exception {
 		if (position == null)
