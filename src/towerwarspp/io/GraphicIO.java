@@ -51,10 +51,14 @@ public class GraphicIO extends JFrame implements IO {
      * Dimension-Object for screenresolution
      */
     private Dimension screenResolution;
-
+    /**
+     * JPanel-Object for right infooutput
+     */
     private JPanel infoPanel;
-
-    private JLabel info;
+    /**
+     * Textarea for output of turn, player
+     */
+    private JTextArea info;
 
     /**
      * JButton-Object for surrender Button
@@ -73,36 +77,31 @@ public class GraphicIO extends JFrame implements IO {
         this.jFrame.setSize(this.screenResolution);
         this.jFrame.addComponentListener(getFrameResize());
         this.surrenderButton = getSurrenderButton();
-        this.info = new JLabel();
+        this.info = new JTextArea();
+        info.setEditable(false);
+        info.setLineWrap(true);
     }
 
+    /**
+     * Set the textarea of InfoPanel to display e.g turn and player
+     * @param string Information which should be displayed
+     */
     @Override
     public void display(String string) {
         info.setText(string);
     }
 
-    private ComponentListener getFrameResize() {
-        return new ComponentListener() {
+    /**
+     * Listener on Resize of Frame
+     * @return the Adapter
+     */
+    private ComponentAdapter getFrameResize() {
+        return new ComponentAdapter() {
             @Override
             public void componentResized(ComponentEvent e) {
                 setPolygonSize();
                 hexagonGrid.updatePolygonSize(polySize);
                 jPanel.setPreferredSize(new Dimension(jFrame.getWidth() - 100, jFrame.getHeight()));
-            }
-
-            @Override
-            public void componentMoved(ComponentEvent e) {
-
-            }
-
-            @Override
-            public void componentShown(ComponentEvent e) {
-
-            }
-
-            @Override
-            public void componentHidden(ComponentEvent e) {
-
             }
         };
     }
@@ -120,7 +119,7 @@ public class GraphicIO extends JFrame implements IO {
     }
 
     /**
-     * Creates the MouseListener for the JPanel
+     * Creates the MouseListener for the JPanel for the clicks on stones and the moves
      * @return MouseListener
      */
     private MouseAdapter getMouseListener() {
@@ -128,14 +127,17 @@ public class GraphicIO extends JFrame implements IO {
             Position positionStart = null;
             @Override
             public void mouseClicked(MouseEvent e) {
+                /*-- left mouse click --*/
                 if (e.getButton() == 1) {
                     int mouseX = e.getX();
                     int mouseY = e.getY();
                     for (int y = 1; y <= viewer.getSize(); ++y) {
                         for (int x = 1; x <= viewer.getSize(); ++x) {
+                            /*-- the right polygon --*/
                             if (polygon[x][y].contains(mouseX, mouseY)) {
                                 try {
                                     positionStart = new Position(x, y);
+                                    /*-- not Empty & right player & not endofgame --*/
                                     if (!viewer.isEmpty(positionStart) && viewer.getTurn() == viewer.getPlayerColor(positionStart) && viewer.getStatus() == Status.OK) {
                                         possibleMoves = viewer.possibleMoves(positionStart);
                                         visualize();
@@ -150,11 +152,12 @@ public class GraphicIO extends JFrame implements IO {
                             }
                         }
                     }
-                } else if (e.getButton() == 3) {
+                } else if (e.getButton() == 3) { /*-- right mouse click --*/
                     int mouseX = e.getX();
                     int mouseY = e.getY();
                     for (int y = 1; y <= viewer.getSize(); ++y) {
                         for (int x = 1; x <= viewer.getSize(); ++x) {
+                            /*-- right polygon --*/
                             if (polygon[x][y].contains(mouseX, mouseY)) {
                                 deliverMove = new Move(positionStart, new Position(x, y));
                                 possibleMoves = null;
@@ -168,7 +171,7 @@ public class GraphicIO extends JFrame implements IO {
     }
 
     /**
-     * Creates the JPanel
+     * Creates the JPanel where the HexagonGrid and the Entities are displayed
      * @return JPanel
      */
     private JPanel getJPanel() {
@@ -182,9 +185,10 @@ public class GraphicIO extends JFrame implements IO {
                 g.setFont(new Font("TimesRoman", Font.BOLD, distance / 2));
                 char[] topLetter = new char[1];
                 topLetter[0] = 'A';
-                String leftNumber = "1";
+                String leftNumber = "";
                 int topLetterX = 0;
                 int topLetterY = 0;
+                /*-- draw the top Chars --*/
                 for(int i = 0; i < viewer.getSize(); ++i) {
                     g.drawChars(topLetter, 0, topLetter.length, (int)(topLetterX + (distance * i) + (0.5 * distance)), topLetterY + (distance / 2));
                     ++topLetter[0];
@@ -203,6 +207,7 @@ public class GraphicIO extends JFrame implements IO {
                 }
 
                 for(int y = 1; y <= viewer.getSize(); ++y) {
+                    /*-- draw the left Numbers --*/
                     g.setFont(new Font("TimesRoman", Font.BOLD, distance / 2));
                     leftNumber = String.valueOf(y);
                     g.setColor(Color.BLACK);
@@ -233,19 +238,15 @@ public class GraphicIO extends JFrame implements IO {
                                 }
                             }
 
-                            //g.setColor(Color.BLACK);
-                            //g.drawPolygon(polygon[x][y]);
-                            //int i = (x * (2 * distance) + (y - 1) * distance) - (polySize / 2);
-                            //int i1 = (y * polySize + (y - 1) * (polySize / 2)) - (polySize / 2);
                             int i = hexagonGrid.getCenter(x, y).getX() - (polySize / 2);
                             int i1 = hexagonGrid.getCenter(x, y).getY() - (polySize / 2);
                             int i2 = polySize - (polySize / 32);
                             int i3 = i2;
 
                             g.fillOval(i, i1, i2, i3);
-                            //g.fillOval(hexagonGrid.getHexagonCenterX(position), hexagonGrid.getHexagonCenterY(position), i2, i3);
+
                             g.setColor(Color.BLACK);
-                            //g.drawOval(hexagonGrid.getHexagonCenterX(position), hexagonGrid.getHexagonCenterY(position), i2, i3);
+
 
                             g.drawOval(i, i1, i2, i3);
                             if(!viewer.isEmpty(position) && viewer.getHeight(position) >= 0) {
@@ -277,14 +278,13 @@ public class GraphicIO extends JFrame implements IO {
     }
 
     /**
-     * Setter of Viewer and Initialize of JPanel
+     * Setter of Viewer and Initialize of JPanels
      * @param viewer Viewer-Object
      */
     @Override
     public void setViewer(Viewer viewer) {
         this.viewer = viewer;
         setPolygonSize();
-        display("<html>test<br />sdt</html>");
         this.hexagonGrid = new HexagonGrid(this.viewer.getSize(), polySize);
         this.polygon = this.hexagonGrid.getPolygon();
         jPanel = getJPanel();
@@ -300,12 +300,17 @@ public class GraphicIO extends JFrame implements IO {
         jFrame.setVisible(true);
     }
 
+    /**
+     * Creates a Button with the action of surrender
+     * @return The surrender Button
+     */
     public JButton getSurrenderButton() {
         JButton button = new JButton("Surrender");
         button.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent actionEvent) {
-                System.out.println("surrender");
+                deliverMove = null;
+                wakeUp();
             }
         });
         return button;

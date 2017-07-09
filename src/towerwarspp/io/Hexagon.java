@@ -26,7 +26,7 @@ public class Hexagon {
      * Constructor
      * @param x X-Coordinate of center
      * @param y Y-Coordinate of center
-     * @param size Size of Hexagon
+     * @param size the radius from center to corner
      * @param position Position of the Hexagon
      */
     public Hexagon (int x, int y, int size, Position position) {
@@ -47,7 +47,7 @@ public class Hexagon {
     /**
      * Setter of the corners of the Hexagon
      * @param center The Center of the Hexagon
-     * @param size Size of the Hexagon
+     * @param size the radius from center to corner
      */
     private void setConers(Center center, int size) {
         this.corners = new Corner[size];
@@ -56,6 +56,12 @@ public class Hexagon {
         }
     }
 
+    /**
+     * Updates the Hexagon
+     * @param x X-Coordinate of the Center of the Hexagon
+     * @param y Y-Coordinate of the Center of the Hexagon
+     * @param size the radius from center to corner
+     */
     public void updateHexagon(int x, int y, int size) {
         for(int i = 0; i < 6; ++i) {
             this.center.updateCenter(x, y);
@@ -145,13 +151,27 @@ class Corner {
         return this.y;
     }
 
+    /**
+     * Updates the Corner of the Hexagon
+     * @param center updated Center
+     * @param size the radius from center to corner
+     * @param i position
+     */
     public void updateCorner(Center center, int size, int i) {
         int[] coordinates = calculateCorner(center, size, i);
         setX(coordinates[0]);
         setY(coordinates[1]);
     }
 
+    /**
+     * Calculates the Coordinates of the corner
+     * @param center updated Center
+     * @param size the radius from center to corner
+     * @param i position
+     * @return the Coordinates of the Corner
+     */
     private int[] calculateCorner(Center center, int size, int i) {
+        /*-- 6 Corners (60) because of corner top + 30 --*/
         int angle_degree = 60 * i + 30;
         double angle_radius = Math.PI / 180 * angle_degree;
         Double x = center.getX() + size * Math.cos(angle_radius);
@@ -180,6 +200,11 @@ class Center {
         setY(y);
     }
 
+    /**
+     * Updates the Center of the Hexagon
+     * @param x X-Coordinate of the Center
+     * @param y Y-Coordinate of the Center
+     */
     public void updateCenter(int x, int y) {
         setX(x);
         setY(y);
