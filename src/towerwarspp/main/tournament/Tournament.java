@@ -102,6 +102,7 @@ public class Tournament {
             }
             catch (Exception e) {
                 e.printStackTrace();
+                System.exit(1);
             }
         }
         return tResult;
