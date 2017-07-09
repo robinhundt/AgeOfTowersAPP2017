@@ -76,7 +76,6 @@ public class GraphicIO extends JFrame implements IO {
         this.jFrame.setTitle("Age of Towers");
         this.jFrame.setSize(this.screenResolution);
         this.jFrame.addComponentListener(getFrameResize());
-        this.jFrame.setVisible(true);
         this.surrenderButton = getSurrenderButton();
         this.info = new JTextArea();
         info.setEditable(false);
@@ -305,6 +304,9 @@ public class GraphicIO extends JFrame implements IO {
         jFrame.add(infoPanel, BorderLayout.EAST);
         jFrame.add(jPanel, BorderLayout.WEST);
         jFrame.pack();
+        if(!jFrame.isVisible()) {
+            jFrame.setVisible(true);
+        }
     }
 
     /**
