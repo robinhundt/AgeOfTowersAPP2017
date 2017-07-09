@@ -121,9 +121,9 @@ public class Board extends SimpleBoard {
 				}
 			}
 		}
-		Board cloneCopy = copy.clone();
 		Vector<Move> opponentMoves = copy.allPossibleMoves(opponentColor);
 		for(Move opponentMove: opponentMoves) {
+			Board cloneCopy = copy.clone();
 			Status prediction = cloneCopy.makeMove(opponentMove, opponentColor);
 			if (prediction == ownLose) {
 				return LOSE;
