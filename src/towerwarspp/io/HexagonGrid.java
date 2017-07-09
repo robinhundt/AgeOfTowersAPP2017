@@ -16,11 +16,7 @@ public class HexagonGrid {
     private int polygonSize;
 
     public HexagonGrid(int boardSize, int polySize) {
-        if(polySize < 20) {
-            this.polygonSize = 20;
-        } else {
-            this.polygonSize = polySize;
-        }
+        this.polygonSize = polySize;
         this.hexagons = new Hexagon[boardSize + 1][boardSize + 1];
         this.polygon = new Polygon[boardSize + 1][boardSize + 1];
         for(int y = 1; y <= boardSize; ++y) {
@@ -39,11 +35,7 @@ public class HexagonGrid {
     }
 
     public void updatePolygonSize(int polySize) {
-        if(polySize < 20) {
-            this.polygonSize = 20;
-        } else {
-            this.polygonSize = polySize;
-        }
+        this.polygonSize = polySize;
         for(int y = 1; y < this.hexagons.length; ++y) {
             for (int x = 1; x < this.hexagons.length; ++x) {
                 int [] coordinates = calculateCenterCoordinates(x, y);
@@ -55,7 +47,7 @@ public class HexagonGrid {
 
     private int[] calculateCenterCoordinates(int x, int y) {
         int distance = (int) (Math.cos(Math.toRadians(30.0)) * this.polygonSize);
-        int [] coordinates = {x * (2 * distance) + (y - 1) * distance, y * this.polygonSize + (y - 1) * (this.polygonSize / 2)};
+        int [] coordinates = {x * (2 * distance) + (y - 1) * distance + (distance / 2), y * this.polygonSize + (y - 1) * (this.polygonSize / 2) + distance};
         return coordinates;
     }
 

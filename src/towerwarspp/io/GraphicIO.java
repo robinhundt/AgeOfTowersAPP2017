@@ -7,10 +7,8 @@ import towerwarspp.preset.Viewer;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.ComponentEvent;
-import java.awt.event.ComponentListener;
-import java.awt.event.MouseEvent;
-import java.awt.event.MouseListener;
+import java.awt.event.*;
+import java.awt.im.InputMethodRequests;
 import java.util.Vector;
 
 /**
@@ -58,15 +56,25 @@ public class GraphicIO extends JFrame implements IO {
      */
     private Dimension screenResolution;
 
+    private JPanel infoPanel;
+
+    /**
+     * JButton-Object for surrender Button
+     */
+    private JButton surrenderButton;
+
     /**
      * Constructor
      */
     public GraphicIO() {
         this.jFrame = new JFrame();
+        this.jFrame.setLayout(new FlowLayout(FlowLayout.LEFT));
         this.jFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         this.screenResolution = Toolkit.getDefaultToolkit().getScreenSize();
+        this.jFrame.setTitle("Age of Towers");
         this.jFrame.setSize(this.screenResolution);
         this.jFrame.addComponentListener(getFrameResize());
+        this.surrenderButton = getSurrenderButton();
     }
 
     private ComponentListener getFrameResize() {
@@ -94,25 +102,16 @@ public class GraphicIO extends JFrame implements IO {
         };
     }
 
+    /**
+     * Setter of the size of a single Polygon
+     */
     private void setPolygonSize() {
-        double frameWidth = this.jFrame.getWidth() - 20;
-        double frameHeight = this.jFrame.getHeight() - 20;
-        int maxWidthPolygon = 0;
-        int maxWidth = 0;
-        if(frameHeight < frameWidth) {
-            maxWidth = (int)frameWidth / this.viewer.getSize();
-            maxWidthPolygon = maxWidth - (maxWidth / 16 * 11);
-        } else if(frameHeight > frameWidth) {
-            maxWidth = (int)frameHeight / this.viewer.getSize();
-            maxWidthPolygon = maxWidth - (maxWidth / 16 * 11);
-        }
-        this.polySize = maxWidthPolygon;
-        System.out.println("poly: " + this.polySize + " maxW: " + maxWidth + " maxWP: " + maxWidthPolygon);
-        System.out.println("w: " + frameWidth + " h: " + frameHeight);
-    }
-
-    private int getPolygonSize() {
-        return this.hexagonGrid.getPolygonSize();
+        double frameWidth = this.jFrame.getWidth() - 50;
+        double frameHeight = this.jFrame.getHeight();
+        double gridX = (frameWidth / (viewer.getSize() + ((1.0 / 2.0) * (viewer.getSize() - 1)))) / 2.0;
+        double gridY = frameHeight / (viewer.getSize() * 2.0);
+        gridX = gridX * Math.cos(Math.toRadians(30.0));
+        this.polySize = gridX < gridY ? (int)gridX : (int)gridY;
     }
 
     /**
@@ -192,17 +191,20 @@ public class GraphicIO extends JFrame implements IO {
             private char[] height;
             @Override
             protected void paintComponent(Graphics g) {
+                int distance = (int)((Math.cos(Math.toRadians(30.0)) * polySize) * 2.0);
                 super.paintComponent(g);
                 g.setColor(Color.BLACK);
+                g.setFont(new Font("TimesRoman", Font.BOLD, distance / 2));
                 char[] topLetter = new char[1];
                 topLetter[0] = 'A';
-                int topLetterX = 10;
-                int topLetterY = 10;
+                String leftNumber = "1";
+                int topLetterX = 0;
+                int topLetterY = 0;
                 for(int i = 0; i < viewer.getSize(); ++i) {
-                    g.drawChars(topLetter, 0, topLetter.length, topLetterX, topLetterY);
-                    topLetterX += 20;
+                    g.drawChars(topLetter, 0, topLetter.length, (int)(topLetterX + (distance * i) + (0.5 * distance)), topLetterY + (distance / 2));
                     ++topLetter[0];
                 }
+                g.setFont(new Font("TimesRoman", Font.BOLD, distance / 4));
                 if (possibleMoves != null) {
                     for (Move move : possibleMoves) {
                         int letter = move.getEnd().getLetter();
@@ -243,9 +245,13 @@ public class GraphicIO extends JFrame implements IO {
 //                        g.drawPolygon(polygon[x][y]);
 //                    }
 //                }
-                int distance = (int) (Math.cos(Math.toRadians(30.0)) * polySize);
                 for(int y = 1; y <= viewer.getSize(); ++y) {
+                    g.setFont(new Font("TimesRoman", Font.BOLD, distance / 2));
+                    leftNumber = String.valueOf(y);
+                    g.setColor(Color.BLACK);
+                    g.drawString(leftNumber, (y - 1) * (distance / 2), hexagonGrid.getCenter(1, y).getY() + (polySize / 4));
                     for(int x = 1; x <= viewer.getSize(); ++x) {
+                        g.setFont(new Font("TimesRoman", Font.BOLD, distance / 4));
 
                         /*-- draw Grid --*/
                         g.setColor(Color.BLACK);
@@ -297,11 +303,12 @@ public class GraphicIO extends JFrame implements IO {
                                     height[0] = 'S';
                                 } else if(viewer.isTower(position)) {
                                     height = new char[2];
-                                    height[0] = 'T';
                                     height[1] = zwischen;
-                                } else if(viewer.isBlocked(position)) {
-                                    height = new char[1];
-                                    height[0] = 'X';
+                                    if(viewer.isBlocked(position)) {
+                                        height[0] = 'X';
+                                    } else {
+                                        height[0] = 'T';
+                                    }
                                 }
                                 g.drawChars(height, 0, height.length, i + (polySize - (polySize * 2 / 3)), i1 + (polySize * 3 / 4));
                             }
@@ -312,7 +319,7 @@ public class GraphicIO extends JFrame implements IO {
 
             @Override
             public Dimension getPreferredSize() {
-                return new Dimension(1280, 720);
+                return screenResolution;
             }
         };
     }
@@ -329,9 +336,38 @@ public class GraphicIO extends JFrame implements IO {
         this.polygon = this.hexagonGrid.getPolygon();
         jPanel = getJPanel();
         jPanel.addMouseListener(getMouseListener());
-        jFrame.add(jPanel);
+        jFrame.add(jPanel, new FlowLayout(FlowLayout.LEFT));
+        infoPanel = getInfoPanel();
+        infoPanel.add(surrenderButton);
+        jFrame.add(infoPanel, new FlowLayout(FlowLayout.RIGHT));
         jFrame.pack();
         jFrame.setVisible(true);
+    }
+
+    public JPanel getInfoPanel() {
+        return new JPanel() {
+            @Override
+            protected void paintComponent(Graphics graphics) {
+                super.paintComponent(graphics);
+                graphics.drawString("test", 1, 1);
+            }
+
+            @Override
+            public Dimension getPreferredSize() {
+                return new Dimension(50, 100);
+            }
+        };
+    }
+
+    public JButton getSurrenderButton() {
+        JButton button = new JButton("Surrender");
+        button.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent actionEvent) {
+                System.out.println("surrender");
+            }
+        });
+        return button;
     }
 
     /**
