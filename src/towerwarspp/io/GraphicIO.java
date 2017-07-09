@@ -81,7 +81,6 @@ public class GraphicIO extends JFrame implements IO {
         this.info = new JTextArea();
         info.setEditable(false);
         info.setLineWrap(true);
-        info.setAutoscrolls(true);
     }
 
     /**
@@ -90,7 +89,7 @@ public class GraphicIO extends JFrame implements IO {
      */
     @Override
     public void display(String string) {
-        info.setText(info.getText() + "\n" + string);
+        info.setText(string);
     }
 
     /**
@@ -175,7 +174,6 @@ public class GraphicIO extends JFrame implements IO {
      */
     private JPanel getJPanel() {
         return new JPanel() {
-            private char[] height;
             @Override
             protected void paintComponent(Graphics g) {
                 int distance = (int)((Math.cos(Math.toRadians(30.0)) * polySize) * 2.0);
