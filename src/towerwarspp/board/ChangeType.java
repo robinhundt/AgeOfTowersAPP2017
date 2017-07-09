@@ -1,6 +1,6 @@
 package towerwarspp.board;
 
-public enum ChangeArt {
+public enum ChangeType {
 	MOVE_ADDED,
 	MOVE_REMOVED,
 	ALL_MOVES_REMOVED,
