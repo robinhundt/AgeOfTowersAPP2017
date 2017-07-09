@@ -65,7 +65,8 @@ public class SimplePlayer extends BasePlayer {
 
         for(Move move : moves) {
             // iterate over all possible moves and calculate their scores
-            int score = board.scoreMove(move, color);
+            int score = board.simpleScoreMove(move, color);
+//            System.out.println(score + " " + move);
 //            System.out.println("score " + score + "Move " + move);
             if(score == maxScore) {
                 maxMoves.add(move);
@@ -85,7 +86,17 @@ public class SimplePlayer extends BasePlayer {
             }
 
         }
-        // return
-        return maxMoves.get(rnd.nextInt(maxMoves.size()));
+        Move move = maxMoves.get(rnd.nextInt(maxMoves.size()));
+        if(board.moveAllowed(move, color))
+            return move;
+        else {
+            System.out.println("Passed illegal move: " + move + " " + color);
+            try{
+                Thread.sleep(50000);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+            return null;
+        }
     }
 }
