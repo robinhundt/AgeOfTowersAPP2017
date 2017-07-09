@@ -23,29 +23,58 @@ public class HexagonGrid {
         }
         this.hexagons = new Hexagon[boardSize + 1][boardSize + 1];
         this.polygon = new Polygon[boardSize + 1][boardSize + 1];
-        int distance = (int) (Math.cos(Math.toRadians(30.0)) * polySize);
         for(int y = 1; y <= boardSize; ++y) {
             for(int x = 1; x <= boardSize; ++x) {
-                this.hexagons[x][y] = new Hexagon(x * (2 * distance) + (y - 1) * distance, y * this.polygonSize + (y - 1) * (this.polygonSize / 2), this.polygonSize, new Position(x, y));
-
-                Corner[] corners = this.hexagons[x][y].getCorners();
-
-                int xPolygon[] = new int[6];
-                int yPolygon[] = new int[6];
-
-                for (int i = 0; i < 6; ++i) {
-                    xPolygon[i] = corners[i].getX();
-                    yPolygon[i] = corners[i].getY();
-                }
-
-                this.polygon[x][y] = new Polygon(xPolygon, yPolygon, 6);
+                int [] coordinates = calculateCenterCoordinates(x, y);
+                this.hexagons[x][y] = new Hexagon(coordinates[0], coordinates[1], this.polygonSize, new Position(x, y));
+                setPolygon(x, y);
             }
 
         }
+        System.out.println(this.hexagons.length);
     }
 
     public int getPolygonSize() {
         return this.polygonSize;
+    }
+
+    public void updatePolygonSize(int polySize) {
+        if(polySize < 20) {
+            this.polygonSize = 20;
+        } else {
+            this.polygonSize = polySize;
+        }
+        for(int y = 1; y < this.hexagons.length; ++y) {
+            for (int x = 1; x < this.hexagons.length; ++x) {
+                int [] coordinates = calculateCenterCoordinates(x, y);
+                this.hexagons[x][y].updateHexagon(coordinates[0], coordinates[1], this.polygonSize);
+                setPolygon(x, y);
+            }
+        }
+    }
+
+    private int[] calculateCenterCoordinates(int x, int y) {
+        int distance = (int) (Math.cos(Math.toRadians(30.0)) * this.polygonSize);
+        int [] coordinates = {x * (2 * distance) + (y - 1) * distance, y * this.polygonSize + (y - 1) * (this.polygonSize / 2)};
+        return coordinates;
+    }
+
+    private void setPolygon(int x, int y) {
+        Corner[] corners = this.hexagons[x][y].getCorners();
+
+        int xPolygon[] = new int[6];
+        int yPolygon[] = new int[6];
+
+        for (int i = 0; i < 6; ++i) {
+            xPolygon[i] = corners[i].getX();
+            yPolygon[i] = corners[i].getY();
+        }
+
+        this.polygon[x][y] = new Polygon(xPolygon, yPolygon, 6);
+    }
+
+    public Center getCenter(int x, int y) {
+        return this.hexagons[x][y].getCenter();
     }
 
     public Polygon[][] getPolygon() {

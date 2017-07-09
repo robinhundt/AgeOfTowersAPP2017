@@ -73,6 +73,8 @@ public class GraphicIO extends JFrame implements IO {
         return new ComponentListener() {
             @Override
             public void componentResized(ComponentEvent e) {
+                setPolygonSize();
+                hexagonGrid.updatePolygonSize(polySize);
             }
 
             @Override
@@ -93,12 +95,15 @@ public class GraphicIO extends JFrame implements IO {
     }
 
     private void setPolygonSize() {
-        double frameWidth = this.jFrame.getWidth();
-        double frameHeight = this.jFrame.getHeight();
+        double frameWidth = this.jFrame.getWidth() - 20;
+        double frameHeight = this.jFrame.getHeight() - 20;
         int maxWidthPolygon = 0;
         int maxWidth = 0;
         if(frameHeight < frameWidth) {
             maxWidth = (int)frameWidth / this.viewer.getSize();
+            maxWidthPolygon = maxWidth - (maxWidth / 16 * 11);
+        } else if(frameHeight > frameWidth) {
+            maxWidth = (int)frameHeight / this.viewer.getSize();
             maxWidthPolygon = maxWidth - (maxWidth / 16 * 11);
         }
         this.polySize = maxWidthPolygon;
@@ -188,6 +193,16 @@ public class GraphicIO extends JFrame implements IO {
             @Override
             protected void paintComponent(Graphics g) {
                 super.paintComponent(g);
+                g.setColor(Color.BLACK);
+                char[] topLetter = new char[1];
+                topLetter[0] = 'A';
+                int topLetterX = 10;
+                int topLetterY = 10;
+                for(int i = 0; i < viewer.getSize(); ++i) {
+                    g.drawChars(topLetter, 0, topLetter.length, topLetterX, topLetterY);
+                    topLetterX += 20;
+                    ++topLetter[0];
+                }
                 if (possibleMoves != null) {
                     for (Move move : possibleMoves) {
                         int letter = move.getEnd().getLetter();
@@ -242,15 +257,25 @@ public class GraphicIO extends JFrame implements IO {
                         if(!viewer.isEmpty(position)) {
                             /*set color*/
                             if(viewer.getPlayerColor(position) == PlayerColor.RED) {
-                                g.setColor(Color.RED);
-                            } else {
-                                g.setColor(Color.BLUE);
+                                if(viewer.getHeight(position) == (viewer.getSize() / 3)) {
+                                    g.setColor(Color.PINK);
+                                } else {
+                                    g.setColor(Color.RED);
+                                }
+                            } else if(viewer.getPlayerColor(position) == PlayerColor.BLUE) {
+                                if(viewer.getHeight(position) == (viewer.getSize() / 3)) {
+                                    g.setColor(Color.CYAN);
+                                } else {
+                                    g.setColor(Color.BLUE);
+                                }
                             }
 
                             //g.setColor(Color.BLACK);
                             //g.drawPolygon(polygon[x][y]);
-                            int i = (x * (2 * distance) + (y - 1) * distance) - (polySize / 2);
-                            int i1 = (y * polySize + (y - 1) * (polySize / 2)) - (polySize / 2);
+                            //int i = (x * (2 * distance) + (y - 1) * distance) - (polySize / 2);
+                            //int i1 = (y * polySize + (y - 1) * (polySize / 2)) - (polySize / 2);
+                            int i = hexagonGrid.getCenter(x, y).getX() - (polySize / 2);
+                            int i1 = hexagonGrid.getCenter(x, y).getY() - (polySize / 2);
                             int i2 = polySize - (polySize / 32);
                             int i3 = i2;
 
@@ -274,8 +299,11 @@ public class GraphicIO extends JFrame implements IO {
                                     height = new char[2];
                                     height[0] = 'T';
                                     height[1] = zwischen;
+                                } else if(viewer.isBlocked(position)) {
+                                    height = new char[1];
+                                    height[0] = 'X';
                                 }
-                                g.drawChars(height, 0, height.length, i+5, y * polySize + (y - 1) * (polySize / 2) + 5);
+                                g.drawChars(height, 0, height.length, i + (polySize - (polySize * 2 / 3)), i1 + (polySize * 3 / 4));
                             }
                         }
                     }
@@ -284,7 +312,7 @@ public class GraphicIO extends JFrame implements IO {
 
             @Override
             public Dimension getPreferredSize() {
-                return screenResolution;
+                return new Dimension(1280, 720);
             }
         };
     }

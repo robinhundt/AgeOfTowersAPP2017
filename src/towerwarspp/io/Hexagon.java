@@ -56,6 +56,13 @@ public class Hexagon {
         }
     }
 
+    public void updateHexagon(int x, int y, int size) {
+        for(int i = 0; i < 6; ++i) {
+            this.center.updateCenter(x, y);
+            this.corners[i].updateCorner(this.center, size, i);
+        }
+    }
+
     /**
      * Setter of the position of the Hexagon
      * @param position Position of the Hexagon
@@ -67,12 +74,8 @@ public class Hexagon {
     /**
      * Getter for Center
      */
-    public int getCenterX() {
-        return this.center.getX();
-    }
-
-    public int getCenterY() {
-        return this.center.getY();
+    public Center getCenter() {
+        return this.center;
     }
 
     /**
@@ -105,12 +108,9 @@ class Corner {
      * Constructor
      */
     public Corner(Center center, int size, int i) {
-        int angle_degree = 60 * i + 30;
-        double angle_radius = Math.PI / 180 * angle_degree;
-        Double x = center.getX() + size * Math.cos(angle_radius);
-        Double y = center.getY() + size * Math.sin(angle_radius);
-        setX(x.intValue());
-        setY(y.intValue());
+        int[] coordinates = calculateCorner(center, size, i);
+        setX(coordinates[0]);
+        setY(coordinates[1]);
     }
 
     /**
@@ -144,6 +144,21 @@ class Corner {
     public int getY() {
         return this.y;
     }
+
+    public void updateCorner(Center center, int size, int i) {
+        int[] coordinates = calculateCorner(center, size, i);
+        setX(coordinates[0]);
+        setY(coordinates[1]);
+    }
+
+    private int[] calculateCorner(Center center, int size, int i) {
+        int angle_degree = 60 * i + 30;
+        double angle_radius = Math.PI / 180 * angle_degree;
+        Double x = center.getX() + size * Math.cos(angle_radius);
+        Double y = center.getY() + size * Math.sin(angle_radius);
+        int coordinates[] =  {x.intValue(), y.intValue()};
+        return coordinates;
+    }
 }
 
 /**
@@ -161,6 +176,11 @@ class Center {
      * @param y Y-Coordinate of the Center
      */
     public Center(int x, int y) {
+        setX(x);
+        setY(y);
+    }
+
+    public void updateCenter(int x, int y) {
         setX(x);
         setY(y);
     }
