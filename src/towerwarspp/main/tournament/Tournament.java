@@ -25,6 +25,10 @@ public class Tournament {
      */
     View view;
     /**
+     * boolean that is set to true if a View object is passed to the constructor, false if null is passed
+     */
+    boolean hasView;
+    /**
      * Boolean debug indicating if debug mode is activated and additional information should be given
      */
     boolean debug;
@@ -53,7 +57,10 @@ public class Tournament {
     public Tournament(Player[] players, View view, boolean debug,
                       int delayTime, int boardSize, int games, int timeOut) {
         this.players = players;
-        this.view = view;
+        if(view != null) {
+            this.view = view;
+            hasView = true;
+        }
         this.debug = debug;
         this.delayTime = delayTime;
         this.boardSize = boardSize;
@@ -77,7 +84,8 @@ public class Tournament {
         /*start as many games as wanted*/
         for (int i=1; i<=games; i++) {
             /*if output is wanted, output current game number*/
-            view.display("Game No.: " + i);
+            if(hasView)
+                view.display("Game No.: " + i);
 
             /*switch players to get a fair tournament*/
             if (i>1) {
@@ -93,7 +101,8 @@ public class Tournament {
             try {
                 /*start game and store result*/
                 Result result = game.play(timeOut);
-                view.display(result.toString());
+                if(hasView)
+                    view.display(result.toString());
                 tResult.addResult(result);
             }
             catch (Exception e) {
