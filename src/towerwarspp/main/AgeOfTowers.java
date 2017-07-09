@@ -10,10 +10,7 @@ import towerwarspp.main.game.Result;
 import towerwarspp.main.tournament.TResult;
 import towerwarspp.main.tournament.Tournament;
 import towerwarspp.network.Remote;
-import towerwarspp.player.HumanPlayer;
-import towerwarspp.player.NetPlayer;
-import towerwarspp.player.RndPlayer;
-import towerwarspp.player.SimplePlayer;
+import towerwarspp.player.*;
 import towerwarspp.preset.*;
 
 import static towerwarspp.preset.PlayerColor.*;
@@ -76,6 +73,11 @@ public class AgeOfTowers {
             if (args.length == 0 || ap.isHelp()) {
                 System.out.println(helpOutput());
                 System.exit(0);
+            }
+
+            if(ap.isSet("graphic")) {
+                System.out.println("Flag --graphic is deprecated. Standard output type is graphic. If you wish to" +
+                        "play with text or no output, set -output setting.");
             }
 
             /*check outputType, default is textual output*/
@@ -225,10 +227,10 @@ public class AgeOfTowers {
         Player player = null;
         /*create concrete player, with given view object, of exit if wrong playertype is given*/
         switch (playerType) {
-            // TODO Split TextIO
             case HUMAN: player = new HumanPlayer(requestable, view); break;
             case RANDOM_AI: player = new RndPlayer(view); break;
             case SIMPLE_AI: player = new SimplePlayer(); break;
+            case ADVANCED_AI_1: player = new AdvPlayer(500); break;
             case REMOTE: player = getRemotePlayer(); break;
             default: System.out.println("Unsupported PlayerType."); System.exit(1);
         }
@@ -333,8 +335,6 @@ public class AgeOfTowers {
                 "delay:  \t  integer bigger than 0 (in milliseconds) \n" +
 
                 "\nFLAGS: \n" +
-                //TODO remove graphic flag
-                "--graphic \t activates the graphic output, if not set output will be on the standard-output \n" +
                 "--debug \t activates the debug-mode: shows additional information for every move \n";
     }
 }
