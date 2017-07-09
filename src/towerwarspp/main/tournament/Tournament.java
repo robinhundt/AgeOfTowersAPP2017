@@ -78,10 +78,7 @@ public class Tournament {
         /*start as many games as wanted*/
         for (int i=1; i<=games; i++) {
             /*if output is wanted, output current game number*/
-            if (view instanceof TextIO) {
-                System.out.println("Game No.: " + i);
-            }
-            //TODO graphic output of game no.
+            view.display("Game No.: " + i);
 
             /*switch players to get a fair tournament*/
             if (i>1) {
@@ -97,7 +94,7 @@ public class Tournament {
             try {
                 /*start game and store result*/
                 Result result = game.play(timeOut);
-                System.out.println(result);
+                view.display(result.toString());
                 tResult.addResult(result);
             }
             catch (Exception e) {

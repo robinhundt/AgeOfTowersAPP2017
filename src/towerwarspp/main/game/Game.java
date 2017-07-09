@@ -117,10 +117,8 @@ public class Game {
         while (board.getStatus() == OK) {
             /*increment move count*/
             moveCounter++;
-            /*if text output is set*/
-            if(view instanceof TextIO) {
-                System.out.println(currentColor + "'s turn");
-            }
+            /*output turn*/
+            view.display(currentColor + "'s turn");
 
             /*get a move from current player*/
             currentMove = currentPlayer.request();
@@ -129,10 +127,9 @@ public class Game {
             board.update(currentMove, currentColor);
 
             /*if debug mode is enabled output information*/
-            if (debug) {
-                if (view instanceof GraphicIO) System.out.println(currentColor + "'s turn");
-                System.out.println(currentColor + "'move :" + currentMove.toString());
-                System.out.println("Status: " + board.getStatus());
+            if (debug && currentMove != null) {
+                view.display(currentColor + "'move :" + currentMove);
+                view.display("Status: " + board.getStatus());
             }
 
             /*check if boardstatus of player is equal to own boardstatus*/
