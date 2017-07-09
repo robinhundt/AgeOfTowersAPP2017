@@ -85,16 +85,24 @@ public class Board extends SimpleBoard {
 		Position opponentBase = playerColor == RED ? blueBase : redBase;
 		Position ownBase = playerColor == RED ? redBase : blueBase;
 		PlayerColor enemy = playerColor == RED ? BLUE : RED;
+		Status enemyWin = playerColor == RED ? BLUE_WIN : RED_WIN;
 		if(move.getEnd().equals(opponentBase))
 			return WIN;
 		else {
 			Board copy = this.clone();
 			copy.update(move, playerColor);
-			Vector<Move> enemyMoves = this.allPossibleMoves(enemy);
+			Vector<Move> enemyMoves = copy.allPossibleMoves(enemy);
+//			System.out.println(enemyMoves.size() + "size of enemy moves");
 			boolean enemyHasWinMove = false;
 			for(Move enemyMove : enemyMoves) {
-				if(enemyMove.getEnd().equals(ownBase))
+//				System.out.println("enemy move + " + enemyMove + "after " + move);
+				Board copyClone = copy.clone();
+			    copyClone.update(enemyMove, enemy);
+				if(copyClone.getStatus() == enemyWin){
+//					System.out.println("Loosing move " + move + " enemy " + enemyMove);
 					enemyHasWinMove = true;
+					break;
+				}
 			}
 
 			if(enemyHasWinMove)
@@ -108,6 +116,8 @@ public class Board extends SimpleBoard {
 	public int verySimpleScoreMove(Move move, PlayerColor playerColor) {
 		Position opponentBase = playerColor == RED ? blueBase : redBase;
 		Position endPos = move.getEnd();
+		if(endPos.equals(opponentBase))
+		    return WIN;
 		Entity opponent = board[endPos.getLetter()][endPos.getNumber()];
 		int score = distance(move.getStart(), opponentBase) - distance(endPos, opponentBase);
 		if (opponent == null) {
@@ -122,6 +132,31 @@ public class Board extends SimpleBoard {
 		}
 		return score;
 	}
+
+	public int altScore(Move move, PlayerColor playerColor) {
+        Position opponentBase = playerColor == RED ? blueBase : redBase;
+        Position endPos = move.getEnd();
+        if(endPos.equals(opponentBase))
+            return WIN;
+        Entity opponent = board[endPos.getLetter()][endPos.getNumber()];
+        int score = distance(move.getStart(), opponentBase) - distance(endPos, opponentBase);
+        if(opponent != null) {
+            if(opponent.getColor() != playerColor) {
+                if(opponent.isTower()) {
+                    if(distance(move.getStart(), endPos) == 1) {
+                        score += 25 * opponent.getHeight();
+                    } else {
+                        score += 15;
+                    }
+                } else {
+                    score += 20;
+                }
+            } else {
+                score += 1;
+            }
+        }
+        return score;
+    }
 
 	public Vector<Move> allPossibleMoves(PlayerColor col) {
 		Vector<Move> allMoves = new Vector<Move>();
