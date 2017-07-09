@@ -35,7 +35,13 @@ public class BViewer implements Viewer {
 			throw new Exception ("Position is empty");
 		}
 		Vector<Move> moves = new Vector<Move>();
-		boardO.getEntityMoves(ent, moves);
+		if(ent.movable()) {
+			int range = ent.getRange();
+			Vector<Vector<Move>> entMoves = ent.getMoves();
+			for(int i = 1; i <= range; ++i) {
+				moves.addAll(entMoves.get(i));
+			}
+		}
 		return moves;
 	}
 

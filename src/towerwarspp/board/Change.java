@@ -18,7 +18,7 @@ public class Change {
 	private Vector<Vector<Move>> allMoves = null;
 	private int[][] reachable = null;
 	private int range = -1;
-	private int moveCounter;
+	private int moveCounter = -1;
 	private int order;
 //ENTITY_ADDED, ENTITY_REMOVED, HEIGHT_INCREASED, HEIGHT_DECREASED, TOWER_BLOCKED, TOWER_UNBLOCKED, RANGE_INC
 	public Change(Entity ent, ChangeType type, int order) {
@@ -122,8 +122,14 @@ public class Change {
 			throw new Exception("Illegal operation in Change: position == null");
 		return position;
 	}
-
-	public int getMoveCounter() {
+	/**
+	*
+	*
+	* @throws Exception if this change's type is not ALL_MOVES_REMOVED.
+	*/
+	public int getMoveCounter() throws Exception{
+		if (moveCounter == -1)
+			throw new Exception("Illegal operation in Change: moveCounter == -1");
 		return moveCounter;
 	}
 }

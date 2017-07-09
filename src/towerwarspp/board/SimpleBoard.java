@@ -39,11 +39,6 @@ public class SimpleBoard implements Viewable {
 		this.redBase = redB;
 		this.blueBase = blueB; 
 	}
-	@Override
-	public SimpleBoard clone() {
-        	// TODO
-        	return null;
-	}
 
 	public Entity[][] getBoard(){
 		return board;
@@ -178,7 +173,6 @@ public class SimpleBoard implements Viewable {
 		Entity ent = getElement(start);
 		int dist = distance(start, end);
 		if (ent == null || ent.getColor() != col || !ent.hasMove(end, dist)) {
-			System.out.println("");
 			return false;
 		}
 		return true;
@@ -207,11 +201,19 @@ public class SimpleBoard implements Viewable {
 		if(col != turn) {
 			status = ILLEGAL;
 			winType = ILLEGAL_MOVE;
-			return status;
+			throw new IllegalArgumentException("Board: turn is incorrect");
+			//return status;
 		}
 		if(!moveAllowed(move, col)) {
 			status = ILLEGAL;
-			return status;
+			if(ent == null) {
+				throw new IllegalArgumentException("Board: Entity not on the board " + move);
+			}
+			if(ent.getColor() != col) {
+				throw new IllegalArgumentException("Board: false color " + move + " entity color: "+ ent.getColor());
+			}
+			throw new IllegalArgumentException("Board: move does not ex. " + move + (this instanceof Evaluator? " eval" : "board"));
+			//return status;
 		}
 		ent = changeStart(ent, start);
 		changeEnd(ent, start, end);
@@ -435,7 +437,6 @@ public class SimpleBoard implements Viewable {
 		Vector<Move> moves = tower.getMoves().get(1);
 		if (tower.isBlocked()) {
 			removeAllMoves(tower);
-			System.out.println("tower.isBlocked(): " + tower.isBlocked());
 		}
 		Position pos;
 		for(Move move: moves) {
@@ -611,7 +612,7 @@ public class SimpleBoard implements Viewable {
 	* @param pos the position of the element that has to be returned.
 	* @return an element located on the specified position on the board.
 	*/
-	private Entity getElement(Position pos) {
+	protected Entity getElement(Position pos) {
 		return board[pos.getLetter()][pos.getNumber()];
 	}
 	protected void block(Entity tower) {
@@ -686,8 +687,18 @@ public class SimpleBoard implements Viewable {
 	*/
 	protected void removeFromList(Entity ent) {
 		Vector<Entity> list = (ent.getColor() == RED? listRed: listBlue);
+		/*if(!list.contains(ent) ) {
+			System.out.println("Entity ist nicht in List");
+		}*/
 		list.remove(ent);
+
 	}
+	/*public void printList(Vector<Entity> list) {
+		for(Entity ent: list) {
+			System.out.print(ent.getPosition() + " ");
+		}
+		System.out.println();
+	}*/
 	/**
 	* Returns true if at least one of the entities returned by the iterator in the argument can be moved.
 	* @param it iterator over a list of Entities (listRed or listBlue) for which the move possibility has to be proved.
@@ -707,13 +718,5 @@ public class SimpleBoard implements Viewable {
 	* @param ent the figure whose moves are to be added to the vector moves.
 	* @moves vector to which all possible moves of the specified figure have to be added.
 	*/
-	public void getEntityMoves(Entity ent, Vector<Move> moves) {
-		if(ent.movable()) {
-			int range = ent.getRange();
-			Vector<Vector<Move>> entMoves = ent.getMoves();
-			for(int i = 1; i <= range; ++i) {
-				moves.addAll(entMoves.get(i));
-			}
-		}
-	}
+	
 }

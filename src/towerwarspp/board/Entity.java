@@ -166,7 +166,11 @@ public class Entity {
 	 * @return the int[] of reachable fields
 	 */
 	public int[] getRangeReachable(int range) {
-		int[] out = reachable[range].clone();
+		int n = reachable[range].length;
+		int[] out = new int[n];
+		for(int i = 0; i < n; ++i) {
+			out[i] = reachable[range][i];
+		}
 		return out;
 	}
 
@@ -182,7 +186,7 @@ public class Entity {
 	private Vector<Vector<Move>> copyRangeMoves() {
 		Vector<Vector<Move>> out = new Vector<Vector<Move>>();
 		for(Vector<Move> vector : rangeMoves) {
-			out.add(new Vector<>(vector));
+			out.add(new Vector<Move>(vector));
 		}
 
 		return out;
@@ -233,7 +237,7 @@ public class Entity {
 	}
 
 	public int[][] getReachable() {
-		return reachable.clone();
+		return copyReachable();
 	}
 
 	private int[][] copyReachable() {
@@ -378,11 +382,18 @@ public class Entity {
 	 * @param range the range of the move
 	 */
 	public boolean hasMove(Position end, int range) {
-		int temp = 1 << end.getLetter();
+		Move move = new Move(pos, end);
+		for(Vector<Move> moves: rangeMoves) {
+			if(moves.contains(move)) {
+				return true;
+			}
+		}
+		return false;
+		/*int temp = 1 << end.getLetter();
 		if((reachable[range][end.getNumber()] & temp) == 0){
 			return false;
 		}
-		return true;
+		return true;*/
 	}
 
 	/**
@@ -408,6 +419,7 @@ public class Entity {
 	 */
 	public void removeAllMoves() {
 		initialiseMoves();
+		moveCounter = 0;
 		range = 1;
 	}
 

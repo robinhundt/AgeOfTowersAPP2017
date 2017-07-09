@@ -40,6 +40,7 @@ public class Board extends SimpleBoard {
 		}
 		return newList;
 	}
+
 	/**
 	* Evaluates the specified move.
 	* @param move - the move which has to be evaluated.
@@ -80,7 +81,80 @@ public class Board extends SimpleBoard {
 		}
 		return res;
 	}
-
+	/**
+	* Evaluates the specified move.
+	* @param move - the move which has to be evaluated.
+	* @return
+	*	a score of the move.
+	*/
+	public int scoreMove2(Move move, PlayerColor ownColor) {
+		PlayerColor opponentColor = (ownColor == RED? BLUE: RED);
+		Status ownWin = (ownColor == RED? RED_WIN: BLUE_WIN);
+		Status ownLose = (ownColor == RED? BLUE_WIN: RED_WIN);
+		Position ownBase = (ownColor == RED? redBase: blueBase);
+		Position opponentBase = (ownColor == RED? blueBase: redBase);
+		if(move.getEnd().equals(opponentBase)) {
+			return WIN;
+		}
+		Board copy = this.clone();
+		copy.makeMove(move, ownColor);
+		if(copy.getStatus() == ownWin) {
+			return WIN;
+		}
+		Vector<Entity> opponentEntities = (ownColor == RED? copy.listBlue: copy.listRed);
+		if(canBeDestroyed(ownBase, opponentEntities)) {
+			return LOSE;
+		}
+		Vector<Entity> ownEntities = (ownColor == RED? copy.listRed: copy.listBlue);
+		int nHasManyMoves = 0;
+		int nStones = 0;
+		for(Entity ent : ownEntities) {
+			if(ent.movable()) {
+				if(ent.getMoveCounter() > 1) {
+					++nHasManyMoves;
+				}
+				if(!ent.isTower()) {
+					++nStones;
+				}
+				if(nHasManyMoves > 1 || nStones > 1) {
+					return computeScore(move, opponentBase, ownColor);
+				}
+			}
+		}
+		Board cloneCopy = copy.clone();
+		Vector<Move> opponentMoves = copy.allPossibleMoves(opponentColor);
+		for(Move opponentMove: opponentMoves) {
+			Status prediction = cloneCopy.makeMove(opponentMove, opponentColor);
+			if (prediction == ownLose) {
+				return LOSE;
+			}
+		}
+		return computeScore(move, opponentBase, ownColor);
+	}
+	private int computeScore(Move move, Position opponentBase, PlayerColor ownColor) {
+		Position startPos = move.getStart();
+		Position endPos = move.getEnd();
+		Entity opponent = getElement(endPos);
+		int res = distance(startPos, opponentBase) - distance(endPos, opponentBase);
+		if(opponent != null && opponent.getColor() != ownColor) {
+			if(!opponent.isTower()) {
+				return (res + 1);
+			}
+			if (distance(startPos, endPos) == 1)
+				return (res + 2);
+		}
+		return res;
+		
+	}
+	private boolean canBeDestroyed(Position pos, Vector<Entity> entities) {
+		for(Entity ent: entities) {
+			int dist = distance(ent.getPosition(), pos);
+			if(ent.hasMove(pos, dist)) {
+				return true;
+			}
+		}
+		return false;
+	}
 	public int simpleScoreMove(Move move, PlayerColor playerColor) {
 		Position opponentBase = playerColor == RED ? blueBase : redBase;
 		Position ownBase = playerColor == RED ? redBase : blueBase;
@@ -162,7 +236,13 @@ public class Board extends SimpleBoard {
 		Vector<Move> allMoves = new Vector<Move>();
 		Vector<Entity> list = (col == RED? listRed: listBlue);
 		for(Entity ent: list) {
-			getEntityMoves(ent, allMoves);
+			if(ent.movable()) {
+			int range = ent.getRange();
+			Vector<Vector<Move>> entMoves = ent.getMoves();
+			for(int i = 1; i <= range; ++i) {
+				allMoves.addAll(entMoves.get(i));
+			}
+		}
 		}
 		return allMoves;
 	}

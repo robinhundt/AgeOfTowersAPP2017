@@ -9,6 +9,7 @@ import java.util.Vector;
 import java.util.Stack;
 import java.util.ListIterator;
 import java.lang.Exception;
+import java.lang.IllegalStateException;
 
 public class Evaluator extends Board{
 	
@@ -22,37 +23,33 @@ public class Evaluator extends Board{
 	public Evaluator (int size, PlayerColor turn, Vector<Entity> lRed, Vector<Entity> lBlue, Entity[][] board, Position redB, Position blueB) {
 		super(size, turn, lRed, lBlue, board, redB, blueB);
 	}
+	public Evaluator (SimpleBoard boardO) {
+		super(boardO.size, boardO.turn, boardO.listRed, boardO.listBlue, boardO.board, boardO.redBase, boardO.blueBase);
+	}
 	public Status evaluate(Move move, int n) {
-//System.out.println("turn " + turn + " order " + order + " move " + move);
-//System.out.println("Stack size: " + stack.size());*/
 		this.order = n;
 		makeMove(move, turn);
-/*System.out.println("Nach dem move");
-Test.printBoard(new BViewer(this, board, size));*/
 		if(order > 1 && !(status == RED_WIN || status == BLUE_WIN)) {
 			Vector<Move> moves = allPossibleMoves(turn);
 			PlayerColor curCol = turn;
-			//int cnt = 0;
 			for(Move opponentMove: moves) {
 				turn = curCol;
 				evaluate(opponentMove, order-1);
 				order = n;
-				//if(++cnt > 5) break;
 				if(status == RED_WIN || status == BLUE_WIN) {
 					break;
 				}
 			}
 		}
 		undoChanges();
-/*System.out.println("Nach undoChanges()" + " move " + move + " order " + order);
-System.out.println("Status: " + status);
+/*System.out.println("After " + order);
 Test.printBoard(new BViewer(this, board, size));
-Test.showMoves(this, RED);*/
+Test.showMoves(this, RED);
+Test.showMoves(this, BLUE);*/
 		return status;
 	}
 
 	private void undoChanges() {
-		//System.out.println("Stack size: " + stack.size() + " stack order: " + stack.peek().getOrder() + " order " + order);
 		while(!stack.empty() && stack.peek().getOrder() == order) {
 			Change change = stack.pop();
 			switch (change.getType()) {
@@ -92,15 +89,8 @@ Test.showMoves(this, RED);*/
 	}
 	private void undoAllMovesRemoved(Change change) {
 		Entity ent = change.getEntity();
-		//System.out.println("Entity: " + ent.getPosition());
 		try{
 			ent.setAllMoves(change.getAllMoves(), change.getReachable(), change.getRange(), change.getMoveCounter());
-			/*System.out.println("\t\tSetze all moves zurueck");
-			Position pos = ent.getPosition();
-			
-			System.out.println("Position: " + pos);
-			System.out.println("Range: " + ent.getRange());
-			printEntMoves(ent);*/
 		} 
 		catch(Exception e) {
 			System.out.println("Mistake in Evaluator undoAllMovesRemoved" + e);
@@ -279,9 +269,12 @@ Test.showMoves(this, RED);*/
 	*/
 	@Override
 	protected void removeFromList(Entity ent) {
-		stack.push(new Change(ent, ENTITY_REMOVED, order));
 		Vector<Entity> list = (ent.getColor() == RED? listRed: listBlue);
-		list.remove(ent);
+		if(list.contains(ent) ){
+			stack.push(new Change(ent, ENTITY_REMOVED, order));
+			list.remove(ent);
+		}
+		//else System.out.println("Hm " + order);
 	}
 	@Override
 	public Vector<Move> allPossibleMoves(PlayerColor col) {
