@@ -70,14 +70,14 @@ public class TextIO implements IO {
         char headChar = 'A';
         StringBuilder tap = new StringBuilder("  ");
 
-        /*own stringbuilder for the letters*/
+        /*own StringBuilder for the letters to be displayed above and beneath the board*/
         StringBuilder letters = new StringBuilder();
         letters.append("    ");
-        /*fill stringbuilder with letters*/
+        /*fill StringBuilder with letters*/
         for (int j=1; j<=size; j++) {
             letters.append(headChar++).append("  ");
         }
-
+        /*output representation of board*/
         for (int i=0; i<=size+1; i++) {
             /*first line, only letters*/
             if (i==0) {
@@ -104,9 +104,14 @@ public class TextIO implements IO {
         System.out.println(output);
     }
 
+    /**
+     * Overriden method display to get possibility for other classes to inform user
+     *
+     * @param string containing information for user
+     */
     @Override
     public void display(String string) {
-        System.out.println(string);;
+        System.out.println(string);
     }
 
     /**
@@ -116,7 +121,9 @@ public class TextIO implements IO {
      * @return String containing representation of the {@link Position}
      */
     private String positionToString(Position position) {
+        /*check if there is an entity on that position*/
         if(!this.viewer.isEmpty(position)) {
+            /*get all information about entity at that position*/
             PlayerColor color = this.viewer.getPlayerColor(position);
             boolean blocked = this.viewer.isBlocked(position);
             int height = this.viewer.getHeight(position);
@@ -153,7 +160,7 @@ public class TextIO implements IO {
     }
 
     /**
-     * Override method setViewer() to set own {@link Viewer}
+     * Overridden method setViewer() to set own {@link Viewer}
      *
      * @param viewer {@link Viewer} object to be set as {@link Viewer}
      */
@@ -163,7 +170,7 @@ public class TextIO implements IO {
     }
 
     /**
-     * Overriden method deliver() parsing a textual input from the standard-input into a {@link Move}
+     * Overridden method deliver() parsing a textual input from the standard-input into a {@link Move}
      *
      * @return {@link Move} user wants to make
      * @throws Exception if input has wrong format
@@ -171,32 +178,41 @@ public class TextIO implements IO {
     @Override
     public Move deliver() throws Exception {
         Move move;
+        /*tell user to enter a move*/
         System.out.println("Please enter move: ");
         String nextMove;
         try {
+            /*read in string in one line from standard input*/
             nextMove = this.scanner.nextLine();
+            /*if user wants to surrender*/
             if (nextMove.equals("surrender")) {
                 return null;
             }
+            /*another option to surrender, but user will be asked twice*/
             else if (nextMove.equals("")) {
                 System.out.println("Do you really want to surrender? yes or no");
                 String answer = this.scanner.nextLine();
                 if (answer.equals("yes") || answer.equals("y")) {
                     return null;
                 }
+                /*if something else then "yes" or "y" will be inputted, return illegal move, so user get's another chance*/
                 return new Move(new Position(1, 1), new Position(1, 1));
             }
         }
+        /*if no line was found*/
         catch (NoSuchElementException e) {
             return null;
         }
         try {
+            /*if something else but "surrender" or nothing has been inputted*/
             move = Move.parseMove(nextMove);
         }
         catch (Exception e) {
+            /*if input did not have the correct format, give user another chance*/
             System.out.println("Couldn't interpret move. Move needs to be like 'A2->A3'");
             return new Move(new Position(1, 1), new Position(1, 1));
         }
+        /*if everything went right, return the parsed move*/
         return move;
     }
 }
