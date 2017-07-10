@@ -14,24 +14,24 @@ import towerwarspp.preset.PlayerColor;
  */
 public class TResult {
 
-    final short RED = 0;
-    final short BLUE = 1;
+    private final short RED = 0;
+    private final short BLUE = 1;
 
-    boolean swappedPlayers = false;
+    private boolean swappedPlayers = false;
 
-    int wins[];
-    int baseDestroyed[];
-    int noPosMoves[];
-    int illegalMove[];
-    int surrender[];
-    double avgMoves[];
-    int totalMoves[];
+    private int wins[];
+    private int baseDestroyed[];
+    private int noPosMoves[];
+    private int illegalMove[];
+    private int surrender[];
+    private double avgMoves[];
+    private int totalMoves[];
 
 
     /**
      * Constructor, just creating a new object with already initialized variables
      */
-    public TResult() {
+    TResult() {
         wins = new int[2];
         baseDestroyed = new int[2];
         noPosMoves = new int[2];
@@ -49,7 +49,7 @@ public class TResult {
      *
      * @param result {@link Result} information to be added
      */
-    public void addResult(Result result) {
+    void addResult(Result result) {
         int winnerIndex = 0;
 
         if(result.winner == PlayerColor.RED)
@@ -71,12 +71,13 @@ public class TResult {
 
     }
 
-    @Override
+
     /**
-     * Method toString returning a string with all information about this {@link TResult}
+     * Overriden method toString returning a string with all information about this {@link TResult}
      *
      * @return String
      */
+    @Override
     public String toString() {
 
         return "Red:\n" +

@@ -11,6 +11,11 @@ import towerwarspp.main.game.Game;
 public enum WinType {
     BASE_DESTROYED, NO_POSSIBLE_MOVES, SURRENDER, ILLEGAL_MOVE;
 
+    /**
+     * Overriden method toString return a string containing description of this {@link WinType}
+     *
+     * @return string representing a {@link WinType}
+     */
     @Override
     public String toString() {
         switch (this) {

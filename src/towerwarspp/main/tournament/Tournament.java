@@ -1,10 +1,7 @@
 package towerwarspp.main.tournament;
 
-import towerwarspp.io.GraphicIO;
-import towerwarspp.io.TextIO;
 import towerwarspp.io.View;
 import towerwarspp.main.game.Game;
-import towerwarspp.main.OutputType;
 import towerwarspp.main.game.Result;
 import towerwarspp.preset.Player;
 
@@ -19,30 +16,27 @@ public class Tournament {
     /**
      * Array of {@link Player}s, to  be able to switch the {@link towerwarspp.preset.PlayerColor} in every other {@link Game}
      */
-    Player[] players;
+    private Player[] players;
     /**
      * {@link View} to start the {@link Game} with
      */
-    View view;
+    private View view;
     /**
      * boolean that is set to true if a View object is passed to the constructor, false if null is passed
      */
-    boolean hasView;
+    private boolean hasView;
     /**
      * Boolean debug indicating if debug mode is activated and additional information should be given
      */
-    boolean debug;
+    private boolean debug;
     /**
      * Integer delayTime setting time to wait after every {@link towerwarspp.preset.Move} has been made.
      * boardSize setting size of the {@link towerwarspp.board.Board} to start the {@link Game} with.
      * games setting number of {@link Game}s to be played.
      * timeOut setting maximum time for a {@link Game} to last, stops if gametime exceeds this
      */
-    int delayTime, boardSize, games, timeOut;
-    /**
-     * {@link TResult} to store information and statistics about the whole {@link Tournament}
-     */
-    TResult tResult;
+    private int delayTime, boardSize, games, timeOut;
+
 
     /**
      * Constructor setting every parameter as given.
@@ -77,8 +71,8 @@ public class Tournament {
      * @return {@link TResult} providing a statistic about this {@link Tournament}
      */
     public TResult play() {
-        /*create new TResult object to collect information*/
-        tResult = new TResult();
+        /*create new TResult object to collect information for every game and create statistic*/
+        TResult tResult = new TResult();
         int red = 0, blue = 1;
 
         /*start as many games as wanted*/

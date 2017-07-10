@@ -1,10 +1,7 @@
 package towerwarspp.main.game;
 
 import towerwarspp.board.Board;
-import towerwarspp.io.GraphicIO;
-import towerwarspp.io.TextIO;
 import towerwarspp.io.View;
-import towerwarspp.main.WinType;
 import towerwarspp.preset.*;
 
 import java.rmi.RemoteException;
@@ -23,31 +20,31 @@ public class Game {
     /**
      * {@link Player} with {@link PlayerColor} RED
      */
-    Player redPlayer;
+    private Player redPlayer;
     /**
      * {@link Player} with {@link PlayerColor} BLUE
      */
-    Player bluePlayer;
+    private Player bluePlayer;
     /**
      * {@link Board} to play with
      */
-    Board board;
+    private Board board;
     /**
      * {@link View} object to visualize the {@link Board} and {@link Game}
      */
-    View view;
+    private View view;
     /**
      * boolean debug activating debug-mode if true
      */
-    boolean debug;
+    private boolean debug;
     /**
      * boolean hasView showing if {@link View} object is given
      */
-    boolean hasView;
+    private boolean hasView;
     /**
      * integer delayTime, time to wait after every turn
      */
-    int delayTime;
+    private int delayTime;
 
     /**
      *Constructor setting {@link Player}s, {@link Board}, {@link View} and integer variables
@@ -84,7 +81,7 @@ public class Game {
             this.bluePlayer.init(board.getSize(), BLUE);
         }
         catch (Exception e) {
-            System.out.println(e);
+            e.printStackTrace();
             System.exit(1);
         }
 
@@ -99,9 +96,9 @@ public class Game {
      * @param timeOut integer timeOut, maximum number of {@link Move}s, after which the {@link Game} will be stopped
      * @return {@link Result} containing information about the winner of this {@link Game}
      * @throws RemoteException if an error occurs with the connection in a network game
-     * @throws Exception
+     * @throws Exception if an error occurs in the {@link Board} or {@link View} object
      */
-    public Result play(int timeOut) throws RemoteException, Exception {
+    public Result play(int timeOut) throws Exception {
         /*set redPlayer as first player, red as first color, and counter of move*/
         Player currentPlayer = redPlayer;
         PlayerColor currentColor = RED;

@@ -13,8 +13,6 @@ import towerwarspp.network.Remote;
 import towerwarspp.player.*;
 import towerwarspp.preset.*;
 
-import static towerwarspp.preset.PlayerColor.*;
-
 /**
  * Class AgeOfTower - main class to start a new game of TowerWarsPP.
  *
@@ -25,16 +23,13 @@ public class AgeOfTowers {
     /**
      * Defaullt {@link OutputType} that is used if nothing else is specified.
      */
-    private final OutputType DEF_OUTPUT = OutputType.GRAPHIC;
+    private static final OutputType DEF_OUTPUT = OutputType.GRAPHIC;
 
     /**
      * {@link ArgumentParser} to get settings and flags from the command line
      */
     private ArgumentParser ap;
-    /**
-     * Array of {@link Player}s
-     */
-    private Player[] players;
+
     /**
      * {@link Board} object
      */
@@ -99,7 +94,7 @@ public class AgeOfTowers {
                     System.exit(1);
                 }
                 /*create players with given PlayerTypes*/
-                players = createPlayers();
+                Player[] players = createPlayers();
                 /*check if tournament mode is enabled and game number is higher than 1, otherwise start just one game*/
                 if(ap.isSet("games") && ap.getGameCount() > 1) {
                     startTournament(players);
@@ -121,8 +116,8 @@ public class AgeOfTowers {
     }
 
     /**
-     * Method initBoard to initialized the board variable with a new {@link Board}
-     * @param boardSize
+     * Method initBoard to initialized the board variable with a new {@link Board} and given size
+     * @param boardSize integer providing size of board
      */
     private void initBoard(int boardSize) {
         board = new Board(boardSize);
@@ -152,7 +147,7 @@ public class AgeOfTowers {
             }
 
         } catch (Exception e) {
-            System.out.println(e);
+            e.printStackTrace();
             System.exit(1);
         }
 
@@ -172,7 +167,7 @@ public class AgeOfTowers {
             /*set player as given*/
             player = ap.isSet("name") ? remote.find(ap.getName()) : remote.find();
         } catch (Exception e) {
-            System.out.println(e);
+            e.printStackTrace();
             System.exit(1);
         }
         /*return found player*/
@@ -181,7 +176,7 @@ public class AgeOfTowers {
 
     /**
      * Method setUpIO to add a specified {@link OutputType} and/or a {@link Requestable} object  to the {@link View} object
-     * @param outputType
+     * @param outputType {@link OutputType} to be set
      */
     private void setUpIO(OutputType outputType) {
         /*check which output type is given and add correct one to the view*/
@@ -208,7 +203,7 @@ public class AgeOfTowers {
             players[RED] = createPlayer(ap.getRed());
             players[BLUE] = createPlayer(ap.getBlue());
         } catch (ArgumentParserException e) {
-            System.out.println(e);
+            e.printStackTrace();
             System.exit(1);
         }
         /*return created players, init needs to be called*/

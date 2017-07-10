@@ -21,17 +21,18 @@ public class Result {
      * @param winnerMoves integer containing number of moves winner needed to win
      * @param winType {@link WinType] of winning {@link towerwarspp.preset.Player}
      */
-    public Result(PlayerColor winner, int winnerMoves, WinType winType) {
+    Result(PlayerColor winner, int winnerMoves, WinType winType) {
         this.winner = winner;
         this.winnerMoves = winnerMoves;
         this.winType = winType;
     }
 
-    @Override
+
     /**
      * Overriden method toString providing simple output of the {@link Result}}
      * @return String containing all informations of this object
      */
+    @Override
     public String toString() {
         return winner + " wins in " + winnerMoves + " moves. Type of win: " + winType.toString();
     }
