@@ -79,7 +79,7 @@ public class Tournament {
         for (int i=1; i<=games; i++) {
             /*if output is wanted, output current game number*/
             if(hasView)
-                view.display("Game No.: " + i);
+                view.setTitle("Game No.: " + i);
 
             /*switch players to get a fair tournament*/
             if (i>1) {
