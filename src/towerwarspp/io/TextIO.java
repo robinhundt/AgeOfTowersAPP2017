@@ -115,7 +115,7 @@ public class TextIO implements IO {
     }
 
     @Override
-    public void dialog(String title, String string) {
+    public void dialog(String string) {
         System.out.println(string);
     }
 

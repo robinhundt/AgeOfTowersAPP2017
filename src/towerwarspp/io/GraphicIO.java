@@ -68,6 +68,7 @@ public class GraphicIO extends JFrame implements IO {
      * JButton-Object for surrender Button
      */
     private JButton surrenderButton;
+    private JTextArea area;
 
     private boolean repainting;
 
@@ -87,12 +88,27 @@ public class GraphicIO extends JFrame implements IO {
         jPanel.setPreferredSize(new Dimension(this.jFrame.getWidth() - 150, this.jFrame.getHeight()));
         this.surrenderButton = getSurrenderButton();
         this.info = new JTextArea();
-        info.setEditable(false);
-        //info.setLineWrap(true);
+        this.info.setEditable(false);
         infoPanel = new JPanel(new BorderLayout());
         infoPanel.setPreferredSize(new Dimension(135, 100));
         infoPanel.add(surrenderButton, BorderLayout.NORTH);
-        infoPanel.add(info, BorderLayout.CENTER);
+        infoPanel.add(this.info, BorderLayout.CENTER);
+        JDialog dialog = new JDialog(this.jFrame, "Result");
+        this.area = new JTextArea(200, 200);
+        JButton close = new JButton("Close");
+        close.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent actionEvent) {
+                System.exit(0);
+            }
+        });
+        this.area.setEditable(false);
+        dialog.setDefaultCloseOperation(DISPOSE_ON_CLOSE);
+        dialog.add(this.area, BorderLayout.LINE_START);
+        dialog.add(close, BorderLayout.AFTER_LAST_LINE);
+        dialog.setSize(new Dimension(450, 400));
+        dialog.setResizable(false);
+        dialog.setVisible(true);
     }
 
     /**
@@ -359,24 +375,8 @@ public class GraphicIO extends JFrame implements IO {
      * Dialog
      */
     @Override
-    public void dialog(String title, String string) {
-        JDialog dialog = new JDialog(this.jFrame, title);
-        JTextArea area = new JTextArea(string);
-        JButton close = new JButton("Close");
-        close.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent actionEvent) {
-                System.exit(0);
-            }
-        });
-        area.setEditable(false);
-        area.setSize(new Dimension(450, 400));
-        dialog.setDefaultCloseOperation(DISPOSE_ON_CLOSE);
-        dialog.add(area, BorderLayout.LINE_START);
-        dialog.add(close, BorderLayout.AFTER_LAST_LINE);
-        dialog.setSize(new Dimension(450, 400));
-        dialog.setResizable(false);
-        dialog.setVisible(true);
+    public void dialog(String string) {
+        this.area.setText(string);
     }
 
     public Shape getPointedShape(int arrayX, int arrayY) {
