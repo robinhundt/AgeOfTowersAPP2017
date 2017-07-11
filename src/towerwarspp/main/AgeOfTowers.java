@@ -21,7 +21,7 @@ import towerwarspp.preset.*;
  */
 public class AgeOfTowers {
     /**
-     * Defaullt {@link OutputType} that is used if nothing else is specified.
+     * Default {@link OutputType} that is used if nothing else is specified.
      */
     private static final OutputType DEF_OUTPUT = OutputType.GRAPHIC;
 
@@ -263,18 +263,19 @@ public class AgeOfTowers {
      * @param players array of {@link Player}
      */
     private void startTournament(Player[] players) {
-        Tournament tournament = null;
+        Tournament tournament;
+        TResult tResult = null;
         try {
 
             tournament = new Tournament(players, io, ap.isDebug(),
                     ap.isSet("delay") ? ap.getDelay() : 0, board.getSize(), ap.getGameCount(), ap.isSet("timeout") ? ap.getTimeOut() : 0);
+            tResult = tournament.play(ap.isStatistic());
         } catch (Exception e) {
             e.printStackTrace();
             System.exit(1);
         }
-        TResult tResult = tournament.play();
         if (io != null) {
-            io.dialog(tResult != null ? tResult.toString() : "All games have ended with timeout!");
+            io.dialog(tResult.toString());
         } else {
             System.out.println(tResult);
         }
@@ -303,7 +304,7 @@ public class AgeOfTowers {
                 "-name  \t chose name for the player, none other settings need to be set" +
 
                 "if -offer is NOT set, obligatory settings are: \n" +
-                "-red \t chose player type for red \n" +
+                "-red  \t chose player type for red \n" +
                 "-blue \t chose player type for blue \n" +
                 "-size \t chose board size \n" +
 
@@ -326,6 +327,8 @@ public class AgeOfTowers {
                 "delay:  \t  integer bigger than 0 (in milliseconds) \n" +
 
                 "\nFLAGS: \n" +
-                "--debug \t activates the debug-mode: shows additional information for every move \n";
+                "--statistic \t activated the constant output of the tournament statistic, \n" +
+                "            \t only effects if a tournament has been started" +
+                "--debug     \t activates the debug-mode: shows additional information for every move \n";
     }
 }

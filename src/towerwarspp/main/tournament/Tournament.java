@@ -70,9 +70,10 @@ public class Tournament {
      *
      * @return {@link TResult} providing a statistic about this {@link Tournament}
      */
-    public TResult play() {
+    public TResult play(boolean statistic) {
         /*create new TResult object to collect information for every game and create statistic*/
         TResult tResult = new TResult();
+        /*set redplayer as first player and blue player second*/
         int red = 0, blue = 1;
 
         /*start as many games as wanted*/
@@ -95,11 +96,15 @@ public class Tournament {
             try {
                 /*start game and store result*/
                 Result result = game.play(timeOut);
-                if(hasView) {
-                    view.display(result.toString());
-                    view.dialog(tResult.toString());
-                }
+                /*include result in statistic*/
                 tResult.addResult(result);
+                if(hasView) {
+                    /*output result of last game*/
+                    view.display(result.toString());
+                    /*output current status of the statistic*/
+                    if (statistic)
+                        view.dialog(tResult.toString());
+                }
             }
             catch (Exception e) {
                 e.printStackTrace();

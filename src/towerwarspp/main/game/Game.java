@@ -154,7 +154,7 @@ public class Game {
             }
         }
 
-        /*if game ended with timeout, do not create result object*/
+        /*if game ended with timeout, create result object with winner == null, indicating this case*/
         if (moveCounter == timeOut) {
             return new Result(moveCounter, WinType.TIMEOUT);
         }

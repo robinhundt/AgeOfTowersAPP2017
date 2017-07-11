@@ -306,4 +306,7 @@ public class ArgumentParser {
         return parsePlayerType((String) getSetting("offer"));
     }
 
+    public boolean isStatistic() throws ArgumentParserException {
+        return getFlag("statistic");
+    }
 }
