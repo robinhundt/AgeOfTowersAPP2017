@@ -81,8 +81,7 @@ public class GraphicIO extends JFrame implements IO {
     public GraphicIO() {
         this.home = System.getProperty("user.dir");
         System.out.println(this.home);
-        this.jFrame = new JFrame();
-        this.jFrame.setLayout(new BorderLayout());
+        this.jFrame = new JFrame("Age of Towers");
         this.jFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         this.screenResolution = Toolkit.getDefaultToolkit().getScreenSize();
         this.jFrame.setSize(this.screenResolution);
@@ -360,7 +359,7 @@ public class GraphicIO extends JFrame implements IO {
      */
     @Override
     public void dialog(String title, String string) {
-        Dialog dialog = new Dialog(this.jFrame, title);
+        JDialog dialog = new JDialog(this.jFrame, title);
         TextArea area = new TextArea(string);
         JButton close = new JButton("Close");
         close.addActionListener(new ActionListener() {
@@ -370,9 +369,9 @@ public class GraphicIO extends JFrame implements IO {
             }
         });
         area.setEditable(false);
-        dialog.setLayout(new BoxLayout(dialog, BoxLayout.Y_AXIS));
-        dialog.add(area);
-        dialog.add(close);
+        dialog.setDefaultCloseOperation(DISPOSE_ON_CLOSE);
+        dialog.add(area, BorderLayout.LINE_START);
+        dialog.add(close, BorderLayout.AFTER_LAST_LINE);
         dialog.setSize(new Dimension(400, 400));
         dialog.setVisible(true);
     }
