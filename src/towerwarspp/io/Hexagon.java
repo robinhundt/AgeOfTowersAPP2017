@@ -50,7 +50,7 @@ public class Hexagon {
      * @param size the radius from center to corner
      */
     private void setConers(Center center, int size) {
-        this.corners = new Corner[size];
+        this.corners = new Corner[6];
         for (int i = 0; i < 6; ++i) {
             this.corners[i] = new Corner(center, size, i);
         }

@@ -5,6 +5,8 @@ import towerwarspp.preset.*;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
+import java.awt.image.ImageObserver;
+import java.text.AttributedCharacterIterator;
 import java.util.Vector;
 
 /**
@@ -73,7 +75,6 @@ public class GraphicIO extends JFrame implements IO {
         this.jFrame.setLayout(new BorderLayout());
         this.jFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         this.screenResolution = Toolkit.getDefaultToolkit().getScreenSize();
-        this.jFrame.setTitle("Age of Towers");
         this.jFrame.setSize(this.screenResolution);
         this.jFrame.addComponentListener(getFrameResize());
         this.surrenderButton = getSurrenderButton();
@@ -89,6 +90,14 @@ public class GraphicIO extends JFrame implements IO {
     @Override
     public void display(String string) {
         info.setText(string);
+    }
+
+    /**
+     * Sets the Title of the JFrame
+     * @param string String who should be in the Title
+     */
+    public void setTitle(String string) {
+        this.jFrame.setTitle("Age of Towers" + string);
     }
 
     /**
@@ -310,6 +319,27 @@ public class GraphicIO extends JFrame implements IO {
     }
 
     /**
+     * Dialog
+     */
+    public void dialog(String title, String string) {
+        Dialog dialog = new Dialog(this.jFrame, title);
+        TextArea area = new TextArea(string);
+        JButton close = new JButton("Close");
+        close.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent actionEvent) {
+                System.exit(0);
+            }
+        });
+        area.setEditable(false);
+        dialog.setLayout(new BoxLayout(dialog, BoxLayout.Y_AXIS));
+        dialog.add(area);
+        dialog.add(close);
+        dialog.setSize(new Dimension(400, 200));
+        dialog.setVisible(true);
+    }
+
+    /**
      * Creates a Button with the action of surrender
      * @return The surrender Button
      */
@@ -330,7 +360,7 @@ public class GraphicIO extends JFrame implements IO {
      */
     @Override
     public void visualize() {
-        if(this.viewer.getStatus() == Status.OK) {
+        if(this.viewer.getStatus() != Status.ILLEGAL) {
             jPanel.setPreferredSize(new Dimension(jFrame.getWidth() - 150, jFrame.getHeight()));
             jPanel.repaint();
         }
