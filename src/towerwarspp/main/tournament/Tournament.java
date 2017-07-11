@@ -95,8 +95,10 @@ public class Tournament {
             try {
                 /*start game and store result*/
                 Result result = game.play(timeOut);
-                if(hasView)
+                if(hasView) {
                     view.display(result.toString());
+                    view.dialog(tResult.toString());
+                }
                 tResult.addResult(result);
             }
             catch (Exception e) {

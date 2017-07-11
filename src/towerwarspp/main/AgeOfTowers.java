@@ -274,7 +274,7 @@ public class AgeOfTowers {
         }
         TResult tResult = tournament.play();
         if (io != null) {
-            io.dialog("Tournament statistic", tResult != null ? tResult.toString() : "All games have ended with timeout!");
+            io.dialog(tResult != null ? tResult.toString() : "All games have ended with timeout!");
         } else {
             System.out.println(tResult);
         }
