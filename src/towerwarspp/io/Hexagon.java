@@ -178,7 +178,7 @@ class Corner {
         Double x = center.getX() + size * Math.cos(angle_radius);
         Double y = center.getY() + size * Math.sin(angle_radius);
         coordinates[0] = x.intValue();
-        coordinates[0] = y.intValue();
+        coordinates[1] = y.intValue();
         return coordinates;
     }
 }
