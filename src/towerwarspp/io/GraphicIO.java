@@ -2,10 +2,15 @@ package towerwarspp.io;
 
 import towerwarspp.preset.*;
 
+import javax.imageio.ImageIO;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
+import java.awt.geom.AffineTransform;
+import java.awt.geom.GeneralPath;
+import java.awt.image.BufferedImage;
 import java.awt.image.ImageObserver;
+import java.io.File;
 import java.text.AttributedCharacterIterator;
 import java.util.Vector;
 
@@ -16,7 +21,10 @@ import java.util.Vector;
  * @author Kai Kuhlmann
  */
 public class GraphicIO extends JFrame implements IO {
-
+    /**
+     * String for Home-Directory
+     */
+    private String home;
     /**
      * Viewer-Object
      */
@@ -71,6 +79,8 @@ public class GraphicIO extends JFrame implements IO {
      * Constructor
      */
     public GraphicIO() {
+        this.home = System.getProperty("user.dir");
+        System.out.println(this.home);
         this.jFrame = new JFrame();
         this.jFrame.setLayout(new BorderLayout());
         this.jFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -97,7 +107,7 @@ public class GraphicIO extends JFrame implements IO {
      * @param string String who should be in the Title
      */
     public void setTitle(String string) {
-        this.jFrame.setTitle("Age of Towers" + string);
+        this.jFrame.setTitle("Age of Towers - " + string);
     }
 
     /**
@@ -183,62 +193,89 @@ public class GraphicIO extends JFrame implements IO {
     private JPanel getJPanel() {
         return new JPanel() {
             @Override
-            protected void paintComponent(Graphics g) {
-                int distance = (int)((Math.cos(Math.toRadians(30.0)) * polySize) * 2.0);
-                Font letterFont = new Font("TimesRoman", Font.BOLD, distance / 2);
-                Font stoneFont = new Font("TimesRoman", Font.BOLD, distance / 4);
-                super.paintComponent(g);
-                g.setColor(Color.BLACK);
-                g.setFont(letterFont);
-                char[] topLetter = new char[1];
-                topLetter[0] = 'A';
-                String leftNumber = "";
-                int topLetterX = 0;
-                int topLetterY = 0;
-                /*-- draw the top Chars --*/
-                for(int i = 0; i < viewer.getSize(); ++i) {
-                    g.drawChars(topLetter, 0, topLetter.length, (int)(topLetterX + (distance * i) + (0.5 * distance)), topLetterY + (distance / 2));
-                    ++topLetter[0];
-                }
-                if (possibleMoves != null) {
-                    for (Move move : possibleMoves) {
-                        int letter = move.getEnd().getLetter();
-                        int number = move.getEnd().getNumber();
+            protected void paintComponent(Graphics graphics) {
+                if (viewer != null) {
+                    Graphics2D g = (Graphics2D) graphics;
+                    int distance = (int) ((Math.cos(Math.toRadians(30.0)) * polySize) * 2.0);
+                    Font letterFont = new Font("TimesRoman", Font.BOLD, distance / 2);
+                    Font stoneFont = new Font("TimesRoman", Font.BOLD, distance / 4);
+                    super.paintComponent(g);
+                    g.setRenderingHint(
+                            RenderingHints.KEY_ANTIALIASING,
+                            RenderingHints.VALUE_ANTIALIAS_ON);
+                    g.setRenderingHint(
+                            RenderingHints.KEY_COLOR_RENDERING,
+                            RenderingHints.VALUE_COLOR_RENDER_QUALITY);
 
-                        g.setColor(Color.GREEN);
-                        g.fillPolygon(polygon[letter][number]);
-                        g.setColor(Color.BLACK);
-                        g.drawPolygon(polygon[letter][number]);
-                    }
-                }
-                for(int y = 1; y <= viewer.getSize(); ++y) {
-                    /*-- draw the left Numbers --*/
-                    g.setFont(letterFont);
-                    leftNumber = String.valueOf(y);
                     g.setColor(Color.BLACK);
-                    g.drawString(leftNumber, (y - 1) * (distance / 2), hexagonGrid.getCenter(1, y).getY() + (polySize / 4));
-                    for(int x = 1; x <= viewer.getSize(); ++x) {
-                        g.setFont(stoneFont);
-                        /*-- draw Grid --*/
-                        g.setColor(Color.BLACK);
-                        g.drawPolygon(polygon[x][y]);
-                        /*-----*/
-                        Position position = new Position(x, y);
-                        /*draw entities*/
-                        if(!viewer.isEmpty(position)) {
-                            /*set color*/
-                            g.setColor(getColor(position));
-                            int i = hexagonGrid.getCenter(x, y).getX() - (polySize / 2);
-                            int i1 = hexagonGrid.getCenter(x, y).getY() - (polySize / 2);
-                            int i2 = polySize - (polySize / 32);
-                            int i3 = i2;
-                            g.fillOval(i, i1, i2, i3);
+                    g.setFont(letterFont);
+                    char[] topLetter = new char[1];
+                    topLetter[0] = 'A';
+                    String leftNumber = "";
+                    int topLetterX = 0;
+                    int topLetterY = 0;
+                /*-- draw the top Chars --*/
+                    for (int i = 0; i < viewer.getSize(); ++i) {
+                        g.drawChars(topLetter, 0, topLetter.length, (int) (topLetterX + (distance * i) + (0.5 * distance)), topLetterY + (distance / 2));
+                        ++topLetter[0];
+                    }
+                    if (possibleMoves != null) {
+                        for (Move move : possibleMoves) {
+                            int letter = move.getEnd().getLetter();
+                            int number = move.getEnd().getNumber();
+
+                            g.setColor(Color.GREEN);
+                            g.fillPolygon(polygon[letter][number]);
                             g.setColor(Color.BLACK);
-                            g.drawOval(i, i1, i2, i3);
-                            if(!viewer.isEmpty(position) && viewer.getHeight(position) >= 0) {
-                                g.setColor(Color.WHITE);
-                                char[] chars = getChar(position);
-                                g.drawChars(chars, 0, chars.length, i + (polySize - (polySize * 2 / 3)), i1 + (polySize * 3 / 4));
+                            g.drawPolygon(polygon[letter][number]);
+                        }
+                    }
+                    for (int y = 1; y <= viewer.getSize(); ++y) {
+                    /*-- draw the left Numbers --*/
+                        g.setFont(letterFont);
+                        leftNumber = String.valueOf(y);
+                        g.setColor(Color.BLACK);
+                        g.drawString(leftNumber, (y - 1) * (distance / 2), hexagonGrid.getCenter(1, y).getY() + (polySize / 4));
+                        for (int x = 1; x <= viewer.getSize(); ++x) {
+
+                        /*Shape shp = getPointedShape(x, y);
+                        Rectangle r = shp.getBounds();
+                        System.out.println(-r.x+1 + " " + -r.y+1);
+                        BufferedImage backgroundImage = new BufferedImage(r.width+2,r.height+2,BufferedImage.TYPE_INT_ARGB);
+                        try {
+                            backgroundImage = ImageIO.read(new File(home + "/assets/feldMit.png"));
+                        } catch (Exception e) {
+
+                        }
+                        AffineTransform centerTransform = AffineTransform.getTranslateInstance(-r.x+1, -r.y+1);
+                        g.setTransform(centerTransform);
+                        g.setClip(shp);
+                        g.drawImage(backgroundImage, x, y, null);
+                        g.setClip(null);*/
+
+
+                            g.setFont(stoneFont);
+                        /*-- draw Grid --*/
+                            g.setColor(Color.BLACK);
+                            g.drawPolygon(polygon[x][y]);
+                        /*-----*/
+                            Position position = new Position(x, y);
+                        /*draw entities*/
+                            if (!viewer.isEmpty(position)) {
+                            /*set color*/
+                                g.setColor(getColor(position));
+                                int i = hexagonGrid.getCenter(x, y).getX() - (polySize / 2);
+                                int i1 = hexagonGrid.getCenter(x, y).getY() - (polySize / 2);
+                                int i2 = polySize - (polySize / 32);
+                                int i3 = i2;
+                                g.fillOval(i, i1, i2, i3);
+                                g.setColor(Color.BLACK);
+                                g.drawOval(i, i1, i2, i3);
+                                if (!viewer.isEmpty(position) && viewer.getHeight(position) >= 0) {
+                                    g.setColor(Color.WHITE);
+                                    char[] chars = getChar(position);
+                                    g.drawChars(chars, 0, chars.length, i + (polySize - (polySize * 2 / 3)), i1 + (polySize * 3 / 4));
+                                }
                             }
                         }
                     }
@@ -321,6 +358,7 @@ public class GraphicIO extends JFrame implements IO {
     /**
      * Dialog
      */
+    @Override
     public void dialog(String title, String string) {
         Dialog dialog = new Dialog(this.jFrame, title);
         TextArea area = new TextArea(string);
@@ -335,8 +373,28 @@ public class GraphicIO extends JFrame implements IO {
         dialog.setLayout(new BoxLayout(dialog, BoxLayout.Y_AXIS));
         dialog.add(area);
         dialog.add(close);
-        dialog.setSize(new Dimension(400, 200));
+        dialog.setSize(new Dimension(400, 400));
         dialog.setVisible(true);
+    }
+
+    public Shape getPointedShape(int arrayX, int arrayY) {
+        Center center = hexagonGrid.getCenter(arrayX, arrayY);
+
+        GeneralPath p = new GeneralPath();
+        for (int i = 0; i < 6; i++) {
+            int angle_degree = 60 * i + 30;
+            double angle_radius = Math.PI / 180 * angle_degree;
+            Double x = center.getX() + this.polySize * Math.cos(angle_radius);
+            Double y = center.getY() + this.polySize * Math.sin(angle_radius);
+            if (i == 0) {
+                p.moveTo(x, y);
+            } else {
+                p.lineTo(x, y);
+            }
+        }
+        p.closePath();
+
+        return p;
     }
 
     /**

@@ -12,5 +12,6 @@ public interface View {
     void visualize();
     void display(String string);
     void dialog(String title, String string);
+    void setTitle(String string);
     void setViewer(Viewer viewer);
 }
