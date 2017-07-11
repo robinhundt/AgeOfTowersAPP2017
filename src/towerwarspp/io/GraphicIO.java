@@ -206,6 +206,7 @@ public class GraphicIO extends JFrame implements IO {
                     Font letterFont = new Font("TimesRoman", Font.BOLD, distance / 2);
                     Font stoneFont = new Font("TimesRoman", Font.BOLD, distance / 4);
                     super.paintComponent(g);
+
                     g.setRenderingHint(
                             RenderingHints.KEY_ANTIALIASING,
                             RenderingHints.VALUE_ANTIALIAS_ON);
@@ -277,7 +278,7 @@ public class GraphicIO extends JFrame implements IO {
                                 g.fillOval(i, i1, i2, i3);
                                 g.setColor(Color.BLACK);
                                 g.drawOval(i, i1, i2, i3);
-                                if (!viewer.isEmpty(position) && viewer.getHeight(position) >= 0) {
+                                if (viewer.getHeight(position) >= 0) {
                                     g.setColor(Color.WHITE);
                                     char[] chars = getChar(position);
                                     g.drawChars(chars, 0, chars.length, i + (polySize - (polySize * 2 / 3)), i1 + (polySize * 3 / 4));
@@ -369,6 +370,7 @@ public class GraphicIO extends JFrame implements IO {
             }
         });
         area.setEditable(false);
+        area.setSize(new Dimension(450, 400));
         dialog.setDefaultCloseOperation(DISPOSE_ON_CLOSE);
         dialog.add(area, BorderLayout.LINE_START);
         dialog.add(close, BorderLayout.AFTER_LAST_LINE);
