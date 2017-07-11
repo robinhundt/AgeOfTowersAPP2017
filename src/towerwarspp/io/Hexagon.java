@@ -62,7 +62,7 @@ public class Hexagon {
      * @param y Y-Coordinate of the Center of the Hexagon
      * @param size the radius from center to corner
      */
-    public void updateHexagon(int x, int y, int size) {
+    void updateHexagon(int x, int y, int size) {
         for(int i = 0; i < 6; ++i) {
             this.center.updateCenter(x, y);
             this.corners[i].updateCorner(this.center, size, i);
@@ -171,12 +171,14 @@ class Corner {
      * @return the Coordinates of the Corner
      */
     private int[] calculateCorner(Center center, int size, int i) {
+        int coordinates[] = new int[2];
         /*-- 6 Corners (60) because of corner top + 30 --*/
         int angle_degree = 60 * i + 30;
         double angle_radius = Math.PI / 180 * angle_degree;
         Double x = center.getX() + size * Math.cos(angle_radius);
         Double y = center.getY() + size * Math.sin(angle_radius);
-        int coordinates[] =  {x.intValue(), y.intValue()};
+        coordinates[0] = x.intValue();
+        coordinates[0] = y.intValue();
         return coordinates;
     }
 }

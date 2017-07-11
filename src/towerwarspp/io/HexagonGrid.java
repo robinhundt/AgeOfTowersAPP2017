@@ -29,10 +29,6 @@ public class HexagonGrid {
         }
     }
 
-    public int getPolygonSize() {
-        return this.polygonSize;
-    }
-
     public void updatePolygonSize(int polySize) {
         this.polygonSize = polySize;
         for(int y = 1; y < this.hexagons.length; ++y) {
@@ -45,8 +41,10 @@ public class HexagonGrid {
     }
 
     private int[] calculateCenterCoordinates(int x, int y) {
+        int [] coordinates = new int[2];
         int distance = (int) (Math.cos(Math.toRadians(30.0)) * this.polygonSize);
-        int [] coordinates = {x * (2 * distance) + (y - 1) * distance + (distance / 2), y * this.polygonSize + (y - 1) * (this.polygonSize / 2) + distance};
+        coordinates[1] = x * (2 * distance) + (y - 1) * distance + (distance / 2);
+        coordinates[2] = y * this.polygonSize + (y - 1) * (this.polygonSize / 2) + distance;
         return coordinates;
     }
 

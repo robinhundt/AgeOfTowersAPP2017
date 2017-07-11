@@ -52,10 +52,6 @@ public class GraphicIO extends JFrame implements IO {
      */
     private Move deliverMove;
     /**
-     * Dimension-Object for screenresolution
-     */
-    private Dimension screenResolution;
-    /**
      * JPanel-Object for right infooutput
      */
     private JPanel infoPanel;
@@ -64,11 +60,9 @@ public class GraphicIO extends JFrame implements IO {
      */
     private JTextArea info;
 
-    /**
-     * JButton-Object for surrender Button
-     */
-    private JButton surrenderButton;
     private JTextArea area;
+
+    private JDialog dialog;
 
     private boolean repainting;
 
@@ -77,23 +71,21 @@ public class GraphicIO extends JFrame implements IO {
      */
     public GraphicIO() {
         this.home = System.getProperty("user.dir");
-        System.out.println(this.home);
         this.jFrame = new JFrame("Age of Towers");
         this.jFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        this.screenResolution = Toolkit.getDefaultToolkit().getScreenSize();
-        this.jFrame.setSize(this.screenResolution);
+        this.jFrame.setSize(Toolkit.getDefaultToolkit().getScreenSize());
         this.jFrame.addComponentListener(getFrameResize());
         jPanel = getJPanel();
         jPanel.addMouseListener(getMouseListener());
         jPanel.setPreferredSize(new Dimension(this.jFrame.getWidth() - 150, this.jFrame.getHeight()));
-        this.surrenderButton = getSurrenderButton();
+        JButton surrenderButton = getSurrenderButton();
         this.info = new JTextArea();
         this.info.setEditable(false);
         infoPanel = new JPanel(new BorderLayout());
         infoPanel.setPreferredSize(new Dimension(135, 100));
         infoPanel.add(surrenderButton, BorderLayout.NORTH);
         infoPanel.add(this.info, BorderLayout.CENTER);
-        JDialog dialog = new JDialog(this.jFrame, "Result");
+        this.dialog = new JDialog(this.jFrame, "Result");
         this.area = new JTextArea(200, 200);
         JButton close = new JButton("Close");
         close.addActionListener(new ActionListener() {
@@ -103,12 +95,11 @@ public class GraphicIO extends JFrame implements IO {
             }
         });
         this.area.setEditable(false);
-        dialog.setDefaultCloseOperation(DISPOSE_ON_CLOSE);
-        dialog.add(this.area, BorderLayout.LINE_START);
-        dialog.add(close, BorderLayout.AFTER_LAST_LINE);
-        dialog.setSize(new Dimension(450, 400));
-        dialog.setResizable(false);
-        dialog.setVisible(true);
+        this.dialog.setDefaultCloseOperation(DISPOSE_ON_CLOSE);
+        this.dialog.add(this.area, BorderLayout.LINE_START);
+        this.dialog.add(close, BorderLayout.AFTER_LAST_LINE);
+        this.dialog.setSize(new Dimension(450, 400));
+        this.dialog.setResizable(false);
     }
 
     /**
@@ -155,11 +146,19 @@ public class GraphicIO extends JFrame implements IO {
         this.polySize = gridX < gridY ? (int)gridX : (int)gridY;
     }
 
+    /**
+     * Get the coordinates of the clicked Entity
+     * @param mouseX X-Coordinate of the Mouse
+     * @param mouseY Y-Coordinate of the Mouse
+     * @return Coordinates of the Entity
+     */
     private int[] getCoordinatesOfPolygon(int mouseX, int mouseY) {
+        int[] coordinates = new int[2];
         for (int y = 1; y <= viewer.getSize(); ++y) {
             for (int x = 1; x <= viewer.getSize(); ++x) {
                 if(this.polygon[x][y].contains(mouseX, mouseY)) {
-                    int[] coordinates = {x, y};
+                    coordinates[0] = x;
+                    coordinates[1] = y;
                     return coordinates;
                 }
             }
@@ -220,18 +219,18 @@ public class GraphicIO extends JFrame implements IO {
                     Font stoneFont = new Font("TimesRoman", Font.BOLD, distance / 4);
                     super.paintComponent(g);
 
-                    g.setRenderingHint(
+                    /*g.setRenderingHint(
                             RenderingHints.KEY_ANTIALIASING,
                             RenderingHints.VALUE_ANTIALIAS_ON);
                     g.setRenderingHint(
                             RenderingHints.KEY_COLOR_RENDERING,
-                            RenderingHints.VALUE_COLOR_RENDER_QUALITY);
+                            RenderingHints.VALUE_COLOR_RENDER_QUALITY);*/
 
                     g.setColor(Color.BLACK);
                     g.setFont(letterFont);
                     char[] topLetter = new char[1];
                     topLetter[0] = 'A';
-                    String leftNumber = "";
+                    String leftNumber;
                     int topLetterX = 0;
                     int topLetterY = 0;
                 /*-- draw the top Chars --*/
@@ -377,6 +376,7 @@ public class GraphicIO extends JFrame implements IO {
     @Override
     public void dialog(String string) {
         this.area.setText(string);
+        this.dialog.setVisible(true);
     }
 
     public Shape getPointedShape(int arrayX, int arrayY) {
@@ -403,7 +403,7 @@ public class GraphicIO extends JFrame implements IO {
      * Creates a Button with the action of surrender
      * @return The surrender Button
      */
-    public JButton getSurrenderButton() {
+    private JButton getSurrenderButton() {
         JButton button = new JButton("Surrender");
         button.addActionListener(new ActionListener() {
             @Override
@@ -442,7 +442,7 @@ public class GraphicIO extends JFrame implements IO {
     /**
      * Waits for Player Input and set the Main-Thread to wait()
      * @return Move
-     * @throws Exception
+     * @throws Exception Illegal move
      */
     @Override
     synchronized public Move deliver() throws Exception {
