@@ -29,16 +29,6 @@ public class RndPlayer extends BasePlayer {
     }
 
     /**
-     * Construct a new Random Player. For the initialization of the {@link #rnd} object no seed is used, which causes
-     * per specification the seed to be set "a value very likely to be distinct from any other invocation of this constructor."
-     * @param view optional {@link View} instance to update state of the game after each {@link #request()} and {@link #update(Move, Status)}
-     */
-    public RndPlayer(View view) {
-        this();
-        setView(view);
-    }
-
-    /**
      * Implementation of the {@link BasePlayer#deliverMove()} method. Randomly selects one move from all the possible
      * moves that are available for this player {@link #color} and returns it.
      * @return randomly selected move out of all possible moves.

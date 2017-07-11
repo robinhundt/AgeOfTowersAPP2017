@@ -28,17 +28,6 @@ public class HumanPlayer extends BasePlayer {
         this.requestable = requestable;
     }
 
-    /**
-     * Constructor for the HumanPlayer with the {@link #requestable} instance and an optional {@link View} object, that can be
-     * used to display the current state of the game (required if the Player is offered on the network but the user wishes
-     * to see output).
-     * @param requestable {@link Requestable} object to get user input from
-     * @param view {@link View} object to update output of the Game after each request and update
-     */
-    public HumanPlayer(Requestable requestable, View view) {
-        this(requestable);
-        setView(view);
-    }
 
 
     /**

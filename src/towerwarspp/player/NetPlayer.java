@@ -1,6 +1,7 @@
 package towerwarspp.player;
 
 import towerwarspp.board.Board;
+import towerwarspp.io.View;
 import towerwarspp.preset.Move;
 import towerwarspp.preset.Player;
 import towerwarspp.preset.PlayerColor;
@@ -24,6 +25,8 @@ public class NetPlayer extends UnicastRemoteObject implements Player {
      * call {@link #player#request()}.
      */
     private Player player;
+    private View view;
+    private boolean hasView;
 
     /**
      * Construct a new NetPlayer object tat is linked to the passed {@link Player} object. Player reference can not be
@@ -32,10 +35,18 @@ public class NetPlayer extends UnicastRemoteObject implements Player {
      * @throws Exception if null is passed
      */
     public NetPlayer(Player player) throws Exception{
+        this(player, null);
+    }
+
+    public NetPlayer(Player player, View view) throws Exception {
         if(player == null)
             throw new Exception("Cannot bind NetPlayer to null");
         else
             this.player = player;
+        this.view = view;
+        if(this.view != null)
+            hasView = true;
+
     }
 
     /**
@@ -46,6 +57,8 @@ public class NetPlayer extends UnicastRemoteObject implements Player {
     @Override
     public Move request() throws Exception{
         Move move = player.request();
+        if(hasView)
+            view.visualize();
         return move;
     }
 
@@ -69,6 +82,8 @@ public class NetPlayer extends UnicastRemoteObject implements Player {
     @Override
     public void update(Move opponentMove, Status boardStatus) throws Exception {
         player.update(opponentMove, boardStatus);
+        if (hasView)
+            view.visualize();
     }
 
     /**
@@ -84,5 +99,10 @@ public class NetPlayer extends UnicastRemoteObject implements Player {
     @Override
     public void init(int size, PlayerColor color) throws Exception{
         player.init(size, color);
+        if(hasView) {
+            view.setViewer(((BasePlayer)player).getViewer());
+            view.visualize();
+        }
+
     }
 }

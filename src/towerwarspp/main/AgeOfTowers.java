@@ -140,9 +140,9 @@ public class AgeOfTowers {
                 Remote remote = new Remote(port);
                 if(io != null)
                     /*create new netplayer with given type and view object*/
-                    remote.offer(new NetPlayer(createPlayer(ap.getOfferedType(), io)), ap.getName());
+                    remote.offer(new NetPlayer(createPlayer(ap.getOfferedType()), io), ap.getName());
                 else
-                    /*create new netplayer without view object, no output will to provided*/
+                    /*create new netplayer without view object, no output will be provided*/
                     remote.offer(new NetPlayer(createPlayer(ap.getOfferedType())), ap.getName());
             }
 
@@ -211,36 +211,27 @@ public class AgeOfTowers {
     }
 
     /**
-     * Method createPlayer to initialize a {@link Player} with given {@link PlayerType} and {@link View} object
+     * Method createPlayer to initialize a {@link Player} with given {@link PlayerType}.
      *
      * @param playerType {@link PlayerType}
-     * @param view {@link View} object to provide possibility to visualize the {@link Game} and {@link Board}
      *
      * @return {@link Player} with needed {@link PlayerType}
      */
-    private Player createPlayer(PlayerType playerType, View view) {
+    private Player createPlayer(PlayerType playerType) {
         Player player = null;
         /*create concrete player, with given view object, of exit if wrong playertype is given*/
         switch (playerType) {
-            case HUMAN: player = new HumanPlayer(requestable, view); break;
-            case RANDOM_AI: player = new RndPlayer(view); break;
+            case HUMAN: player = new HumanPlayer(requestable); break;
+            case RANDOM_AI: player = new RndPlayer(); break;
             case SIMPLE_AI: player = new SimplePlayer(); break;
-            case ADVANCED_AI_1: player = new AdvPlayer(50); break;
+            case ADVANCED_AI_1: player = new Adv1Player(); break;
+            case ADVANCED_AI_2: player = new Adv2Player(1); break;
             case REMOTE: player = getRemotePlayer(); break;
             default: System.out.println("Unsupported PlayerType."); System.exit(1);
         }
         return player;
     }
 
-    /**
-     * Method createPlayer to initialize a {@link Player} with given {@link PlayerType} but without {@link View} object
-     * @param playerType {@link PlayerType}
-     *
-     * @return {@link Player}
-     */
-    private Player createPlayer(PlayerType playerType) {
-        return createPlayer(playerType, null);
-    }
 
     /**
      * Method startGame to create a new {@link Game} object, with given {@link Player}s.

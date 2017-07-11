@@ -39,17 +39,6 @@ public class SimplePlayer extends BasePlayer {
     }
 
     /**
-     * Construct a new Random Player. For the initialization of the {@link #rnd} object no seed is used, which causes
-     * per specification the seed to be set "a value very likely to be distinct from any other invocation of this constructor."
-     * @param view optional {@link View} instance that can be used to update the visual state of the game after each
-     *             {@link #request()} and {@link #update(Move, Status)}
-     */
-    public SimplePlayer(View view) {
-        this();
-        setView(view);
-    }
-
-    /**
      * Uses the {@link Board#scoreMove(Move, PlayerColor)} method to evaluate all possible moves for this players {@link #color}
      * and randomly chooses one of the highest rated moves. If the score of a Move is equal to {@link Board#WIN} (leads to
      * instant victory), that move is automatically returned.
@@ -65,7 +54,7 @@ public class SimplePlayer extends BasePlayer {
 
         for(Move move : moves) {
             // iterate over all possible moves and calculate their scores
-            int score = board.simpleScoreMove(move, color);
+            int score = board.scoreMove2(move, color);
 //            System.out.println(score + " " + move);
 //            System.out.println("score " + score + "Move " + move);
             if(score == maxScore) {

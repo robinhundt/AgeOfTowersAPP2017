@@ -26,11 +26,6 @@ abstract class BasePlayer implements Player {
      */
     protected Board board;
     /**
-     * Optional View object that can be passed in the constructors of subclasses. If view == null no calls to visualize
-     * will be made.
-     */
-    private View view;
-    /**
      * State that represents the point in the request - confirm - update cycle of the Player
      */
     private PlayerState state;
@@ -50,22 +45,15 @@ abstract class BasePlayer implements Player {
     abstract Move deliverMove() throws Exception;
 
     /**
-     * This method sets the View of the player accordingly. Can be used if the Player is offered on the network and
-     * no game logic, and thus no own view.visualize() calls, is beeing executed on the local machine. By setting the
-     * view, the output is always updated at every own or opponent Move.
-     * Null values are permitted since view.visualize() is only called if view != null.
-     * @param view
-     */
-    void setView(View view) {
-        this.view = view;
-    }
-
-    /**
      * Returns the current {@link PlayerColor}
      * @return the color of the Player
      */
     public PlayerColor getColor() {
         return color;
+    }
+
+    Viewer getViewer() {
+        return board.viewer();
     }
 
     /**
@@ -82,9 +70,6 @@ abstract class BasePlayer implements Player {
         state = state.next();
         Move move = deliverMove();
         board.update(move, color);
-        if(view != null)
-            view.visualize();
-//        System.out.println("Making move " + move);
         return move;
     }
 
@@ -108,7 +93,6 @@ abstract class BasePlayer implements Player {
     /**
      * Update own board with opponentMove  and check if opponents board status is equal to own board status. If status are
      * unequal of own board status is ILLEGAL an exception is thrown.
-     * If {@link #view} is set {@link View#visualize()} will be called.
      * @param opponentMove opponent move to place on own board
      * @param boardStatus opponent board status after move
      * @throws Exception is thrown if method is called in wrong order, or status is ILLEGAL or different from passed status
@@ -119,8 +103,6 @@ abstract class BasePlayer implements Player {
             throw new Exception("Illegal PlayerState. update can only be called after confirm or at first if Player is Blue");
 
         board.update(opponentMove, color == BLUE ? RED : BLUE);
-        if(view != null)
-            view.visualize();
 
         if(!board.getStatus().equals(boardStatus) || board.getStatus() == ILLEGAL) {
             throw new Exception("Illegal PlayerState. Confirmation unsuccessful. Illegal or non matching status of player board and passed status");
@@ -146,10 +128,6 @@ abstract class BasePlayer implements Player {
             state = PlayerState.REQUEST;
         else if(color == BLUE)
             state = PlayerState.UPDATE;
-        if(view != null) {
-            view.setViewer(board.viewer());
-            view.visualize();
-        }
     }
 
 }
