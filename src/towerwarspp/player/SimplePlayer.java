@@ -54,7 +54,7 @@ public class SimplePlayer extends BasePlayer {
 
         for(Move move : moves) {
             // iterate over all possible moves and calculate their scores
-            int score = board.scoreMove2(move, color);
+            int score = board.scoreMove(move, color);
 //            System.out.println(score + " " + move);
 //            System.out.println("score " + score + "Move " + move);
             if(score == maxScore) {

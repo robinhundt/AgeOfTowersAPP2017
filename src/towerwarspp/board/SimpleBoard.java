@@ -212,7 +212,7 @@ public class SimpleBoard implements Viewable {
 			if(ent.getColor() != col) {
 				throw new IllegalArgumentException("Board: false color " + move + " entity color: "+ ent.getColor());
 			}
-			throw new IllegalArgumentException("Board: move does not ex. " + move + (this instanceof Evaluator? " eval" : "board"));
+			throw new IllegalArgumentException("Board: move does not ex. " + move);
 			//return status;
 		}
 		ent = changeStart(ent, start);

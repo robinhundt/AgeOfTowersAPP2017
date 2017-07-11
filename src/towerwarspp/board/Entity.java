@@ -70,12 +70,6 @@ public class Entity {
 	private int range = 1;
 
 	/**
-	 * this Array contains as many booleans, as the field has positions. For every position there is a bool,
-	 * which shows, if the position is reachable or not.
-	 */
-	private int[][] reachable;
-
-	/**
 	 * this array of vectors shows, which moves are available for every range
 	 */
 	private Vector<Vector<Move>> rangeMoves;
@@ -113,11 +107,6 @@ public class Entity {
 		maxHeight = size/3;
 		maxRange = 6*maxHeight+2;
 		initialiseMoves();
-		/*reachable = new int[6*maxHeight+2][size+1];
-		rangeMoves = new Vector<Vector<Position>>(6*maxHeight+2);
-		for(int i = 0; i <= 6*maxHeight+1; ++i) {
-			rangeMoves.add(i, new Vector<Position>(i * 6 + 1));
-		}*/
 	}
 	/**
 	 * Constructor for Bases
@@ -147,7 +136,6 @@ public class Entity {
 		maxHeight = size/3;
 		maxRange = 6*maxHeight+2;
 
-		reachable = original.copyReachable();
 		rangeMoves = original.copyRangeMoves();
 	}
 
@@ -159,19 +147,6 @@ public class Entity {
 	 */
 	public Vector<Move> getRangeMoves(int range) {
 		return rangeMoves.elementAt(range);
-	}
-
-	/**
-	 * returns the reachable fields for a specific range
-	 * @return the int[] of reachable fields
-	 */
-	public int[] getRangeReachable(int range) {
-		int n = reachable[range].length;
-		int[] out = new int[n];
-		for(int i = 0; i < n; ++i) {
-			out[i] = reachable[range][i];
-		}
-		return out;
 	}
 
 	/**
@@ -234,22 +209,6 @@ public class Entity {
 	 */
 	public Vector<Vector<Move>> getMoves() {
 		return rangeMoves;
-	}
-
-	/**
-	 * returns clone of reachable
-	 */
-	public int[][] getReachable() {
-		return copyReachable();
-	}
-	/**
-	 * returns copy of reachable
-	 */
-	private int[][] copyReachable() {
-		int[][] copy = new int[reachable.length][];
-		for(int i=0; i<copy.length; i++)
-			copy[i] = Arrays.copyOf(reachable[i], reachable[i].length);
-		return copy;
 	}
 
 	/**
@@ -321,9 +280,6 @@ public class Entity {
 	public void decRange() {
 		moveCounter-= rangeMoves.elementAt(range).size();
 		rangeMoves.set(range, new Vector<Move>());
-		for(int i = 0; i <= size; i++) {
-			reachable[range][i] = 0;
-		}
 		range--;
 
 	}
@@ -339,28 +295,21 @@ public class Entity {
 	/**
 	 * same as incRange but uses given vector and int-array
 	 * @param rangeVector movevector for specific range
-	 * @param reachableRange reachable-array for specific range
 	 */
-	public void incRange(Vector<Move> rangeVector, int[] reachableRange) {
+	public void incRange(Vector<Move> rangeVector) {
 		range++;
 		rangeMoves.set(range, rangeVector);
-		/*for(int i = 0; i < size; i++) {
-			reachable[range][i] = reachableRange[i];
-		}*/
-		reachable[range] = reachableRange;
 		moveCounter += rangeVector.size();
 	}
 
 	/**
 	 * This Method adds a possible move to the Entity.
-	 * It is added in reachable, rangeMoves and rangeMoves
+	 * It is added in rangeMoves and rangeMoves
 	 * @param end endposition of the move
 	 * @param range distance of the endposition
 	 */
 	public void addMove(Position end, int range) {
-		int temp = 1 << end.getLetter();
 		if(!hasMove(end, range)){
-			reachable[range][end.getNumber()] |=  temp;
 			rangeMoves.elementAt(range).add(new Move(pos, end));
 			moveCounter++;
 		}
@@ -368,14 +317,12 @@ public class Entity {
 
 	/**
 	 * This Method removes a move from the Entity.
-	 * It is removed in reachable and rangeMoves
+	 * It is removed in and rangeMoves
 	 * @param end endposition of the move
 	 * @param range distance of the endposition
 	 */
 	public void removeMove(Position end, int range) {
-		int temp = 1 << end.getLetter();
 		if(hasMove(end, range)) {
-			reachable[range][end.getNumber()] ^=  temp;
 			rangeMoves.elementAt(range).remove(new Move(pos, end));
 			moveCounter--;
 		}
@@ -394,11 +341,6 @@ public class Entity {
 			}
 		}
 		return false;
-		/*int temp = 1 << end.getLetter();
-		if((reachable[range][end.getNumber()] & temp) == 0){
-			return false;
-		}
-		return true;*/
 	}
 
 	/**
@@ -417,7 +359,6 @@ public class Entity {
 		for(int i = 0; i < maxRange; ++i) {
 			rangeMoves.add(i, new Vector<Move>(i * 6 + 1));
 		}
-		reachable = new int[maxRange][size+1];
 	}
 	/**
 	 * removes all moves of the entity and sets the range to 1
@@ -431,11 +372,9 @@ public class Entity {
 	/**
 	 * This method gives an Entity all moves
 	 * @param rangeMoves the moves in the vector of vectors
-	 * @param reachable the reachable-Array
 	 */
-	public void setAllMoves(Vector<Vector<Move>> rangeMoves, int[][] reachable, int range, int moveCounter) {
+	public void setAllMoves(Vector<Vector<Move>> rangeMoves, int range, int moveCounter) {
 		this.rangeMoves = rangeMoves;
-		this.reachable = reachable;
 		this.range = range;
 		this.moveCounter = moveCounter;
 	}
