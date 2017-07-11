@@ -1,5 +1,5 @@
 <?xml version="1.0"?>
-<project name="Age of Towers" basedir="." default="build">
+<project name="Age of Towers" basedir="." default="jar">
 	<property name="src.dir" value="src"/>
 	<property name="build.dir" value="out"/>
 	<property name="doc.dir" value="doc"/>
@@ -16,7 +16,6 @@
 			<src path="${src.dir}"/>
 		</javac>
 	</target>
-
 	<target name="doc" description="Create JavaDoc files" depends="build">
 
 		<delete includeemptydirs="true" quiet="true">
@@ -38,5 +37,12 @@
 		</javadoc>
 
 	</target>
+	<target name ="jar" description="Creates Jar-File" depends="build">
+		<jar destfile="${build.dir}/AgeOfTowers.jar" basedir="${build.dir}">
+			<manifest>
+				<attribute name="Main-Class" value="towerwarspp.main.AgeOfTowers"/>
+			</manifest >
+		</jar >
+	</target >
 
 </project>

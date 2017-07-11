@@ -236,10 +236,15 @@ public class Entity {
 		return rangeMoves;
 	}
 
+	/**
+	 * returns clone of reachable
+	 */
 	public int[][] getReachable() {
 		return copyReachable();
 	}
-
+	/**
+	 * returns copy of reachable
+	 */
 	private int[][] copyReachable() {
 		int[][] copy = new int[reachable.length][];
 		for(int i=0; i<copy.length; i++)
