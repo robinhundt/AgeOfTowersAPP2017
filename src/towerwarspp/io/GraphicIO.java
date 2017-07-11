@@ -419,7 +419,6 @@ public class GraphicIO extends JFrame implements IO {
     @Override
     public void visualize() {
         if(this.viewer.getStatus() != Status.ILLEGAL) {
-            jPanel.setPreferredSize(new Dimension(jFrame.getWidth() - 150, jFrame.getHeight()));
             jPanel.repaint();
         }
     }
