@@ -114,6 +114,12 @@ public class TextIO implements IO {
         System.out.println(string);
     }
 
+    @Override
+    public void dialog(String title, String string) {
+        System.out.println(title);
+        System.out.println(string);
+    }
+
     /**
      * Method positionToString() showing if there is an {@link towerwarspp.board.Entity} at given {@link Position} and what kind
      *
