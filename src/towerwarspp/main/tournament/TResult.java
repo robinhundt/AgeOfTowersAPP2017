@@ -81,23 +81,23 @@ public class TResult {
     public String toString() {
 
         return "Red:\n" +
-                "-total wins: " + wins[RED] + "\n" +
-                "-wins per base destruction:\t " + baseDestroyed[RED] + "\n" +
-                "-wins per surrender of blue:\t " + surrender[RED] + "\n" +
-                "-wins per illegal move of blue:\t " + illegalMove[RED] + "\n" +
-                "-wins per immobility of blue:\t " + noPosMoves[RED] + "\n" +
-                "-total moves: \t " + totalMoves[RED] + "\n" +
-                "-average amount of moves per win:\t " + String.format("%.1f" ,avgMoves[RED]) + "\n" +
+                "-total wins:\t \t \t" + wins[RED] + "\n" +
+                "-wins per base destruction:\t \t" + baseDestroyed[RED] + "\n" +
+                "-wins per surrender of blue:\t \t" + surrender[RED] + "\n" +
+                "-wins per illegal move of blue:\t" + illegalMove[RED] + "\n" +
+                "-wins per immobility of blue:\t \t" + noPosMoves[RED] + "\n" +
+                "-total moves: \t \t \t" + totalMoves[RED] + "\n" +
+                "-average amount of moves per win:\t" + String.format("%.1f" ,avgMoves[RED]) + "\n" +
 
                 "\n" +
                 "Blue:\n" +
-                "-total wins: " + wins[BLUE] + "\n" +
-                "-wins per base destruction:\t " + baseDestroyed[BLUE] + "\n" +
-                "-wins per surrender of red:\t " + surrender[BLUE] + "\n" +
-                "-wins per illegal move of red:\t " + illegalMove[BLUE] + "\n" +
-                "-wins per immobility of red:\t " + noPosMoves[BLUE] + "\n" +
-                "-total moves: \t " + totalMoves[BLUE] + "\n" +
-                "-average amount of moves per win:\t " + String.format("%.1f" ,avgMoves[BLUE]) + "\n";
+                "-total wins:\t \t \t" + wins[BLUE] + "\n" +
+                "-wins per base destruction:\t \t" + baseDestroyed[BLUE] + "\n" +
+                "-wins per surrender of red:\t \t" + surrender[BLUE] + "\n" +
+                "-wins per illegal move of red:\t" + illegalMove[BLUE] + "\n" +
+                "-wins per immobility of red:\t \t" + noPosMoves[BLUE] + "\n" +
+                "-total moves: \t \t \t" + totalMoves[BLUE] + "\n" +
+                "-average amount of moves per win:\t" + String.format("%.1f" ,avgMoves[BLUE]) + "\n";
 
 
     }

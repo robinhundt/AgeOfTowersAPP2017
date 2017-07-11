@@ -116,7 +116,7 @@ public class Game {
             moveCounter++;
             /*output turn*/
             if(hasView)
-                view.display(currentColor + "'s turn, Round No.: " + (moveCounter == 1 ? "1" : moveCounter/2));
+                view.display(currentColor + "'s turn\n" + "Round No.: " + (moveCounter == 1 ? "1" : moveCounter/2));
 
             /*get a move from current player*/
             currentMove = currentPlayer.request();

@@ -68,7 +68,7 @@ public class GraphicIO extends JFrame implements IO {
     /**
      * Textarea for output of turn, player
      */
-    private JTextArea info;
+    private TextArea info;
 
     /**
      * JButton-Object for surrender Button
@@ -90,9 +90,9 @@ public class GraphicIO extends JFrame implements IO {
         jPanel.addMouseListener(getMouseListener());
         jPanel.setPreferredSize(new Dimension(this.jFrame.getWidth() - 150, this.jFrame.getHeight()));
         this.surrenderButton = getSurrenderButton();
-        this.info = new JTextArea();
+        this.info = new TextArea();
         info.setEditable(false);
-        info.setLineWrap(true);
+        //info.setLineWrap(true);
         infoPanel = new JPanel(new BorderLayout());
         infoPanel.setPreferredSize(new Dimension(135, 100));
         infoPanel.add(surrenderButton, BorderLayout.NORTH);
@@ -105,7 +105,7 @@ public class GraphicIO extends JFrame implements IO {
      */
     @Override
     public void display(String string) {
-        info.setText(string);
+        info.setText(info.getText() + "\n" + string);
     }
 
     /**
@@ -361,7 +361,7 @@ public class GraphicIO extends JFrame implements IO {
     @Override
     public void dialog(String title, String string) {
         JDialog dialog = new JDialog(this.jFrame, title);
-        TextArea area = new TextArea(string);
+        JTextArea area = new JTextArea(string);
         JButton close = new JButton("Close");
         close.addActionListener(new ActionListener() {
             @Override
@@ -374,7 +374,7 @@ public class GraphicIO extends JFrame implements IO {
         dialog.setDefaultCloseOperation(DISPOSE_ON_CLOSE);
         dialog.add(area, BorderLayout.LINE_START);
         dialog.add(close, BorderLayout.AFTER_LAST_LINE);
-        dialog.setSize(new Dimension(400, 350));
+        dialog.setSize(new Dimension(450, 400));
         dialog.setResizable(false);
         dialog.setVisible(true);
     }
