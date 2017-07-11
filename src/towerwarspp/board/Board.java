@@ -11,6 +11,9 @@ import java.lang.Exception;
 public class Board extends SimpleBoard {
 	public static final int WIN = Integer.MAX_VALUE;
 	public static final int LOSE = Integer.MIN_VALUE;
+	private static final int DEFENCE = -5000;
+	private static final int DEFEND = 5000;
+
  	/**
         * Initialises a new object of the class PlayerBoard.
         * @param n - size of the new board.
@@ -41,53 +44,14 @@ public class Board extends SimpleBoard {
 		return newList;
 	}
 
-	/**
-	* Evaluates the specified move.
-	* @param move - the move which has to be evaluated.
-	* @return
-	*	a score of the move.
-	*/
 
-
-	public int scoreMove(Move move) {
-		return 0;
-	}
 	/**
 	* Evaluates the specified move.
 	* @param move - the move which has to be evaluated.
 	* @return
 	*	a score of the move.
 	*/
-	public int scoreMove(Move move, PlayerColor col) {
-		Evaluator evaluator = new Evaluator(size, turn, listRed, listBlue, board, redBase, blueBase);
-		Status prediction = evaluator.evaluate(move, 2);
-		switch(prediction) {
-			case RED_WIN: return (col == RED? WIN: LOSE);
-			case BLUE_WIN: return (col == RED? LOSE: WIN);
-		}
-		Position endPos = move.getEnd();
-		Entity opponent = board[endPos.getLetter()][endPos.getNumber()];
-		Position base = (col == RED? blueBase: redBase);
-		int res =  distance(move.getStart(), base) - distance(endPos, base);
-		if (opponent == null) {
-			return res;
-		}
-		if(opponent.getColor() != col) {
-			if(!opponent.isTower()) {
-				return (res + 1);
-			}
-			if (distance(move.getStart(), endPos) == 1)
-				return (res + 2);
-		}
-		return res;
-	}
-	/**
-	* Evaluates the specified move.
-	* @param move - the move which has to be evaluated.
-	* @return
-	*	a score of the move.
-	*/
-	public int scoreMove2(Move move, PlayerColor ownColor) {
+	public int scoreMove(Move move, PlayerColor ownColor) {
 		PlayerColor opponentColor = (ownColor == RED? BLUE: RED);
 		Status ownWin = (ownColor == RED? RED_WIN: BLUE_WIN);
 		Status ownLose = (ownColor == RED? BLUE_WIN: RED_WIN);
@@ -155,80 +119,33 @@ public class Board extends SimpleBoard {
 		}
 		return false;
 	}
-	public int simpleScoreMove(Move move, PlayerColor playerColor) {
-		Position opponentBase = playerColor == RED ? blueBase : redBase;
-		Position ownBase = playerColor == RED ? redBase : blueBase;
-		PlayerColor enemy = playerColor == RED ? BLUE : RED;
-		Status enemyWin = playerColor == RED ? BLUE_WIN : RED_WIN;
-		if(move.getEnd().equals(opponentBase))
-			return WIN;
-		else {
-			Board copy = this.clone();
-			copy.update(move, playerColor);
-			Vector<Move> enemyMoves = copy.allPossibleMoves(enemy);
-//			System.out.println(enemyMoves.size() + "size of enemy moves");
-			boolean enemyHasWinMove = false;
-			for(Move enemyMove : enemyMoves) {
-//				System.out.println("enemy move + " + enemyMove + "after " + move);
-				Board copyClone = copy.clone();
-			    copyClone.update(enemyMove, enemy);
-				if(copyClone.getStatus() == enemyWin){
-//					System.out.println("Loosing move " + move + " enemy " + enemyMove);
-					enemyHasWinMove = true;
-					break;
-				}
-			}
-
-			if(enemyHasWinMove)
-				return LOSE;
-			else {
-				return verySimpleScoreMove(move, playerColor);
-			}
-		}
-	}
-
-	public int verySimpleScoreMove(Move move, PlayerColor playerColor) {
-		Position opponentBase = playerColor == RED ? blueBase : redBase;
-		Position endPos = move.getEnd();
-		if(endPos.equals(opponentBase))
-		    return WIN;
-		Entity opponent = board[endPos.getLetter()][endPos.getNumber()];
-		int score = distance(move.getStart(), opponentBase) - distance(endPos, opponentBase);
-		if (opponent == null) {
-			return score;
-		}
-		if (opponent.getColor() != playerColor) {
-			if (!opponent.isTower()) {
-				return (score + 1);
-			}
-			if (distance(move.getStart(), endPos) == 1)
-				return (score + 2);
-		}
-		return score;
-	}
 
 	public int altScore(Move move, PlayerColor playerColor) {
+		Position ownBase = playerColor == RED ? redBase : blueBase;
         Position opponentBase = playerColor == RED ? blueBase : redBase;
         Position endPos = move.getEnd();
         if(endPos.equals(opponentBase))
             return WIN;
         Entity opponent = board[endPos.getLetter()][endPos.getNumber()];
-        int score = distance(move.getStart(), opponentBase) - distance(endPos, opponentBase);
-        if(opponent != null) {
+        int score = 3 * distance(move.getStart(), opponentBase) - distance(endPos, opponentBase);
+        int disToOwnBase = distance(move.getStart(), ownBase);
+        if(disToOwnBase < 4 && disToOwnBase < size / 4.0)
+        	score = DEFENCE;
+        if(opponent != null && score != DEFENCE) {
             if(opponent.getColor() != playerColor) {
                 if(opponent.isTower()) {
                     if(distance(move.getStart(), endPos) == 1) {
-                        score += 25 * opponent.getHeight();
+                        score += 50 * opponent.getHeight();
                     } else {
                         score += 15;
                     }
                 } else {
-                    score += 20;
+                    score += 45;
                 }
-            } else {
-                score += 1;
             }
-        }
+        } else if(opponent != null && opponent.getColor() != playerColor) {
+        	score = DEFEND;
+		}
         return score;
     }
 
@@ -237,12 +154,12 @@ public class Board extends SimpleBoard {
 		Vector<Entity> list = (col == RED? listRed: listBlue);
 		for(Entity ent: list) {
 			if(ent.movable()) {
-			int range = ent.getRange();
-			Vector<Vector<Move>> entMoves = ent.getMoves();
-			for(int i = 1; i <= range; ++i) {
-				allMoves.addAll(entMoves.get(i));
+				int range = ent.getRange();
+				Vector<Vector<Move>> entMoves = ent.getMoves();
+				for(int i = 1; i <= range; ++i) {
+					allMoves.addAll(entMoves.get(i));
+				}
 			}
-		}
 		}
 		return allMoves;
 	}

@@ -18,9 +18,9 @@ public class BViewer implements Viewer {
 		board = ar;
 		size = sz;
 	}
-	
-    	public int getSize() {
-		return size; 
+
+	public int getSize() {
+		return size;
 	}
 	public Status getStatus() {
 		return boardO.getStatus();
@@ -28,8 +28,8 @@ public class BViewer implements Viewer {
 	public PlayerColor getTurn() {
 		return boardO.getTurn();
 	}
-	
-    	public Vector<Move> possibleMoves(Position pos) throws Exception {
+
+	public Vector<Move> possibleMoves(Position pos) throws Exception {
 		Entity ent = getElement(pos);
 		if (ent == null) {
 			throw new Exception ("Position is empty");
@@ -61,7 +61,7 @@ public class BViewer implements Viewer {
 		Entity ent = getElement(pos);
 		return ent.getHeight();
 	}
-    	public PlayerColor getPlayerColor(Position pos) {
+	public PlayerColor getPlayerColor(Position pos) {
 		Entity ent = getElement(pos);
 		return ent.getColor();
 	}
@@ -73,19 +73,19 @@ public class BViewer implements Viewer {
 		return ent != null && ent.isBase();
 	}
 	/**
-	* Returns an element located on the specified position on the board.
-	* @param pos the position of the element that has to be returned.
-	* @return an element located on the specified position on the board.
-	*/
+	 * Returns an element located on the specified position on the board.
+	 * @param pos the position of the element that has to be returned.
+	 * @return an element located on the specified position on the board.
+	 */
 	private Entity getElement(Position pos) {
 		return board[pos.getLetter()][pos.getNumber()];
 	}
-	
+
 	public String positionToString(Position pos) {
 		Entity ent = getElement(pos);
 		if (ent == null)
 			return " o ";
-		else 
+		else
 			return ent.toString();
 	}
 }
