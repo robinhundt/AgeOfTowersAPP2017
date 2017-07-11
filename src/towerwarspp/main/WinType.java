@@ -9,7 +9,7 @@ import towerwarspp.main.game.Game;
  * @version 07-03-2017
  */
 public enum WinType {
-    BASE_DESTROYED, NO_POSSIBLE_MOVES, SURRENDER, ILLEGAL_MOVE;
+    BASE_DESTROYED, NO_POSSIBLE_MOVES, SURRENDER, ILLEGAL_MOVE, TIMEOUT;
 
     /**
      * Overriden method toString return a string containing description of this {@link WinType}

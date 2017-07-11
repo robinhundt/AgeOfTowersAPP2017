@@ -27,6 +27,9 @@ public class TResult {
     private double avgMoves[];
     private int totalMoves[];
 
+    private int timeoutGames = 0;
+    private int totalGames = 0;
+
 
     /**
      * Constructor, just creating a new object with already initialized variables
@@ -39,9 +42,6 @@ public class TResult {
         surrender = new int[2];
         avgMoves = new double[2];
         totalMoves = new int[2];
-
-
-
     }
 
     /**
@@ -52,23 +52,35 @@ public class TResult {
     void addResult(Result result) {
         int winnerIndex = 0;
 
-        if(result.winner == PlayerColor.RED)
-            winnerIndex = swappedPlayers ? BLUE : RED;
-        else if(result.winner == PlayerColor.BLUE)
-            winnerIndex = swappedPlayers ? RED : BLUE;
+        if (result.winner != null) {
+            if (result.winner == PlayerColor.RED)
+                winnerIndex = swappedPlayers ? BLUE : RED;
+            else if (result.winner == PlayerColor.BLUE)
+                winnerIndex = swappedPlayers ? RED : BLUE;
 
-        wins[winnerIndex]++;
-        switch (result.winType) {
-            case BASE_DESTROYED: baseDestroyed[winnerIndex]++; break;
-            case NO_POSSIBLE_MOVES: noPosMoves[winnerIndex]++; break;
-            case ILLEGAL_MOVE: illegalMove[winnerIndex]++;  break;
-            case SURRENDER: surrender[winnerIndex]++; break;
+            wins[winnerIndex]++;
+            switch (result.winType) {
+                case BASE_DESTROYED:
+                    baseDestroyed[winnerIndex]++;
+                    break;
+                case NO_POSSIBLE_MOVES:
+                    noPosMoves[winnerIndex]++;
+                    break;
+                case ILLEGAL_MOVE:
+                    illegalMove[winnerIndex]++;
+                    break;
+                case SURRENDER:
+                    surrender[winnerIndex]++;
+                    break;
+            }
+            totalMoves[winnerIndex] += result.winnerMoves;
+            avgMoves[winnerIndex] = (double) totalMoves[winnerIndex] / wins[winnerIndex];
         }
-
-        totalMoves[winnerIndex] += result.winnerMoves;
-        avgMoves[winnerIndex] = (double) totalMoves[winnerIndex]/wins[winnerIndex];
+        else {
+            timeoutGames++;
+        }
+        totalGames++;
         swappedPlayers = !swappedPlayers;
-
     }
 
 
@@ -80,7 +92,8 @@ public class TResult {
     @Override
     public String toString() {
 
-        return "Red:\n" +
+        return  "total games: " + totalGames +
+                "\nRed:\n" +
                 "-total wins:\t \t \t" + wins[RED] + "\n" +
                 "-wins per base destruction:\t \t" + baseDestroyed[RED] + "\n" +
                 "-wins per surrender of blue:\t \t" + surrender[RED] + "\n" +
@@ -97,7 +110,8 @@ public class TResult {
                 "-wins per illegal move of red:\t" + illegalMove[BLUE] + "\n" +
                 "-wins per immobility of red:\t \t" + noPosMoves[BLUE] + "\n" +
                 "-total moves: \t \t \t" + totalMoves[BLUE] + "\n" +
-                "-average amount of moves per win:\t" + String.format("%.1f" ,avgMoves[BLUE]) + "\n";
+                "-average amount of moves per win:\t" + String.format("%.1f" ,avgMoves[BLUE]) + "\n" +
+                "\n-games ended with timeout: \t" + timeoutGames;
 
 
     }

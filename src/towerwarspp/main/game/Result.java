@@ -27,6 +27,14 @@ public class Result {
         this.winType = winType;
     }
 
+    /**
+     *
+     */
+    Result(int moves, WinType winType) {
+        this.winner = null;
+        this.winnerMoves = moves;
+        this.winType = winType;
+    }
 
     /**
      * Overriden method toString providing simple output of the {@link Result}}
@@ -34,6 +42,7 @@ public class Result {
      */
     @Override
     public String toString() {
-        return winner + " wins in " + winnerMoves + " moves. Type of win: " + winType.toString();
+        return winner != null ? winner + " wins in " + winnerMoves + " moves. Type of win: " + winType.toString()
+                : "Game ended with timeout!";
     }
 }

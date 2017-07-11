@@ -2,6 +2,7 @@ package towerwarspp.main.game;
 
 import towerwarspp.board.Board;
 import towerwarspp.io.View;
+import towerwarspp.main.WinType;
 import towerwarspp.preset.*;
 
 import java.rmi.RemoteException;
@@ -155,7 +156,7 @@ public class Game {
 
         /*if game ended with timeout, do not create result object*/
         if (moveCounter == timeOut) {
-            return null;
+            return new Result(moveCounter, WinType.TIMEOUT);
         }
 
         /*create result object with playercolor, number of moves and type of win*/
