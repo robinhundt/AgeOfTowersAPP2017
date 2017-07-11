@@ -86,10 +86,17 @@ public class GraphicIO extends JFrame implements IO {
         this.screenResolution = Toolkit.getDefaultToolkit().getScreenSize();
         this.jFrame.setSize(this.screenResolution);
         this.jFrame.addComponentListener(getFrameResize());
+        jPanel = getJPanel();
+        jPanel.addMouseListener(getMouseListener());
+        jPanel.setPreferredSize(new Dimension(this.jFrame.getWidth() - 150, this.jFrame.getHeight()));
         this.surrenderButton = getSurrenderButton();
         this.info = new JTextArea();
         info.setEditable(false);
         info.setLineWrap(true);
+        infoPanel = new JPanel(new BorderLayout());
+        infoPanel.setPreferredSize(new Dimension(135, 100));
+        infoPanel.add(surrenderButton, BorderLayout.NORTH);
+        infoPanel.add(info, BorderLayout.CENTER);
     }
 
     /**
@@ -339,13 +346,6 @@ public class GraphicIO extends JFrame implements IO {
         setPolygonSize();
         this.hexagonGrid = new HexagonGrid(this.viewer.getSize(), polySize);
         this.polygon = this.hexagonGrid.getPolygon();
-        jPanel = getJPanel();
-        jPanel.addMouseListener(getMouseListener());
-        jPanel.setPreferredSize(new Dimension(this.jFrame.getWidth() - 150, this.jFrame.getHeight()));
-        infoPanel = new JPanel(new BorderLayout());
-        infoPanel.setPreferredSize(new Dimension(135, 100));
-        infoPanel.add(surrenderButton, BorderLayout.NORTH);
-        infoPanel.add(info, BorderLayout.CENTER);
         jFrame.add(infoPanel, BorderLayout.EAST);
         jFrame.add(jPanel, BorderLayout.WEST);
         jFrame.pack();
@@ -372,7 +372,8 @@ public class GraphicIO extends JFrame implements IO {
         dialog.setDefaultCloseOperation(DISPOSE_ON_CLOSE);
         dialog.add(area, BorderLayout.LINE_START);
         dialog.add(close, BorderLayout.AFTER_LAST_LINE);
-        dialog.setSize(new Dimension(400, 400));
+        dialog.setSize(new Dimension(400, 350));
+        dialog.setResizable(false);
         dialog.setVisible(true);
     }
 
