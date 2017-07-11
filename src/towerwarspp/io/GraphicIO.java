@@ -68,7 +68,7 @@ public class GraphicIO extends JFrame implements IO {
     /**
      * Textarea for output of turn, player
      */
-    private TextArea info;
+    private JTextArea info;
 
     /**
      * JButton-Object for surrender Button
@@ -90,7 +90,7 @@ public class GraphicIO extends JFrame implements IO {
         jPanel.addMouseListener(getMouseListener());
         jPanel.setPreferredSize(new Dimension(this.jFrame.getWidth() - 150, this.jFrame.getHeight()));
         this.surrenderButton = getSurrenderButton();
-        this.info = new TextArea();
+        this.info = new JTextArea();
         info.setEditable(false);
         //info.setLineWrap(true);
         infoPanel = new JPanel(new BorderLayout());
@@ -105,7 +105,7 @@ public class GraphicIO extends JFrame implements IO {
      */
     @Override
     public void display(String string) {
-        info.setText(info.getText() + "\n" + string);
+        info.setText(string);
     }
 
     /**
