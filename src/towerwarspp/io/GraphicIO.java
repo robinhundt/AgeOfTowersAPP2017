@@ -2,16 +2,10 @@ package towerwarspp.io;
 
 import towerwarspp.preset.*;
 
-import javax.imageio.ImageIO;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
-import java.awt.geom.AffineTransform;
 import java.awt.geom.GeneralPath;
-import java.awt.image.BufferedImage;
-import java.awt.image.ImageObserver;
-import java.io.File;
-import java.text.AttributedCharacterIterator;
 import java.util.Vector;
 
 /**
@@ -74,6 +68,8 @@ public class GraphicIO extends JFrame implements IO {
      * JButton-Object for surrender Button
      */
     private JButton surrenderButton;
+
+    private boolean repainting;
 
     /**
      * Constructor
@@ -200,6 +196,7 @@ public class GraphicIO extends JFrame implements IO {
         return new JPanel() {
             @Override
             protected void paintComponent(Graphics graphics) {
+                repainting = true;
                 if (viewer != null) {
                     Graphics2D g = (Graphics2D) graphics;
                     int distance = (int) ((Math.cos(Math.toRadians(30.0)) * polySize) * 2.0);
@@ -287,6 +284,7 @@ public class GraphicIO extends JFrame implements IO {
                         }
                     }
                 }
+                repainting = false;
             }
         };
     }
@@ -424,6 +422,13 @@ public class GraphicIO extends JFrame implements IO {
     public void visualize() {
         if(this.viewer.getStatus() != Status.ILLEGAL) {
             jPanel.repaint();
+            while (repainting) {
+                try{
+                    Thread.sleep(1);
+                } catch (InterruptedException e) {
+                    System.out.println(e);
+                }
+            }
         }
     }
 
@@ -444,4 +449,6 @@ public class GraphicIO extends JFrame implements IO {
         wait();
         return deliverMove;
     }
+
+
 }
