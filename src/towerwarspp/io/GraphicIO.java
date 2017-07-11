@@ -278,7 +278,7 @@ public class GraphicIO extends JFrame implements IO {
                                 g.fillOval(i, i1, i2, i3);
                                 g.setColor(Color.BLACK);
                                 g.drawOval(i, i1, i2, i3);
-                                if (viewer.getHeight(position) >= 0) {
+                                if (!viewer.isEmpty(position) && viewer.getHeight(position) >= 0) {
                                     g.setColor(Color.WHITE);
                                     char[] chars = getChar(position);
                                     g.drawChars(chars, 0, chars.length, i + (polySize - (polySize * 2 / 3)), i1 + (polySize * 3 / 4));
@@ -321,17 +321,19 @@ public class GraphicIO extends JFrame implements IO {
      * @return the color of the Token
      */
     private Color getColor(Position position) {
-        if(viewer.getPlayerColor(position) == PlayerColor.RED) {
-            if(viewer.getHeight(position) == (viewer.getSize() / 3)) {
-                return Color.PINK;
-            } else {
-                return Color.RED;
-            }
-        } else if(viewer.getPlayerColor(position) == PlayerColor.BLUE) {
-            if(viewer.getHeight(position) == (viewer.getSize() / 3)) {
-                return Color.CYAN;
-            } else {
-                return Color.BLUE;
+        if(!viewer.isEmpty(position)) {
+            if(viewer.getPlayerColor(position) == PlayerColor.RED) {
+                if(viewer.getHeight(position) == (viewer.getSize() / 3)) {
+                    return Color.PINK;
+                } else {
+                    return Color.RED;
+                }
+            } else if(viewer.getPlayerColor(position) == PlayerColor.BLUE) {
+                if(viewer.getHeight(position) == (viewer.getSize() / 3)) {
+                    return Color.CYAN;
+                } else {
+                    return Color.BLUE;
+                }
             }
         }
         return null;
