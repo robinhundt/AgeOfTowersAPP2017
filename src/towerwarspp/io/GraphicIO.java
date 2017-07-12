@@ -117,7 +117,7 @@ public class GraphicIO extends JFrame implements IO {
         this.dialog.setDefaultCloseOperation(DISPOSE_ON_CLOSE);
         this.dialog.add(this.area, BorderLayout.LINE_START);
         this.dialog.add(close, BorderLayout.AFTER_LAST_LINE);
-        this.dialog.setPreferredSize(new Dimension(450, 400));
+        this.dialog.setSize(new Dimension(450, 400));
         this.dialog.setResizable(false);
     }
 
