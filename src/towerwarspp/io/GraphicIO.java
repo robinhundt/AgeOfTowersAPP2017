@@ -297,33 +297,13 @@ public class GraphicIO extends JFrame implements IO {
                     g.setColor(Color.BLACK);
                     g.setFont(letterFont);
                     g.setStroke(new BasicStroke(5));
-                    char[] topLetter = new char[1];
-                    topLetter[0] = 'A';
-                    String leftNumber;
-                    int topLetterX = 0;
-                    int topLetterY = 0;
-                /*-- draw the top Chars --*/
-                    for (int i = 0; i < viewer.getSize(); ++i) {
-                        g.drawChars(topLetter, 0, topLetter.length, (int) (topLetterX + (distance * i) + (0.5 * distance)), topLetterY + (distance / 2));
-                        ++topLetter[0];
-                    }
-                    if (possibleMoves != null) {
-                        for (Move move : possibleMoves) {
-                            int letter = move.getEnd().getLetter();
-                            int number = move.getEnd().getNumber();
 
-                            g.setColor(Color.GREEN);
-                            g.fillPolygon(polygon[letter][number]);
-                            g.setColor(Color.BLACK);
-                            g.drawPolygon(polygon[letter][number]);
-                        }
-                    }
+                    drawLetters(g, distance);
+                    drawPossibleMoves(g);
                     for (int y = 1; y <= viewer.getSize(); ++y) {
                     /*-- draw the left Numbers --*/
                         g.setFont(letterFont);
-                        leftNumber = String.valueOf(y);
-                        g.setColor(Color.BLACK);
-                        g.drawString(leftNumber, (y - 1) * (distance / 2), hexagonGrid.getCenter(1, y).getY() + (polySize / 4));
+                        drawNumbers(g, distance, y);
                         for (int x = 1; x <= viewer.getSize(); ++x) {
                             Position position = new Position(x, y);
                             Entity entity = viewer.getEntity(position);
@@ -333,50 +313,87 @@ public class GraphicIO extends JFrame implements IO {
                             g.setColor(Color.BLACK);
                             g.drawPolygon(polygon[x][y]);
                         /*-----*/
-                        /*draw entities*/
-                            //if (!viewer.isEmpty(position)) {
-                            /*set color*/
-                                /*if(viewer.getTurn() == viewer.getPlayerColor(position)) {
-                                    g.setColor((viewer.getPlayerColor(position) == PlayerColor.RED) ? Color.RED : Color.BLUE);
-                                    g.drawPolygon(markedPolygon[x][y]);
-                                }
-                                g.setColor(getColor(position));
-                                int i = hexagonGrid.getCenter(x, y).getX() - (polySize / 2);
-                                int i1 = hexagonGrid.getCenter(x, y).getY() - (polySize / 2);
-                                int i2 = polySize - (polySize / 32);
-                                int i3 = i2;
-                                g.fillOval(i, i1, i2, i3);
-                                g.setColor(Color.BLACK);
-                                g.drawOval(i, i1, i2, i3);
-                                if (!viewer.isEmpty(position) && viewer.getHeight(position) >= 0) {
-                                    g.setColor(Color.WHITE);
-                                    char[] chars = getChar(position);
-                                    g.drawChars(chars, 0, chars.length, i + (polySize - (polySize * 2 / 3)), i1 + (polySize - (distance / 5)));
-                                }
-                            }*/
-                            if(entity != null) {
-                                if(viewer.getTurn() == entity.getColor()) {
-                                    g.setColor((entity.getColor() == PlayerColor.RED ? Color.RED : Color.BLUE));
-                                    g.drawPolygon(markedPolygon[x][y]);
-                                }
-                                g.setColor(getColor(entity));
-                                int i = hexagonGrid.getCenter(x, y).getX() - (polySize / 2);
-                                int i1 = hexagonGrid.getCenter(x, y).getY() - (polySize / 2);
-                                int i2 = polySize - (polySize / 32);
-                                g.fillOval(i, i1, i2, i2);
-                                g.setColor(Color.BLACK);
-                                g.drawOval(i, i1, i2, i2);
-                                if(entity.getHeight() >= 0) {
-                                    g.setColor(Color.WHITE);
-                                    char[] chars = getChar(entity);
-                                    g.drawChars(chars, 0, chars.length, i + (polySize - (polySize * 2 / 3)), i1 + (polySize - (distance / 5)));
-                                }
-                            }
+                            drawEntity(g, entity, distance, x, y);
                         }
                     }
                 }
             }
         };
+    }
+
+    private void drawLetters(Graphics2D g, int distance) {
+        char[] topLetter = new char[1];
+        topLetter[0] = 'A';
+        int topLetterX = 0;
+        int topLetterY = 0;
+                /*-- draw the top Chars --*/
+        for (int i = 0; i < this.viewer.getSize(); ++i) {
+            g.drawChars(topLetter, 0, topLetter.length, (int) (topLetterX + (distance * i) + (0.5 * distance)), topLetterY + (distance / 2));
+            ++topLetter[0];
+        }
+    }
+
+    private void drawPossibleMoves(Graphics2D g) {
+        if (this.possibleMoves != null) {
+            for (Move move : this.possibleMoves) {
+                int letter = move.getEnd().getLetter();
+                int number = move.getEnd().getNumber();
+
+                g.setColor(Color.GREEN);
+                g.fillPolygon(polygon[letter][number]);
+                g.setColor(Color.BLACK);
+                g.drawPolygon(polygon[letter][number]);
+            }
+        }
+    }
+
+    private void drawNumbers(Graphics2D g, int distance, int y) {
+        String leftNumber;
+        leftNumber = String.valueOf(y);
+        g.setColor(Color.BLACK);
+        g.drawString(leftNumber, (y - 1) * (distance / 2), hexagonGrid.getCenter(1, y).getY() + (polySize / 4));
+    }
+
+    private void drawEntity(Graphics2D g, Entity entity, int distance, int x, int y) {
+        /*draw entities*/
+        //if (!viewer.isEmpty(position)) {
+        /*set color*/
+            /*if(viewer.getTurn() == viewer.getPlayerColor(position)) {
+                g.setColor((viewer.getPlayerColor(position) == PlayerColor.RED) ? Color.RED : Color.BLUE);
+                g.drawPolygon(markedPolygon[x][y]);
+            }
+            g.setColor(getColor(position));
+            int i = hexagonGrid.getCenter(x, y).getX() - (polySize / 2);
+            int i1 = hexagonGrid.getCenter(x, y).getY() - (polySize / 2);
+            int i2 = polySize - (polySize / 32);
+            int i3 = i2;
+            g.fillOval(i, i1, i2, i3);
+            g.setColor(Color.BLACK);
+            g.drawOval(i, i1, i2, i3);
+            if (!viewer.isEmpty(position) && viewer.getHeight(position) >= 0) {
+                g.setColor(Color.WHITE);
+                char[] chars = getChar(position);
+                g.drawChars(chars, 0, chars.length, i + (polySize - (polySize * 2 / 3)), i1 + (polySize - (distance / 5)));
+            }
+        }*/
+        if(entity != null) {
+            if(viewer.getTurn() == entity.getColor()) {
+                g.setColor((entity.getColor() == PlayerColor.RED ? Color.RED : Color.BLUE));
+                g.drawPolygon(markedPolygon[x][y]);
+            }
+            g.setColor(getColor(entity));
+            int i = hexagonGrid.getCenter(x, y).getX() - (polySize / 2);
+            int i1 = hexagonGrid.getCenter(x, y).getY() - (polySize / 2);
+            int i2 = polySize - (polySize / 32);
+            g.fillOval(i, i1, i2, i2);
+            g.setColor(Color.BLACK);
+            g.drawOval(i, i1, i2, i2);
+            if(entity.getHeight() >= 0) {
+                g.setColor(Color.WHITE);
+                char[] chars = getChar(entity);
+                g.drawChars(chars, 0, chars.length, i + (polySize - (polySize * 2 / 3)), i1 + (polySize - (distance / 5)));
+            }
+        }
     }
 
     /**
