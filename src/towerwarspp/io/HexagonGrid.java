@@ -13,12 +13,14 @@ import java.awt.*;
 public class HexagonGrid {
     private Hexagon[][] hexagons;
     private Polygon[][] polygon;
+    private Polygon[][] markedPolygon;
     private int polygonSize;
 
     public HexagonGrid(int boardSize, int polySize) {
         this.polygonSize = polySize;
         this.hexagons = new Hexagon[boardSize + 1][boardSize + 1];
         this.polygon = new Polygon[boardSize + 1][boardSize + 1];
+        this.markedPolygon = new Polygon[boardSize + 1][boardSize + 1];
         for(int y = 1; y <= boardSize; ++y) {
             for(int x = 1; x <= boardSize; ++x) {
                 int[] coordinates = calculateCenterCoordinates(x, y);
@@ -53,12 +55,41 @@ public class HexagonGrid {
 
         int xPolygon[] = new int[6];
         int yPolygon[] = new int[6];
+        int xMarkedPolygon[] = new int[6];
+        int yMarkedPolygon[] = new int[6];
 
         for (int i = 0; i < 6; ++i) {
             xPolygon[i] = corners[i].getX();
             yPolygon[i] = corners[i].getY();
+            switch (i) {
+                case 0:
+                    xMarkedPolygon[i] = corners[i].getX() - 4;
+                    yMarkedPolygon[i] = corners[i].getY() - 4;
+                    break;
+                case 1:
+                    xMarkedPolygon[i] = corners[i].getX();
+                    yMarkedPolygon[i] = corners[i].getY() - 4;
+                    break;
+                case 2:
+                    xMarkedPolygon[i] = corners[i].getX() + 4;
+                    yMarkedPolygon[i] = corners[i].getY() - 4;
+                    break;
+                case 3:
+                    xMarkedPolygon[i] = corners[i].getX() + 4;
+                    yMarkedPolygon[i] = corners[i].getY() + 4;
+                    break;
+                case 4:
+                    xMarkedPolygon[i] = corners[i].getX();
+                    yMarkedPolygon[i] = corners[i].getY() + 4;
+                    break;
+                case 5:
+                    xMarkedPolygon[i] = corners[i].getX() - 4;
+                    yMarkedPolygon[i] = corners[i].getY() + 4;
+                    break;
+            }
         }
 
+        this.markedPolygon[x][y] = new Polygon(xMarkedPolygon, yMarkedPolygon, 6);
         this.polygon[x][y] = new Polygon(xPolygon, yPolygon, 6);
     }
 
@@ -68,5 +99,9 @@ public class HexagonGrid {
 
     public Polygon[][] getPolygon() {
         return this.polygon;
+    }
+
+    public Polygon[][] getMarkedPolygon() {
+        return this.markedPolygon;
     }
 }

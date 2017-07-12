@@ -32,6 +32,10 @@ public class GraphicIO extends JFrame implements IO {
      */
     private Polygon[][] polygon;
     /**
+     * Polygon-Object for the marks of which player has turn
+     */
+    private Polygon[][] markedPolygon;
+    /**
      * JFrame-Object
      */
     private JFrame jFrame;
@@ -77,6 +81,7 @@ public class GraphicIO extends JFrame implements IO {
         this.jFrame.addComponentListener(getFrameResize());
         jPanel = getJPanel();
         jPanel.addMouseListener(getMouseListener());
+        jPanel.addMouseMotionListener(getMouseListener());
         jPanel.setPreferredSize(new Dimension(this.jFrame.getWidth() - 150, this.jFrame.getHeight()));
         JButton surrenderButton = getSurrenderButton();
         this.info = new JTextArea();
@@ -173,6 +178,7 @@ public class GraphicIO extends JFrame implements IO {
     private MouseAdapter getMouseListener() {
         return new MouseAdapter() {
             Position positionStart = null;
+            boolean clicked = false;
             @Override
             public void mouseClicked(MouseEvent e) {
                 int mouseX = e.getX();
@@ -185,10 +191,12 @@ public class GraphicIO extends JFrame implements IO {
                         /*-- not Empty & right player & not endofgame --*/
                         if (!viewer.isEmpty(positionStart) && viewer.getTurn() == viewer.getPlayerColor(positionStart) && viewer.getStatus() == Status.OK) {
                             possibleMoves = viewer.possibleMoves(positionStart);
-                            visualize();
+                            clicked = true;
+                            jPanel.repaint();
                         } else {
                             possibleMoves = null;
-                            visualize();
+                            clicked = false;
+                            jPanel.repaint();
                         }
                     } catch (Exception ex) {
                         System.out.println(ex);
@@ -197,7 +205,31 @@ public class GraphicIO extends JFrame implements IO {
                 } else if (e.getButton() == 3 && position != null) { /*-- right mouse click --*/
                     deliverMove = new Move(positionStart, new Position(position[0], position[1]));
                     possibleMoves = null;
+                    clicked = false;
                     wakeUp();
+                }
+            }
+
+            @Override
+            public void mouseMoved(MouseEvent e) {
+                int mouseX = e.getX();
+                int mouseY = e.getY();
+                int[] position = getCoordinatesOfPolygon(mouseX, mouseY);
+                if(position != null && !clicked) {
+                    try {
+                        positionStart = new Position(position[0], position[1]);
+                        /*-- not Empty & right player & not endofgame --*/
+                        if (!viewer.isEmpty(positionStart) && viewer.getTurn() != viewer.getPlayerColor(positionStart) && viewer.getStatus() == Status.OK) {
+                            possibleMoves = viewer.possibleMoves(positionStart);
+                            jPanel.repaint();
+                        } else {
+                            possibleMoves = null;
+                            jPanel.repaint();
+                        }
+                    } catch (Exception ex) {
+                        System.out.println(ex);
+                        System.exit(1);
+                    }
                 }
             }
         };
@@ -219,15 +251,12 @@ public class GraphicIO extends JFrame implements IO {
                     Font stoneFont = new Font("TimesRoman", Font.BOLD, distance / 4);
                     super.paintComponent(g);
 
-                    /*g.setRenderingHint(
-                            RenderingHints.KEY_ANTIALIASING,
-                            RenderingHints.VALUE_ANTIALIAS_ON);
-                    g.setRenderingHint(
-                            RenderingHints.KEY_COLOR_RENDERING,
-                            RenderingHints.VALUE_COLOR_RENDER_QUALITY);*/
+                    //g.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+                    //g.setRenderingHint(RenderingHints.KEY_COLOR_RENDERING, RenderingHints.VALUE_COLOR_RENDER_QUALITY);
 
                     g.setColor(Color.BLACK);
                     g.setFont(letterFont);
+                    g.setStroke(new BasicStroke(5));
                     char[] topLetter = new char[1];
                     topLetter[0] = 'A';
                     String leftNumber;
@@ -282,6 +311,10 @@ public class GraphicIO extends JFrame implements IO {
                         /*draw entities*/
                             if (!viewer.isEmpty(position)) {
                             /*set color*/
+                                if(viewer.getTurn() == viewer.getPlayerColor(position)) {
+                                    g.setColor((viewer.getPlayerColor(position) == PlayerColor.RED) ? Color.RED : Color.BLUE);
+                                    g.drawPolygon(markedPolygon[x][y]);
+                                }
                                 g.setColor(getColor(position));
                                 int i = hexagonGrid.getCenter(x, y).getX() - (polySize / 2);
                                 int i1 = hexagonGrid.getCenter(x, y).getY() - (polySize / 2);
@@ -362,6 +395,7 @@ public class GraphicIO extends JFrame implements IO {
         setPolygonSize();
         this.hexagonGrid = new HexagonGrid(this.viewer.getSize(), polySize);
         this.polygon = this.hexagonGrid.getPolygon();
+        this.markedPolygon = this.hexagonGrid.getMarkedPolygon();
         jFrame.add(infoPanel, BorderLayout.EAST);
         jFrame.add(jPanel, BorderLayout.WEST);
         jFrame.pack();
@@ -449,6 +483,4 @@ public class GraphicIO extends JFrame implements IO {
         wait();
         return deliverMove;
     }
-
-
 }
