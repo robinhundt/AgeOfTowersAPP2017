@@ -3,6 +3,7 @@ package towerwarspp.io;
 import towerwarspp.preset.Position;
 
 import java.awt.*;
+import java.awt.geom.GeneralPath;
 
 /**
  * Class {@link HexagonGrid} creates the Grid of the Hexagons
@@ -29,6 +30,23 @@ public class HexagonGrid {
             }
 
         }
+    }
+
+    public Shape getPointedShape(int arrayX, int arrayY) {
+        Corner[] corners = this.hexagons[arrayX][arrayY].getCorners();
+        GeneralPath p = new GeneralPath();
+        for (int i = 0; i < 6; i++) {
+            int x = corners[i].getX();
+            int y = corners[i].getY();
+            if (i == 0) {
+                p.moveTo(x, y);
+            } else {
+                p.lineTo(x, y);
+            }
+        }
+        p.closePath();
+
+        return p;
     }
 
     public void updatePolygonSize(int polySize) {

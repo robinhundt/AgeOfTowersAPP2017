@@ -2,10 +2,14 @@ package towerwarspp.io;
 
 import towerwarspp.preset.*;
 
+import javax.imageio.ImageIO;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
+import java.awt.geom.AffineTransform;
 import java.awt.geom.GeneralPath;
+import java.awt.image.BufferedImage;
+import java.io.File;
 import java.util.Vector;
 
 /**
@@ -70,6 +74,8 @@ public class GraphicIO extends JFrame implements IO {
 
     private boolean repainting;
 
+    private boolean clicked = false;
+
     /**
      * Constructor
      */
@@ -82,13 +88,21 @@ public class GraphicIO extends JFrame implements IO {
         jPanel = getJPanel();
         jPanel.addMouseListener(getMouseListener());
         jPanel.addMouseMotionListener(getMouseListener());
-        jPanel.setPreferredSize(new Dimension(this.jFrame.getWidth() - 150, this.jFrame.getHeight()));
+        jPanel.setPreferredSize(new Dimension(this.jFrame.getWidth() - 200, this.jFrame.getHeight()));
         JButton surrenderButton = getSurrenderButton();
         this.info = new JTextArea();
         this.info.setEditable(false);
         infoPanel = new JPanel(new BorderLayout());
         infoPanel.setPreferredSize(new Dimension(135, 100));
         infoPanel.add(surrenderButton, BorderLayout.NORTH);
+        JButton save = new JButton("Save");
+        save.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent actionEvent) {
+                System.out.println("save");
+            }
+        });
+        infoPanel.add(save, BorderLayout.SOUTH);
         infoPanel.add(this.info, BorderLayout.CENTER);
         this.dialog = new JDialog(this.jFrame, "Result");
         this.area = new JTextArea(200, 200);
@@ -103,7 +117,7 @@ public class GraphicIO extends JFrame implements IO {
         this.dialog.setDefaultCloseOperation(DISPOSE_ON_CLOSE);
         this.dialog.add(this.area, BorderLayout.LINE_START);
         this.dialog.add(close, BorderLayout.AFTER_LAST_LINE);
-        this.dialog.setSize(new Dimension(450, 400));
+        this.dialog.setPreferredSize(new Dimension(450, 400));
         this.dialog.setResizable(false);
     }
 
@@ -172,13 +186,14 @@ public class GraphicIO extends JFrame implements IO {
     }
 
     /**
-     * Creates the MouseListener for the JPanel for the clicks on stones and the moves
+     * Creates the MouseListener for the JPanel for the clicks and hover on stones
+     * When you hover over a token it shows the possible Moves of this token same for click,
+     * but only possible on own Stones
      * @return MouseListener
      */
     private MouseAdapter getMouseListener() {
         return new MouseAdapter() {
             Position positionStart = null;
-            boolean clicked = false;
             @Override
             public void mouseClicked(MouseEvent e) {
                 int mouseX = e.getX();
@@ -219,7 +234,7 @@ public class GraphicIO extends JFrame implements IO {
                     try {
                         positionStart = new Position(position[0], position[1]);
                         /*-- not Empty & right player & not endofgame --*/
-                        if (!viewer.isEmpty(positionStart) && viewer.getTurn() != viewer.getPlayerColor(positionStart) && viewer.getStatus() == Status.OK) {
+                        if (!viewer.isEmpty(positionStart) && viewer.getStatus() == Status.OK) {
                             possibleMoves = viewer.possibleMoves(positionStart);
                             jPanel.repaint();
                         } else {
@@ -250,9 +265,8 @@ public class GraphicIO extends JFrame implements IO {
                     Font letterFont = new Font("TimesRoman", Font.BOLD, distance / 2);
                     Font stoneFont = new Font("TimesRoman", Font.BOLD, distance / 4);
                     super.paintComponent(g);
-
-                    //g.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-                    //g.setRenderingHint(RenderingHints.KEY_COLOR_RENDERING, RenderingHints.VALUE_COLOR_RENDER_QUALITY);
+                    g.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+                    g.setRenderingHint(RenderingHints.KEY_COLOR_RENDERING, RenderingHints.VALUE_COLOR_RENDER_QUALITY);
 
                     g.setColor(Color.BLACK);
                     g.setFont(letterFont);
@@ -286,21 +300,6 @@ public class GraphicIO extends JFrame implements IO {
                         g.drawString(leftNumber, (y - 1) * (distance / 2), hexagonGrid.getCenter(1, y).getY() + (polySize / 4));
                         for (int x = 1; x <= viewer.getSize(); ++x) {
 
-                        /*Shape shp = getPointedShape(x, y);
-                        Rectangle r = shp.getBounds();
-                        System.out.println(-r.x+1 + " " + -r.y+1);
-                        BufferedImage backgroundImage = new BufferedImage(r.width+2,r.height+2,BufferedImage.TYPE_INT_ARGB);
-                        try {
-                            backgroundImage = ImageIO.read(new File(home + "/assets/feldMit.png"));
-                        } catch (Exception e) {
-
-                        }
-                        AffineTransform centerTransform = AffineTransform.getTranslateInstance(-r.x+1, -r.y+1);
-                        g.setTransform(centerTransform);
-                        g.setClip(shp);
-                        g.drawImage(backgroundImage, x, y, null);
-                        g.setClip(null);*/
-
 
                             g.setFont(stoneFont);
                         /*-- draw Grid --*/
@@ -326,7 +325,7 @@ public class GraphicIO extends JFrame implements IO {
                                 if (!viewer.isEmpty(position) && viewer.getHeight(position) >= 0) {
                                     g.setColor(Color.WHITE);
                                     char[] chars = getChar(position);
-                                    g.drawChars(chars, 0, chars.length, i + (polySize - (polySize * 2 / 3)), i1 + (polySize * 3 / 4));
+                                    g.drawChars(chars, 0, chars.length, i + (polySize - (polySize * 2 / 3)), i1 + (polySize - (distance / 5)));
                                 }
                             }
                         }
@@ -411,26 +410,6 @@ public class GraphicIO extends JFrame implements IO {
     public void dialog(String string) {
         this.area.setText(string);
         this.dialog.setVisible(true);
-    }
-
-    public Shape getPointedShape(int arrayX, int arrayY) {
-        Center center = hexagonGrid.getCenter(arrayX, arrayY);
-
-        GeneralPath p = new GeneralPath();
-        for (int i = 0; i < 6; i++) {
-            int angle_degree = 60 * i + 30;
-            double angle_radius = Math.PI / 180 * angle_degree;
-            Double x = center.getX() + this.polySize * Math.cos(angle_radius);
-            Double y = center.getY() + this.polySize * Math.sin(angle_radius);
-            if (i == 0) {
-                p.moveTo(x, y);
-            } else {
-                p.lineTo(x, y);
-            }
-        }
-        p.closePath();
-
-        return p;
     }
 
     /**
