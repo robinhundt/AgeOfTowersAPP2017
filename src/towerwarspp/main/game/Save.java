@@ -1,6 +1,8 @@
 package towerwarspp.main.game;
 
 import java.io.FileOutputStream;
+import java.io.FileInputStream;
+import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.Serializable;
 import java.util.ArrayDeque;
@@ -49,5 +51,17 @@ public class Save implements Serializable {
         } catch (Exception e) {
             System.out.println("Saving failed!");
         }
+    }
+
+    public Save load(String file) {
+        Save a;
+        try (ObjectInputStream in = new ObjectInputStream(new FileInputStream(file + ".aot"))) {
+            a = (Save) in.readObject();
+            System.out.println("Loading completed");
+        } catch (Exception e) {
+            System.out.println("Loading failed");
+            return null;
+        }
+        return a;
     }
 }
