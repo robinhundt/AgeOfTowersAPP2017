@@ -124,18 +124,17 @@ public class Entity {
 	 * @param original Entity to be copied
 	 */
 	public Entity(Entity original) {
-		this.pos = original.getPosition();
-		this.color = original.getColor();
-		this.size = original.getSize();
-		this.range = original.getRange();
-		this.blocked = original.isBlocked();
-		this.base = original.isBase();
-		this.moveCounter = original.getMoveCounter();
-
-		maxHeight = size/3;
-		maxRange = 6*maxHeight+2;
-
-		rangeMoves = original.copyRangeMoves();
+		this.pos = original.pos;
+		this.color = original.color;
+		this.height = original.height;
+		this.size = original.size;
+		this.range = original.range;
+		this.blocked = original.blocked;
+		this.base = original.base;
+		this.moveCounter = original.moveCounter;
+		this.maxHeight = original.maxHeight;
+		this.maxRange = original.maxRange;
+		this.rangeMoves = original.copyRangeMoves();
 	}
 
 
