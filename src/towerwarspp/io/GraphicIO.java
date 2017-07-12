@@ -69,7 +69,7 @@ public class GraphicIO extends JFrame implements IO {
 
     private boolean clicked = false;
 
-    JDialog saveDialog;
+    private JDialog saveDialog;
 
     /**
      * Constructor
@@ -127,7 +127,7 @@ public class GraphicIO extends JFrame implements IO {
         saveButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent actionEvent) {
-                if(saveFileName.getText() != "") {
+                if(saveFileName.getText().equals("")) {
                     System.out.println(saveFileName.getText());
                 }
             }
@@ -363,11 +363,10 @@ public class GraphicIO extends JFrame implements IO {
                                 int i = hexagonGrid.getCenter(x, y).getX() - (polySize / 2);
                                 int i1 = hexagonGrid.getCenter(x, y).getY() - (polySize / 2);
                                 int i2 = polySize - (polySize / 32);
-                                int i3 = i2;
-                                g.fillOval(i, i1, i2, i3);
+                                g.fillOval(i, i1, i2, i2);
                                 g.setColor(Color.BLACK);
-                                g.drawOval(i, i1, i2, i3);
-                                if(entity != null && entity.getHeight() >= 0) {
+                                g.drawOval(i, i1, i2, i2);
+                                if(entity.getHeight() >= 0) {
                                     g.setColor(Color.WHITE);
                                     char[] chars = getChar(entity);
                                     g.drawChars(chars, 0, chars.length, i + (polySize - (polySize * 2 / 3)), i1 + (polySize - (distance / 5)));
@@ -389,7 +388,7 @@ public class GraphicIO extends JFrame implements IO {
         int intHeight = entity.getHeight();
         char height = Character.forDigit(intHeight, 10);
         char[] chars = new char[2];
-        if(entity != null && entity.isBase()) {
+        if(entity.isBase()) {
             chars[0] = 'B';
         } else if(entity.getHeight() == 0) {
             chars[0] = 'S';
