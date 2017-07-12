@@ -1,15 +1,10 @@
 package towerwarspp.io;
 
+import towerwarspp.board.Entity;
 import towerwarspp.preset.*;
-
-import javax.imageio.ImageIO;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
-import java.awt.geom.AffineTransform;
-import java.awt.geom.GeneralPath;
-import java.awt.image.BufferedImage;
-import java.io.File;
 import java.util.Vector;
 
 /**
@@ -72,9 +67,9 @@ public class GraphicIO extends JFrame implements IO {
 
     private JDialog dialog;
 
-    private boolean repainting;
-
     private boolean clicked = false;
+
+    JDialog saveDialog;
 
     /**
      * Constructor
@@ -99,7 +94,7 @@ public class GraphicIO extends JFrame implements IO {
         save.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent actionEvent) {
-                System.out.println("save");
+                showSaveDialog();
             }
         });
         infoPanel.add(save, BorderLayout.SOUTH);
@@ -119,6 +114,36 @@ public class GraphicIO extends JFrame implements IO {
         this.dialog.add(close, BorderLayout.AFTER_LAST_LINE);
         this.dialog.setSize(new Dimension(450, 400));
         this.dialog.setResizable(false);
+        this.saveDialog = getSaveDialog();
+    }
+
+    private JDialog getSaveDialog() {
+        JDialog saveDialog = new JDialog();
+        JPanel savePanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
+        JLabel saveText = new JLabel("Game Name:");
+        JTextField saveFileName = new JTextField();
+        saveFileName.setPreferredSize(new Dimension(150, 25));
+        JButton saveButton = new JButton("Save");
+        saveButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent actionEvent) {
+                if(saveFileName.getText() != "") {
+                    System.out.println(saveFileName.getText());
+                }
+            }
+        });
+        saveDialog.setTitle("Save Game");
+        savePanel.add(saveText);
+        savePanel.add(saveFileName);
+        savePanel.add(saveButton);
+        saveDialog.add(savePanel);
+        saveDialog.setSize(200, 100);
+        saveDialog.setResizable(false);
+        return saveDialog;
+    }
+
+    private void showSaveDialog() {
+        this.saveDialog.setVisible(true);
     }
 
     /**
@@ -203,9 +228,10 @@ public class GraphicIO extends JFrame implements IO {
                 if (e.getButton() == 1 && position != null) {
                     try {
                         positionStart = new Position(position[0], position[1]);
+                        Entity entity = viewer.getEntity(positionStart);
                         /*-- not Empty & right player & not endofgame --*/
-                        if (!viewer.isEmpty(positionStart) && viewer.getTurn() == viewer.getPlayerColor(positionStart) && viewer.getStatus() == Status.OK) {
-                            possibleMoves = viewer.possibleMoves(positionStart);
+                        if (entity != null && viewer.getTurn() == entity.getColor() && viewer.getStatus() == Status.OK) {
+                            possibleMoves = viewer.getPossibleMoves(entity);
                             clicked = true;
                             jPanel.repaint();
                         } else {
@@ -214,7 +240,7 @@ public class GraphicIO extends JFrame implements IO {
                             jPanel.repaint();
                         }
                     } catch (Exception ex) {
-                        System.out.println(ex);
+                        System.out.println("mouseClick" + ex);
                         System.exit(1);
                     }
                 } else if (e.getButton() == 3 && position != null) { /*-- right mouse click --*/
@@ -233,16 +259,17 @@ public class GraphicIO extends JFrame implements IO {
                 if(position != null && !clicked) {
                     try {
                         positionStart = new Position(position[0], position[1]);
+                        Entity entity = viewer.getEntity(positionStart);
                         /*-- not Empty & right player & not endofgame --*/
-                        if (!viewer.isEmpty(positionStart) && viewer.getStatus() == Status.OK) {
-                            possibleMoves = viewer.possibleMoves(positionStart);
+                        if (entity != null && viewer.getStatus() == Status.OK) {
+                            possibleMoves = viewer.getPossibleMoves(entity);
                             jPanel.repaint();
                         } else {
                             possibleMoves = null;
                             jPanel.repaint();
                         }
                     } catch (Exception ex) {
-                        System.out.println(ex);
+                        System.out.println("mouseMove" + ex);
                         System.exit(1);
                     }
                 }
@@ -258,7 +285,6 @@ public class GraphicIO extends JFrame implements IO {
         return new JPanel() {
             @Override
             protected void paintComponent(Graphics graphics) {
-                repainting = true;
                 if (viewer != null) {
                     Graphics2D g = (Graphics2D) graphics;
                     int distance = (int) ((Math.cos(Math.toRadians(30.0)) * polySize) * 2.0);
@@ -299,18 +325,18 @@ public class GraphicIO extends JFrame implements IO {
                         g.setColor(Color.BLACK);
                         g.drawString(leftNumber, (y - 1) * (distance / 2), hexagonGrid.getCenter(1, y).getY() + (polySize / 4));
                         for (int x = 1; x <= viewer.getSize(); ++x) {
-
+                            Position position = new Position(x, y);
+                            Entity entity = viewer.getEntity(position);
 
                             g.setFont(stoneFont);
                         /*-- draw Grid --*/
                             g.setColor(Color.BLACK);
                             g.drawPolygon(polygon[x][y]);
                         /*-----*/
-                            Position position = new Position(x, y);
                         /*draw entities*/
-                            if (!viewer.isEmpty(position)) {
+                            //if (!viewer.isEmpty(position)) {
                             /*set color*/
-                                if(viewer.getTurn() == viewer.getPlayerColor(position)) {
+                                /*if(viewer.getTurn() == viewer.getPlayerColor(position)) {
                                     g.setColor((viewer.getPlayerColor(position) == PlayerColor.RED) ? Color.RED : Color.BLUE);
                                     g.drawPolygon(markedPolygon[x][y]);
                                 }
@@ -327,31 +353,49 @@ public class GraphicIO extends JFrame implements IO {
                                     char[] chars = getChar(position);
                                     g.drawChars(chars, 0, chars.length, i + (polySize - (polySize * 2 / 3)), i1 + (polySize - (distance / 5)));
                                 }
+                            }*/
+                            if(entity != null) {
+                                if(viewer.getTurn() == entity.getColor()) {
+                                    g.setColor((entity.getColor() == PlayerColor.RED ? Color.RED : Color.BLUE));
+                                    g.drawPolygon(markedPolygon[x][y]);
+                                }
+                                g.setColor(getColor(entity));
+                                int i = hexagonGrid.getCenter(x, y).getX() - (polySize / 2);
+                                int i1 = hexagonGrid.getCenter(x, y).getY() - (polySize / 2);
+                                int i2 = polySize - (polySize / 32);
+                                int i3 = i2;
+                                g.fillOval(i, i1, i2, i3);
+                                g.setColor(Color.BLACK);
+                                g.drawOval(i, i1, i2, i3);
+                                if(entity != null && entity.getHeight() >= 0) {
+                                    g.setColor(Color.WHITE);
+                                    char[] chars = getChar(entity);
+                                    g.drawChars(chars, 0, chars.length, i + (polySize - (polySize * 2 / 3)), i1 + (polySize - (distance / 5)));
+                                }
                             }
                         }
                     }
                 }
-                repainting = false;
             }
         };
     }
 
     /**
      * Returns the Char for the Token-Type
-     * @param position Position of the Token
+     * @param entity Tower or Stone
      * @return the type of the Token as Char
      */
-    private char[] getChar(Position position) {
-        int intHeight = viewer.getHeight(position);
+    private char[] getChar(Entity entity) {
+        int intHeight = entity.getHeight();
         char height = Character.forDigit(intHeight, 10);
         char[] chars = new char[2];
-        if(viewer.isBase(position)) {
+        if(entity != null && entity.isBase()) {
             chars[0] = 'B';
-        } else if(viewer.isStone(position)) {
+        } else if(entity.getHeight() == 0) {
             chars[0] = 'S';
-        } else if(viewer.isTower(position)) {
+        } else if(entity.isTower()) {
             chars[1] = height;
-            if(viewer.isBlocked(position)) {
+            if(entity.isBlocked()) {
                 chars[0] = 'X';
             } else {
                 chars[0] = 'T';
@@ -362,11 +406,11 @@ public class GraphicIO extends JFrame implements IO {
 
     /**
      * Returns the Color of the Token
-     * @param position Position of the Token
+     * @param entity Tower or Stone
      * @return the color of the Token
      */
-    private Color getColor(Position position) {
-        if(!viewer.isEmpty(position)) {
+    private Color getColor(Entity entity) {
+        /*if(!viewer.isEmpty(position)) {
             if(viewer.getPlayerColor(position) == PlayerColor.RED) {
                 if(viewer.getHeight(position) == (viewer.getSize() / 3)) {
                     return Color.PINK;
@@ -375,6 +419,21 @@ public class GraphicIO extends JFrame implements IO {
                 }
             } else if(viewer.getPlayerColor(position) == PlayerColor.BLUE) {
                 if(viewer.getHeight(position) == (viewer.getSize() / 3)) {
+                    return Color.CYAN;
+                } else {
+                    return Color.BLUE;
+                }
+            }
+        }*/
+        if(entity != null) {
+            if(entity.getColor() == PlayerColor.RED) {
+                if(entity.isMaxHeight()) {
+                    return Color.PINK;
+                } else {
+                    return Color.RED;
+                }
+            } else if(entity.getColor() == PlayerColor.BLUE) {
+                if(entity.isMaxHeight()) {
                     return Color.CYAN;
                 } else {
                     return Color.BLUE;
@@ -435,13 +494,6 @@ public class GraphicIO extends JFrame implements IO {
     public void visualize() {
         if(this.viewer.getStatus() != Status.ILLEGAL) {
             jPanel.repaint();
-            while (repainting) {
-                try{
-                    Thread.sleep(1);
-                } catch (InterruptedException e) {
-                    System.out.println(e);
-                }
-            }
         }
     }
 

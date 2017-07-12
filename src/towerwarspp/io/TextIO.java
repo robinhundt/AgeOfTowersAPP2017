@@ -2,9 +2,8 @@ package towerwarspp.io;
 
 import java.util.NoSuchElementException;
 import java.util.Scanner;
-
+import towerwarspp.board.Entity;
 import towerwarspp.preset.*;
-
 import static towerwarspp.preset.PlayerColor.RED;
 
 /**
@@ -46,7 +45,6 @@ public class TextIO implements IO {
      * Viewer-Object
      */
     private Viewer viewer;
-
     /**
      * Private Scanner-Object
      */
@@ -131,12 +129,13 @@ public class TextIO implements IO {
      * @return String containing representation of the {@link Position}
      */
     private String positionToString(Position position) {
+        Entity entity = this.viewer.getEntity(position);
         /*check if there is an entity on that position*/
-        if(!this.viewer.isEmpty(position)) {
+        if(entity != null) {
             /*get all information about entity at that position*/
-            PlayerColor color = this.viewer.getPlayerColor(position);
-            boolean blocked = this.viewer.isBlocked(position);
-            int height = this.viewer.getHeight(position);
+            PlayerColor color = entity.getColor();
+            boolean blocked = entity.isBlocked();
+            int height = entity.getHeight();
             int maxHeight = this.viewer.getSize() / 3;
             String col;
             String s;
@@ -156,7 +155,7 @@ public class TextIO implements IO {
             }
 
             /*check if entity is base*/
-            if (viewer.isBase(position)) {
+            if (entity.isBase()) {
                 s = col + " B " + ANSI_RESET;
             } else {
                 /*otherwise check if height is bigger than zero, so if there's a tower or a stone*/

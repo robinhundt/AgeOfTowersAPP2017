@@ -2,7 +2,6 @@ package towerwarspp.board;
 
 import towerwarspp.preset.*;
 
-import java.util.Arrays;
 import java.util.Vector;
 
 /**
@@ -158,7 +157,7 @@ public class Entity {
 	/**
 	 * returns a clone of the rangeMoves
 	 */
-	private Vector<Vector<Move>> copyRangeMoves() {
+	synchronized private Vector<Vector<Move>> copyRangeMoves() {
 		Vector<Vector<Move>> out = new Vector<Vector<Move>>();
 		for(Vector<Move> vector : rangeMoves) {
 			out.add(new Vector<Move>(vector));
@@ -277,7 +276,7 @@ public class Entity {
 	 * This method decreases the possible range and removes all moves, which aren't
 	 * posssible anymore
 	 */
-	public void decRange() {
+	synchronized public void decRange() {
 		moveCounter-= rangeMoves.elementAt(range).size();
 		rangeMoves.set(range, new Vector<Move>());
 		range--;
@@ -296,7 +295,7 @@ public class Entity {
 	 * same as incRange but uses given vector and int-array
 	 * @param rangeVector movevector for specific range
 	 */
-	public void incRange(Vector<Move> rangeVector) {
+	synchronized public void incRange(Vector<Move> rangeVector) {
 		range++;
 		rangeMoves.set(range, rangeVector);
 		moveCounter += rangeVector.size();
@@ -308,7 +307,7 @@ public class Entity {
 	 * @param end endposition of the move
 	 * @param range distance of the endposition
 	 */
-	public void addMove(Position end, int range) {
+	synchronized public void addMove(Position end, int range) {
 		if(!hasMove(end, range)){
 			rangeMoves.elementAt(range).add(new Move(pos, end));
 			moveCounter++;
@@ -321,7 +320,7 @@ public class Entity {
 	 * @param end endposition of the move
 	 * @param range distance of the endposition
 	 */
-	public void removeMove(Position end, int range) {
+	synchronized public void removeMove(Position end, int range) {
 		if(hasMove(end, range)) {
 			rangeMoves.elementAt(range).remove(new Move(pos, end));
 			moveCounter--;
@@ -333,7 +332,7 @@ public class Entity {
 	 * @param end the Move to be checked
 	 * @param range the range of the move
 	 */
-	public boolean hasMove(Position end, int range) {
+	synchronized public boolean hasMove(Position end, int range) {
 		Move move = new Move(pos, end);
 		for(Vector<Move> moves: rangeMoves) {
 			if(moves.contains(move)) {
@@ -354,7 +353,7 @@ public class Entity {
 	/**
 	 * intitalises the rangeMoves-Vector
 	 */
-	private void initialiseMoves() {
+	synchronized private void initialiseMoves() {
 		rangeMoves = new Vector<Vector<Move>>(maxRange);
 		for(int i = 0; i < maxRange; ++i) {
 			rangeMoves.add(i, new Vector<Move>(i * 6 + 1));
@@ -384,7 +383,7 @@ public class Entity {
 	 * @return the clones entityt
 	 */
 	@Override
-	public Entity clone() {
+	synchronized public Entity clone() {
 		return new Entity(this);
 	}
 
