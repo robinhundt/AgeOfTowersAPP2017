@@ -5,6 +5,7 @@ import towerwarspp.io.*;
 import static towerwarspp.preset.PlayerColor.*;
 import static towerwarspp.preset.Status.*;
 import java.util.Vector;
+import java.util.Collection;
 import java.util.ListIterator;
 import java.lang.Exception;
 

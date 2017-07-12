@@ -314,7 +314,7 @@ public class SimpleBoard implements Viewable {
 	*/
 	private void blockTower(Entity tower, Entity blockingStone) {
 		block(tower);
-		actualiseTowerBlockedOrDecreased(tower, tower.getHeight());
+		actualiseOwnTowerBlockedOrDecreased(tower, tower.getHeight());
 		removeFromList(blockingStone);
 		positionClosed(tower.getPosition(), blockingStone.getColor(), false);
 	}
@@ -348,8 +348,8 @@ public class SimpleBoard implements Viewable {
 			unblock(tower);
 			removeFromList(unblockingStone);
 			findTowerMoves(tower);
-			actualiseTowerUnblockedOrIncreased(tower, tower.getHeight());
-			positionOpened(tower.getPosition(), (tower.getColor() == RED? BLUE : RED));
+			actualiseOwnTowerUnblockedOrIncreased(tower, tower.getHeight());
+			positionOpenedStonesOnly(tower.getPosition(), (tower.getColor() == RED? BLUE : RED));
 	}
 	/**
 	* Puts the stone newStone on the top of the other stone or tower of the same color specified by the parameter tower.
@@ -421,6 +421,23 @@ public class SimpleBoard implements Viewable {
 			}
 		}
 	}
+	/**
+	* Adds the specified position to the list of possible moves for every stone (and for the towers),
+	* if this stone can reach the position.
+	* @param openedPos the position in question.
+	* @param col the of the stone for which the position in question has to be opened.
+	*/
+	private void positionOpenedStonesOnly(Position openedPos, PlayerColor col) {
+		Vector<Entity> list = (col == RED? listRed: listBlue);
+		for(Entity ent: list) {
+			if(!ent.isTower()) {
+				int dist = distance(openedPos, ent.getPosition());
+				if(ent.getRange() >= dist) {
+					addMove(ent, openedPos, dist);
+				}
+			}
+		}
+	}
 	
 	/**
 	* Commits changes caused by blocking or dismantling of a tower in respect to its neighbours of the same color.
@@ -433,7 +450,7 @@ public class SimpleBoard implements Viewable {
 	* @change the number of steps that the neighbouring stones of the same color
 	*	lose as a result of blocking or dismantling of the tower in question.
 	*/
-	private void actualiseTowerBlockedOrDecreased(Entity tower, int change) {
+	private void actualiseOwnTowerBlockedOrDecreased(Entity tower, int change) {
 		Vector<Move> moves = tower.getMoves().get(1);
 		if (tower.isBlocked()) {
 			removeAllMoves(tower);
@@ -442,10 +459,9 @@ public class SimpleBoard implements Viewable {
 		for(Move move: moves) {
 			pos = move.getEnd();
 			Entity ent = getElement(pos);
-			if(ent == null || ent.isTower()) 
-				continue;
-			else 
+			if(ent != null && !ent.isTower()) {
 				removeRanges(ent, change);
+			}
 		}
 		if(tower.isMaxHeight()) {
 			positionOpened(tower.getPosition(), tower.getColor());
@@ -462,16 +478,15 @@ public class SimpleBoard implements Viewable {
 	* @change the number of steps that the neighbouring stones of the same color
 	*	gain as a result of creating, increasing or unblocking of the tower in question.
 	*/
-	private void actualiseTowerUnblockedOrIncreased(Entity tower, int change) {
+	private void actualiseOwnTowerUnblockedOrIncreased(Entity tower, int change) {
 		Vector<Move> moves = tower.getMoves().get(1);
 		Position pos;
 		for(Move move: moves) {
 			pos = move.getEnd();
 			Entity ent = getElement(pos);
-			if(ent == null || ent.isTower()) 
-				continue;
-			else 
+			if(ent != null && !ent.isTower()) { 
 				addRanges(ent, change);
+			}
 		}
 		if(tower.isMaxHeight()) {
 			positionClosed(tower.getPosition(), tower.getColor(), true);
@@ -484,9 +499,12 @@ public class SimpleBoard implements Viewable {
 	private void actualiseTowerRemoved(Entity tower) {
 		removeFromList(tower);
 		if(!tower.isBlocked()) {
-			actualiseTowerBlockedOrDecreased(tower, tower.getHeight());
+			actualiseOwnTowerBlockedOrDecreased(tower, tower.getHeight());
 		}
-		else positionOpened(tower.getPosition(), (tower.getColor() == RED? BLUE: RED));
+		positionOpened(tower.getPosition(), (tower.getColor() == RED? BLUE: RED));
+		if(tower.isMaxHeight()) {
+			positionOpenedStonesOnly(tower.getPosition(), tower.getColor());
+		}
 	}
 	/**
 	* Conducts all necessary changes caused by putting a stone on a top of a tower.
@@ -497,14 +515,17 @@ public class SimpleBoard implements Viewable {
 		if(tower.getHeight() == 1) {
 			findTowerMoves(tower);
 		}
-		actualiseTowerUnblockedOrIncreased(tower, 1);
+		actualiseOwnTowerUnblockedOrIncreased(tower, 1);
 	}
 	/**
 	* Conducts all necessary changes caused by removing a stone from a tower.
 	* @param tower the tower whose top stone has been removed.
 	*/
 	private void actualiseTowerRemoveStone(Entity tower) {
-		actualiseTowerBlockedOrDecreased(tower, 1);
+		actualiseOwnTowerBlockedOrDecreased(tower, 1);
+		if(tower.isMaxHeight()) {
+			positionOpened(tower.getPosition(), tower.getColor());
+		}
 		decHeight(tower);
 		if(tower.getHeight() < 1) {
 			findStoneMoves(tower);

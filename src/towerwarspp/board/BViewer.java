@@ -5,6 +5,7 @@ import towerwarspp.io.*;
 import static towerwarspp.preset.PlayerColor.*;
 import static towerwarspp.preset.Status.*;
 import java.util.Vector;
+import java.util.Collection;
 import java.util.ListIterator;
 import java.lang.Exception;
 
@@ -18,7 +19,29 @@ public class BViewer implements Viewer {
 		board = ar;
 		size = sz;
 	}
-
+	Entity[][] getBoardCopy() {
+		Entity[][] copyBoard = new Entity[size+1][size+1];
+		for (int i = 1; i <= size; ++i) {
+			for(int j = 1; j <= size; ++j) {
+				copyBoard[i][j] = board[i][j];
+			}
+		}
+		return copyBoard;
+	}
+	public Vector<Move> getPossibleMoves(Entity ent) throws Exception{
+		if (ent == null) {
+			throw new Exception ("Entity is null");
+		}
+		Vector<Move> moves = new Vector<Move>();
+		if(ent.movable()) {
+			int range = ent.getRange();
+			Vector<Vector<Move>> entMoves = ent.getMoves();
+			for(int i = 1; i <= range; ++i) {
+				moves.addAll(entMoves.get(i));
+			}
+		}
+		return moves;
+	}
 	public int getSize() {
 		return size;
 	}
@@ -36,10 +59,9 @@ public class BViewer implements Viewer {
 		}
 		Vector<Move> moves = new Vector<Move>();
 		if(ent.movable()) {
-			int range = ent.getRange();
-			Vector<Vector<Move>> entMoves = ent.getMoves();
-			for(int i = 1; i <= range; ++i) {
-				moves.addAll(entMoves.get(i));
+			Vector<Vector <Move>> entMoves = ent.getMoves();
+			for(Vector<Move> movesInRange : entMoves) {
+				moves.addAll(movesInRange);
 			}
 		}
 		return moves;
