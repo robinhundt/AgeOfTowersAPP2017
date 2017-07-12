@@ -60,9 +60,9 @@ public class Board extends SimpleBoard {
 		Status ownLose = (ownColor == RED? BLUE_WIN: RED_WIN);
 		Position ownBase = (ownColor == RED? redBase: blueBase);
 		Position opponentBase = (ownColor == RED? blueBase: redBase);
-		/*if(move.getEnd().equals(opponentBase)) {
+		if(move.getEnd().equals(opponentBase)) {
 			return WIN;
-		}*/
+		}
 		Board copy = this.clone();
 		copy.makeMove(move, ownColor);
 		if(copy.getStatus() == ownWin) {
