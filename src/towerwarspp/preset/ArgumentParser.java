@@ -1,6 +1,8 @@
 package towerwarspp.preset;
 
 import towerwarspp.main.OutputType;
+import towerwarspp.main.debug.DebugLevel;
+import towerwarspp.main.debug.DebugSource;
 
 import java.util.HashMap;
 
@@ -228,10 +230,10 @@ public class ArgumentParser {
     }
 
     /**
-     *
-     * @param type
-     * @return
-     * @throws ArgumentParserException
+     * Parse an OutputType.
+     * @param type output type given by user via command line arguments
+     * @return output type as {@link OutputType}
+     * @throws ArgumentParserException if read in output type is not available
      */
 
     private OutputType parseOutputType(String type) throws ArgumentParserException {
@@ -241,6 +243,44 @@ public class ArgumentParser {
             case "graphic": return OutputType.GRAPHIC;
 
             default: throw new ArgumentParserException("Unknown OutputType: " + type);
+        }
+    }
+
+    /**
+     * Parse the {@link DebugLevel} entered by the user for debugging purposes.
+     * @param level debug level given by user via command line arguments
+     * @return debug level as {@link DebugLevel}
+     * @throws ArgumentParserException if read in debug level is not available
+     */
+    private DebugLevel parseDebugLevel(String level) throws ArgumentParserException {
+        switch (level) {
+            case "1": return DebugLevel.LEVEL_1;
+            case "2": return DebugLevel.LEVEL_2;
+            case "3": return DebugLevel.LEVEL_3;
+            case "4": return DebugLevel.LEVEL_4;
+            case "5": return DebugLevel.LEVEL_5;
+            case "6": return DebugLevel.LEVEL_6;
+            case "7": return DebugLevel.LEVEL_7;
+
+            default: throw new ArgumentParserException("Unknown DebugLevel: " + level);
+        }
+    }
+
+    /**
+     * Parse the {@link DebugSource} entered by the user.
+     * @param source debug source given by user via command line arguments
+     * @return debug source as {@link DebugSource}
+     * @throws ArgumentParserException if read in debug source is not available
+     */
+    private DebugSource parseDebugSource(String source) throws ArgumentParserException {
+        switch (source) {
+            case "board": return DebugSource.BOARD;
+            case "io": return DebugSource.IO;
+            case "main": return DebugSource.MAIN;
+            case "network": return DebugSource.NETWORK;
+            case "player": return DebugSource.PLAYER;
+
+            default: throw new ArgumentParserException("Unknown DebugSource: " + source);
         }
     }
 
@@ -309,4 +349,16 @@ public class ArgumentParser {
     public boolean isStatistic() throws ArgumentParserException {
         return getFlag("statistic");
     }
+    public long getThinkingTime() throws ArgumentParserException {
+        return  Long.parseLong((String) getSetting("thinktime"));
+    }
+
+    public DebugLevel getDebugLevel() throws ArgumentParserException {
+        return parseDebugLevel((String) getSetting("dlevel"));
+    }
+
+    public DebugSource getDebugSource() throws ArgumentParserException {
+        return parseDebugSource((String) getSetting("dsource"));
+    }
+
 }

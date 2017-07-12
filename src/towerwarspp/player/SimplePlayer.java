@@ -1,10 +1,8 @@
 package towerwarspp.player;
 
 import towerwarspp.board.Board;
-import towerwarspp.io.View;
 import towerwarspp.preset.Move;
 import towerwarspp.preset.PlayerColor;
-import towerwarspp.preset.Status;
 
 import java.util.Random;
 import java.util.Vector;

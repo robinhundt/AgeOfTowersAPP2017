@@ -5,6 +5,7 @@ import towerwarspp.io.GraphicIO;
 import towerwarspp.io.IO;
 import towerwarspp.io.TextIO;
 import towerwarspp.io.View;
+import towerwarspp.main.debug.DebugLevel;
 import towerwarspp.main.game.Game;
 import towerwarspp.main.game.Result;
 import towerwarspp.main.tournament.TResult;
@@ -12,6 +13,9 @@ import towerwarspp.main.tournament.Tournament;
 import towerwarspp.network.Remote;
 import towerwarspp.player.*;
 import towerwarspp.preset.*;
+
+import static towerwarspp.main.debug.DebugLevel.*;
+import static towerwarspp.main.debug.DebugSource.MAIN;
 
 import javax.swing.*;
 import java.awt.*;
@@ -34,6 +38,12 @@ public class AgeOfTowers {
      * {@link ArgumentParser} to get settings and flags from the command line
      */
     private ArgumentParser ap;
+
+    /**
+     * {@link Debug} singleton that will be set to the debugging preferences entered by
+     * the user via the command line arguments at program start
+     */
+    private Debug debug;
 
     /**
      * {@link Board} object
@@ -78,6 +88,16 @@ public class AgeOfTowers {
             if (args.length == 0 || ap.isHelp()) {
                 System.out.println(helpOutput());
                 System.exit(0);
+            }
+
+            /* Create single instance Debug object and initialize it with the optional values provided by the
+            * user via the ArgumentParser */
+            debug = Debug.getInstance();
+            if(ap.isSet("debug")) {
+                debug.setDebugLevel(ap.isSet("dlevel") ? ap.getDebugLevel() : DebugLevel.LEVEL_1);
+
+                if(ap.isSet("dsource"))
+                    debug.setSource(ap.getDebugSource());
             }
 
             if(ap.isSet("graphic")) {
@@ -244,7 +264,15 @@ public class AgeOfTowers {
             case RANDOM_AI: player = new RndPlayer(); break;
             case SIMPLE_AI: player = new SimplePlayer(); break;
             case ADVANCED_AI_1: player = new Adv1Player(); break;
-            case ADVANCED_AI_2: player = new Adv2Player(1); break;
+            case ADVANCED_AI_2:
+                try {
+                    player = new Adv2Player(ap.isSet("thinktime") ? ap.getThinkingTime() : 2000);
+                } catch (ArgumentParserException e) {
+                    System.out.println(e.getMessage());
+                    debug.send(LEVEL_1, MAIN, e.getMessage());
+                    System.exit(1);
+                }
+                break;
             case REMOTE: player = getRemotePlayer(); break;
             default: System.out.println("Unsupported PlayerType."); System.exit(1);
         }

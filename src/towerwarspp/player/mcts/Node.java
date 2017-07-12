@@ -1,37 +1,46 @@
 package towerwarspp.player.mcts;
 
 import towerwarspp.board.Board;
+import towerwarspp.main.Debug;
 import towerwarspp.preset.Move;
 import towerwarspp.preset.PlayerColor;
 
+import static towerwarspp.main.debug.DebugLevel.*;
+import static towerwarspp.main.debug.DebugSource.PLAYER;
 import static towerwarspp.preset.PlayerColor.*;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.Random;
 
 /**
  * Created by robin on 11.07.17.
  */
+
 public class Node {
-    private static double BIAS = 1.4;
+    private static double BIAS = 0.4;
+    private static Debug debug;
 
-    static Random random = new Random();
-    Move move;
-    PlayerColor player;
-    PlayerColor enemy;
-    double wins;
-    double games;
-    boolean expanded;
-    boolean terminal;
+    private static Random random = new Random();
+    private Move move;
+    private PlayerColor player;
+    private PlayerColor enemy;
+    private double wins;
+    private double games;
+    private boolean expanded;
+    private boolean terminal;
 
 
-    Node parent;
 
-    ArrayList<Node> children;
-    ArrayList<Node> unvisitedChildren;
+    private Node parent;
+    private Node terminalChild;
+
+    private ArrayList<Node> children;
+    private ArrayList<Node> unvisitedChildren;
 
 
     Node(Board board, PlayerColor player) {
+        debug = Debug.getInstance();
         this.player = player == RED ? BLUE : RED;
         this.enemy = player;
 
@@ -43,6 +52,7 @@ public class Node {
     }
 
     Node(Move move, Node parent) {
+        debug = Debug.getInstance();
         this.move = move;
         this.parent = parent;
         this.player = parent.enemy;
@@ -63,9 +73,7 @@ public class Node {
                 unvisitedChildren.add(new Node(move, this));
             }
             if(unvisitedChildren.isEmpty()) {
-                expanded = true;
-                terminal = true;
-                backPropagateScore(0, player);
+                setTerminalTrue();
                 return null;
             }
         }
@@ -79,6 +87,30 @@ public class Node {
         return child;
     }
 
+    /**
+     * Board will not be modified. Use this function to fully expand a node. Should be used when updating the root
+     * of the tree.
+     */
+    ArrayList<Node> fullExpand(Board board) {
+        ArrayList<Node> unexploredChildren = new ArrayList<>();
+        if(unvisitedChildren != null) {
+            for(Iterator<Node> it = unvisitedChildren.iterator(); it.hasNext(); ) {
+                Node child = it.next();
+                children.add(child);
+                unexploredChildren.add(child);
+                it.remove();
+            }
+        } else {
+            for(Move move : board.allPossibleMoves(enemy)) {
+                Node child = new Node(move, this);
+                children.add(child);
+                unexploredChildren.add(child);
+            }
+        }
+        expanded = true;
+        return unexploredChildren;
+    }
+
     Node bestChild() {
         if(!expanded)
             throw new IllegalStateException("bestChild can only be called on expanded Nodes");
@@ -87,6 +119,10 @@ public class Node {
         double highestBound = Double.MIN_VALUE;
         for(Node child : children) {
             double bound = child.upperConfBound(BIAS);
+            debug.send(LEVEL_7, PLAYER, "Node: UCB of " + child + " : " + bound);
+            if(Double.isNaN(bound))
+                bound = Double.POSITIVE_INFINITY;
+
             if(bound > highestBound) {
                 bestChild = child;
                 highestBound = bound;
@@ -97,17 +133,43 @@ public class Node {
 
     Node maxChild() {
         Node maxChild = null;
-        double maxScore = 0;
+        double maxWeight = 0;
+        debug.send(LEVEL_3, PLAYER, "Node: Selecting best Move from: ");
         for(Node child : children) {
-            double score = child.wins / child.games;
-//            System.out.println("checking " + child.getMove() + " score " + score);
-            if(score > maxScore) {
+            double weight = child.getWeight();
+            debug.send(LEVEL_3, PLAYER, "Node: Child Node: " + child + " weight: " + child.getWeight());
+            if(weight > maxWeight) {
                 maxChild = child;
-                maxScore = score;
+                maxWeight = weight;
             }
         }
         return maxChild;
     }
+
+    Node robustChild() {
+        Node robustChild = null;
+        double maxGames = 0;
+        debug.send(LEVEL_3, PLAYER, "Node: Selecting best Move from: ");
+        for(Node child : children) {
+            double games = child.getGames();
+            debug.send(LEVEL_3, PLAYER, "Node: Child Node: " + child + " weight: " + child.getWeight());
+            if(games > maxGames) {
+                robustChild = child;
+                maxGames = games;
+            }
+        }
+        return robustChild;
+    }
+
+    boolean hasTerminalChild() {
+        return terminalChild != null;
+    }
+
+    Node getTerminalChild() {
+        return terminalChild;
+    }
+
+
 
     void backPropagateScore(double score, PlayerColor winner) {
         games++;
@@ -118,49 +180,70 @@ public class Node {
             parent.backPropagateScore(score, winner);
     }
 
+    double getWeight() {
+        return wins / games;
+    }
+
 
     double upperConfBound(double bias) {
         return wins / games + bias * Math.sqrt( Math.log(parent.games) / games);
     }
 
-    public Move getMove() {
+    Move getMove() {
         return move;
     }
 
-    public PlayerColor getPlayer() {
+    PlayerColor getPlayer() {
         return player;
     }
 
-    public PlayerColor getEnemy() {
+    PlayerColor getEnemy() {
         return enemy;
     }
 
-    public double getWins() {
+    double getWins() {
         return wins;
     }
 
-    public double getGames() {
+    double getGames() {
         return games;
     }
 
-    public boolean isExpanded() {
+    boolean isExpanded() {
         return expanded;
     }
 
-    public boolean isTerminal() {
+    boolean isTerminal() {
         return terminal;
     }
 
-    public Node getParent() {
+    Node getParent() {
         return parent;
     }
 
-    public ArrayList<Node> getChildren() {
+    public void setParent(Node parent) {
+        this.parent = parent;
+    }
+
+    ArrayList<Node> getChildren() {
         return children;
     }
 
-    public void setTerminal(boolean terminal) {
-        this.terminal = terminal;
+    void setTerminalTrue() {
+        terminal = true;
+        expanded = true;
+        if(parent != null)
+            parent.terminalChild = this;
+        backPropagateScore(Mcts.DEF_SCORE, player);
+    }
+
+    @Override
+    public String toString() {
+        if(move != null)
+            return move.toString() + " " + player + " expanded: " + expanded + " terminal: " +terminal + " wins: "
+                    + wins + " games " + games;
+        else
+            return "root of tree";
     }
 }
 

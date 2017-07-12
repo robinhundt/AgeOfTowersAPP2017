@@ -2,6 +2,9 @@ package towerwarspp.player;
 
 import towerwarspp.board.Board;
 import towerwarspp.io.View;
+import towerwarspp.main.Debug;
+import towerwarspp.main.debug.DebugLevel;
+import towerwarspp.main.debug.DebugSource;
 import towerwarspp.player.mcts.Mcts;
 import towerwarspp.preset.Move;
 import towerwarspp.preset.PlayerColor;
@@ -18,89 +21,43 @@ import static towerwarspp.preset.Status.OK;
  * Created by robin on 23.06.17.
  */
 public class Adv2Player extends BasePlayer {
-    private final int simCount;
-    Random random;
+    private Debug debug;
+    private Random random;
+    private Mcts mcts;
+    private Thread ai;
 
-    public Adv2Player(int simCount) {
-        this.simCount = simCount;
+    private final long timePerMove;
+
+
+    public Adv2Player(long timePerMove) {
+        this.timePerMove = timePerMove;
+        debug = Debug.getInstance();
         random = new Random();
+        mcts = new Mcts(timePerMove);
+        ai = new Thread(mcts);
+        ai.setDaemon(true);
     }
 
     @Override
     Move deliverMove() throws Exception {
-        Mcts mcts = new Mcts(board.clone(), color);
-        Move move = mcts.bestMove(10000);
-        System.out.println("Making move " + move);
+        Move move = mcts.getMove();
+        debug.send(DebugLevel.LEVEL_1, DebugSource.PLAYER, "Adv2Player " + color + " moving " + move);
         return move;
     }
 
-//    @Override
-//    public void update(Move enemyMove, Status boardStatus) throws Exception {
-//        super.update(enemyMove, boardStatus);
-//        mcts.feedEnemyMove(enemyMove);
-//    }
-//
-//    @Override
-//    public void init(int boardSize, PlayerColor playerColor) {
-//        super.init(boardSize, playerColor);
-//        mcts = new Mcts(board.clone(), playerColor);
-//    }
+    @Override
+    public void update(Move opponentMove, Status boardStatus) throws Exception{
+        super.update(opponentMove, boardStatus);
+        debug.send(DebugLevel.LEVEL_1, DebugSource.PLAYER, "Adv2Player " + color + " received " + opponentMove);
+        mcts.feedEnemyMove(opponentMove);
+    }
 
-//    @Override
-//    Move deliverMove() throws Exception {
-//        Move bestMove = null;
-//        int moveCount = 0;
-//        PlayerColor turn = color;
-//        for(Move move : board.allPossibleMoves(color)) {
-//            int count = 0;
-//            for(int i=0; i < 1000; i++) {
-//                Board cp = board.clone();
-//                turn = color;
-//                cp.update(move, turn);
-////                System.out.println("here");
-//                turn = turn == RED ? BLUE : RED;
-//                while (cp.getStatus() == OK) {
-////                    System.out.println(cp.getStatus());
-//                    Vector<Move> moves = cp.allPossibleMoves(turn);
-//                    Move rndMove = moves.get(random.nextInt(moves.size()));
-//                    cp.update(rndMove, turn);
-////                    System.out.println("There");
-////                    System.out.println(cp.getStatus());
-//                    if(cp.getStatus() == OK)
-//                        turn = turn == RED ? BLUE : RED;
-//                }
-//                if(turn == color)
-//                    count++;
-//            }
-//            if(count > moveCount) {
-//                moveCount = count;
-//                bestMove = move;
-//            }
-//        }
-//
-//        return bestMove;
-//    }
+    @Override
+    public void init(int boardSize, PlayerColor playerColor) {
+        super.init(boardSize, playerColor);
+        mcts.setInit(board.clone(), playerColor);
+        if(!ai.isAlive())
+            ai.start();
+    }
 
-
-//
-//    }
-//        Move bestMove = null;
-//        int bestWinCounter = -1;
-//
-//        for(Move move : board.allPossibleMoves(color)) {
-//            int winCount = 0;
-//            for(int i=0; i < simCount; i++) {
-////                System.out.println("sim: " + i);
-//                Board copy = board.clone();
-//                copy.update(move, color);
-//                SimGame sim = new SimGame(copy, color == PlayerColor.RED ? PlayerColor.BLUE : PlayerColor.RED);
-//                if(sim.simulate() == 1)
-//                    winCount++;
-//            }
-//            if(winCount > bestWinCounter)
-//                bestMove = move;
-//
-//        }
-//        return bestMove;
-//    }
 }

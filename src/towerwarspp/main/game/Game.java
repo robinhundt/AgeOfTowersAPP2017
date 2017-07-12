@@ -2,6 +2,7 @@ package towerwarspp.main.game;
 
 import towerwarspp.board.Board;
 import towerwarspp.io.View;
+import towerwarspp.main.Debug;
 import towerwarspp.main.WinType;
 import towerwarspp.preset.*;
 
@@ -47,6 +48,10 @@ public class Game {
      * integer delayTime, time to wait after every turn
      */
     private int delayTime;
+    /**
+     * {@link Debug} object that is used to print out debug information from all parts of the program in main game loop
+     */
+    private Debug debugMsg;
 
     /**
      * Save Object, which saves all moves and exports them to a savefile
@@ -69,6 +74,7 @@ public class Game {
      * @param delayTime time to wait after every turn (in millisecond)
      */
     public Game(Player redPlayer, Player bluePlayer, int boardSize, View view, boolean debug, int delayTime) {
+        debugMsg = Debug.getInstance();
         /*if one of the players is null*/
         if (redPlayer == null || bluePlayer == null) {
             throw new IllegalArgumentException("Player cannot be null!");
@@ -83,12 +89,18 @@ public class Game {
         saveGame = new Save(boardSize);
         
 
+        if(debug)
+            System.out.println(debugMsg);
+
         /*create new board and include viewer object in view*/
         board = new Board(boardSize);
         if(view != null) {
             view.setViewer(board.viewer());
             hasView = true;
         }
+
+        if(debug)
+            System.out.println(debugMsg);
 
         /*try to initialized players*/
         try {
@@ -100,7 +112,8 @@ public class Game {
             System.exit(1);
         }
 
-
+        if(debug)
+            System.out.println(debugMsg);
     }
 
 
@@ -114,6 +127,8 @@ public class Game {
      * @throws Exception if an error occurs in the {@link Board} or {@link View} object
      */
     public Result play(int timeOut) throws Exception {
+        if(debug)
+            System.out.println(debugMsg);
         /*set redPlayer as first player, red as first color, and counter of move*/
         Player currentPlayer = redPlayer;
         PlayerColor currentColor = RED;
@@ -128,6 +143,8 @@ public class Game {
 
         /*as long as a valid move has been made and none of the players did not win, ask for next moves*/
         while (board.getStatus() == OK && ((timeOut != 0 && moveCounter < timeOut) || timeOut == 0)) {
+            if (debug)
+                System.out.println(debugMsg);
             /*increment move count*/
             moveCounter++;
             /*output turn*/
