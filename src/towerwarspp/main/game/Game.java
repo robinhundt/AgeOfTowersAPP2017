@@ -6,6 +6,7 @@ import towerwarspp.main.WinType;
 import towerwarspp.preset.*;
 
 import java.rmi.RemoteException;
+import java.util.ArrayDeque;
 
 import static towerwarspp.preset.Status.*;
 import static towerwarspp.preset.PlayerColor.BLUE;
@@ -48,6 +49,16 @@ public class Game {
     private int delayTime;
 
     /**
+     * Save Object, which saves all moves and exports them to a savefile
+     */
+    private Save saveGame;
+
+    /**
+     * the size of the board
+     */
+    private int boardSize;
+
+    /**
      *Constructor setting {@link Player}s, {@link Board}, {@link View} and integer variables
      *
      * @param redPlayer {@link Player} with {@link PlayerColor} RED
@@ -68,6 +79,9 @@ public class Game {
         this.debug = debug;
         this.delayTime = delayTime;
         this.view = view;
+        this.boardSize = boardSize;
+        saveGame = new Save(boardSize);
+        
 
         /*create new board and include viewer object in view*/
         board = new Board(boardSize);
@@ -105,6 +119,7 @@ public class Game {
         PlayerColor currentColor = RED;
         Move currentMove;
         int moveCounter = 0;
+        
 
         /*if a view object exists, so visualization is wanted, do this*/
         if(hasView) {
@@ -124,13 +139,14 @@ public class Game {
 
             /*make move on board*/
             board.update(currentMove, currentColor);
+            
 
             /*if debug mode is enabled output information*/
             if (debug && currentMove != null && hasView) {
                 view.display(currentColor + "'move :" + currentMove);
                 view.display("Status: " + board.getStatus());
             }
-
+            saveGame.add(currentMove);
             /*check if boardstatus of player is equal to own boardstatus*/
             currentPlayer.confirm(board.getStatus());
             /*switch current player and playercolor*/
