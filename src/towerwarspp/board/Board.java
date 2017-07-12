@@ -44,7 +44,9 @@ public class Board extends SimpleBoard {
 		}
 		return newList;
 	}
-
+	public int scoreMove(Move move, PlayerColor ownColor) {
+		return scoreMove(move, ownColor, true);
+	}
 
 	/**
 	* Evaluates the specified move.
@@ -52,22 +54,22 @@ public class Board extends SimpleBoard {
 	* @return
 	*	a score of the move.
 	*/
-	public int scoreMove(Move move, PlayerColor ownColor) {
+	public int scoreMove(Move move, PlayerColor ownColor, boolean ownBaseCanBeDestroyed) {
 		PlayerColor opponentColor = (ownColor == RED? BLUE: RED);
 		Status ownWin = (ownColor == RED? RED_WIN: BLUE_WIN);
 		Status ownLose = (ownColor == RED? BLUE_WIN: RED_WIN);
 		Position ownBase = (ownColor == RED? redBase: blueBase);
 		Position opponentBase = (ownColor == RED? blueBase: redBase);
-		if(move.getEnd().equals(opponentBase)) {
+		/*if(move.getEnd().equals(opponentBase)) {
 			return WIN;
-		}
+		}*/
 		Board copy = this.clone();
 		copy.makeMove(move, ownColor);
 		if(copy.getStatus() == ownWin) {
 			return WIN;
 		}
 		Vector<Entity> opponentEntities = (ownColor == RED? copy.listBlue: copy.listRed);
-		if(canBeDestroyed(ownBase, opponentEntities)) {
+		if(ownBaseCanBeDestroyed && canBeDestroyed(ownBase, opponentEntities)) {
 			return LOSE;
 		}
 		Vector<Entity> ownEntities = (ownColor == RED? copy.listRed: copy.listBlue);
@@ -105,8 +107,9 @@ public class Board extends SimpleBoard {
 			if(!opponent.isTower()) {
 				return (res + 1);
 			}
-			if (distance(startPos, endPos) == 1)
+			if (distance(startPos, endPos) == 1) {
 				return (res + 2);
+			}
 		}
 		return res;
 		
@@ -119,6 +122,59 @@ public class Board extends SimpleBoard {
 			}
 		}
 		return false;
+	}
+	private Move findDestroyMove(Position endPos, Vector<Entity> entities) {
+		for(Entity ent: entities) {
+			int dist = distance(ent.getPosition(), endPos);
+			if(ent.hasMove(endPos, dist)) {
+				return new Move(ent.getPosition(), endPos);
+			}
+		}
+		return null;
+	}
+	public Vector<Move> getBestMoves(PlayerColor ownColor) {
+		PlayerColor opponentColor = (ownColor == RED? BLUE: RED);
+		Vector<Entity> ownEntityList = getEntityList(ownColor);
+		Vector<Entity> opponentEntityList = getEntityList(opponentColor);
+		Status ownWin = (ownColor == RED? RED_WIN: BLUE_WIN);
+		Status ownLose = (ownColor == RED? BLUE_WIN: RED_WIN);
+		Position ownBase = (ownColor == RED? redBase: blueBase);
+		Position opponentBase = (ownColor == RED? blueBase: redBase);
+		boolean opponentCanDestroyBase;
+		Vector<Move> bestMoves = new Vector<Move>();
+		Move baseDestroyMove = findDestroyMove(opponentBase, ownEntityList);
+		if (baseDestroyMove != null) {
+			bestMoves.add(baseDestroyMove);
+			return bestMoves;	
+		}
+		int maxScore = LOSE;
+		opponentCanDestroyBase = canBeDestroyed(ownBase, opponentEntityList);
+		for(Entity ent : ownEntityList) {
+			Vector<Vector<Move>> allMoves = ent.getMoves();
+			for(Vector<Move> rangeMoves : allMoves) {
+				for(Move move : rangeMoves) {
+					if(bestMoves.isEmpty()) {
+						maxScore = scoreMove(move, ownColor, opponentCanDestroyBase);
+						bestMoves.add(move);
+						if (maxScore == WIN) {
+							return bestMoves;
+						}
+					}
+					else {
+						int score = scoreMove(move, ownColor, opponentCanDestroyBase);
+						if(score == maxScore) {
+							bestMoves.add(move);
+						}
+						else if(score > maxScore) {
+							maxScore = score;
+							bestMoves = new Vector<Move>();
+							bestMoves.add(move);
+						}
+					}
+				}
+			}		
+		}
+		return bestMoves;		
 	}
 
 	public int altScore(Move move, PlayerColor playerColor) {

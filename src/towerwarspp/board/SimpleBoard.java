@@ -734,10 +734,8 @@ public class SimpleBoard implements Viewable {
 		return false;
 	}
 	
-	/**
-	* Adds all possible moves of the specified figure to the specified vector moves.
-	* @param ent the figure whose moves are to be added to the vector moves.
-	* @moves vector to which all possible moves of the specified figure have to be added.
-	*/
+	protected Vector<Entity> getEntityList(PlayerColor col) {
+		return (col == RED? listRed: listBlue);
+	}
 	
 }
