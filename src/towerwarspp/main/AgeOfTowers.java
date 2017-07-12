@@ -13,6 +13,11 @@ import towerwarspp.network.Remote;
 import towerwarspp.player.*;
 import towerwarspp.preset.*;
 
+import javax.swing.*;
+import java.awt.*;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+
 /**
  * Class AgeOfTower - main class to start a new game of TowerWarsPP.
  *
@@ -61,6 +66,11 @@ public class AgeOfTowers {
      */
     private AgeOfTowers(String[] args) {
         try {
+            /*
+            try {
+                args = initArguments();
+            } catch (Exception e) {}
+            */
             /*create new ArgumentParser to get access to settings and flags*/
             ap = new ArgumentParser(args);
 
@@ -113,6 +123,15 @@ public class AgeOfTowers {
             System.out.println(helpOutput());
             System.exit(1);
         }
+    }
+
+    /**
+     *
+     */
+    synchronized private String[] initArguments() throws Exception {
+        ParameterInput parameterInput = new ParameterInput();
+        wait();
+        return parameterInput.getString();
     }
 
     /**
