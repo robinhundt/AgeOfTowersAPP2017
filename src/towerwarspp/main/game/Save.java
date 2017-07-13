@@ -1,14 +1,18 @@
 package towerwarspp.main.game;
 
-import java.io.FileOutputStream;
-import java.io.FileInputStream;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
-import java.io.Serializable;
-import java.util.ArrayDeque;
-import towerwarspp.preset.*;
 
-public class Save implements Serializable {
+import java.io.BufferedReader;
+import java.io.FileReader;
+import java.io.PrintWriter;
+import java.util.ArrayDeque;
+import java.io.IOException;
+
+import towerwarspp.main.game.LoadParserException;
+import towerwarspp.preset.*;
+import towerwarspp.main.game.*;
+
+
+public class Save {
     /**
      * The History of the moves
      */
@@ -25,11 +29,23 @@ public class Save implements Serializable {
     int size;
 
     /**
+     * variables for the PlayerColor
+     */
+    private static final boolean RED = true, BLUE = false;
+
+    /**
      * Constructor for Save-Object
      * @param save the size of the board
      */
     public Save (int size) {
         this.size = size;
+    }
+
+    /**
+     * getter for the boardsize
+     */
+    public int getSize() {
+        return size;
     }
 
     /**
@@ -44,24 +60,52 @@ public class Save implements Serializable {
      * The Method, which is called, if the user wants to save and export the game
      * to a file with the given name
      */
-    public void export() {
-        try (ObjectOutputStream out = new ObjectOutputStream(new FileOutputStream(dataName + ".aot"))) {
-            out.writeObject(this);
-            out.close();
-        } catch (Exception e) {
-            System.out.println("Saving failed!");
-        }
+    public void export(String dateName) {
+        try{
+            PrintWriter writer = new PrintWriter(dateName + ".aot", "UTF-8");
+            writer.println(size);
+            boolean currentPlayer = RED;
+            for(Move i : moveHistory) {
+                writer.println(i.toString() + (currentPlayer == RED ? ",Red" : ",Blue"));
+                currentPlayer = (currentPlayer == RED ? BLUE : RED);
+            }
+            writer.close();
+            System.out.println("Saving completed");
+        } catch (IOException e) {
+            System.out.println("Saving failed");
+        }  
     }
 
+    /**
+     * This method loads a plain-text-file and converts it into a Save-Object
+     * @param file the name of the file to be loaded
+     * @return the parsed Save-Object
+     */
     public Save load(String file) {
-        Save a;
-        try (ObjectInputStream in = new ObjectInputStream(new FileInputStream(file + ".aot"))) {
-            a = (Save) in.readObject();
-            System.out.println("Loading completed");
+        try (BufferedReader br = new BufferedReader(new FileReader(file))){
+            Save a = new Save(Integer.parseInt(br.readLine()));
+            String line = br.readLine();
+            while(line != null) {
+                a.add(parseLoad(line));    
+                line = br.readLine();            
+            }
+            return a; 
         } catch (Exception e) {
-            System.out.println("Loading failed");
-            return null;
+            System.out.println("Loading Failed");
         }
-        return a;
+        return null;
+    }
+
+    /**
+     * parses a line of the savefile into a move-object
+     */
+
+    private Move parseLoad(String str) throws LoadParserException {
+        try {
+            String[] parse = str.split(",");
+            return Move.parseMove(parse[0]);
+        } catch (Exception e){
+            throw new LoadParserException("illegal Savefile!");
+        } 
     }
 }

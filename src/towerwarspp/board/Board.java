@@ -6,6 +6,7 @@ import static towerwarspp.preset.PlayerColor.*;
 import static towerwarspp.preset.Status.*;
 import java.util.Vector;
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.ListIterator;
 import java.lang.Exception;
 
@@ -150,8 +151,8 @@ public class Board extends SimpleBoard {
 		int maxScore = LOSE;
 		opponentCanDestroyBase = canBeDestroyed(ownBase, opponentEntityList);
 		for(Entity ent : ownEntityList) {
-			Vector<Vector<Move>> allMoves = ent.getMoves();
-			for(Vector<Move> rangeMoves : allMoves) {
+			Vector<HashSet<Move>> allMoves = ent.getMoves();
+			for(HashSet<Move> rangeMoves : allMoves) {
 				for(Move move : rangeMoves) {
 					if(bestMoves.isEmpty()) {
 						maxScore = scoreMove(move, ownColor, opponentCanDestroyBase);
@@ -212,7 +213,7 @@ public class Board extends SimpleBoard {
 		for(Entity ent: list) {
 			if(ent.movable()) {
 				int range = ent.getRange();
-				Vector<Vector<Move>> entMoves = ent.getMoves();
+				Vector<HashSet<Move>> entMoves = ent.getMoves();
 				for(int i = 1; i <= range; ++i) {
 					allMoves.addAll(entMoves.get(i));
 				}

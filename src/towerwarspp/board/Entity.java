@@ -3,6 +3,7 @@ package towerwarspp.board;
 import towerwarspp.preset.*;
 
 import java.util.Vector;
+import java.util.HashSet;
 
 /**
  * This Class provides several Functions, used for TowerwarsPP. It's instances are the Stones and
@@ -71,7 +72,7 @@ public class Entity {
 	/**
 	 * this array of vectors shows, which moves are available for every range
 	 */
-	private Vector<Vector<Move>> rangeMoves;
+	private Vector<HashSet<Move>> rangeMoves;
 
 	/**
 	 * size of the gamefield
@@ -143,7 +144,7 @@ public class Entity {
 	 * Returns all Moves, which are possible for a specific range
 	 * @return the Vector of positions
 	 */
-	public Vector<Move> getRangeMoves(int range) {
+	public HashSet<Move> getRangeMoves(int range) {
 		return rangeMoves.elementAt(range);
 	}
 
@@ -156,10 +157,10 @@ public class Entity {
 	/**
 	 * returns a clone of the rangeMoves
 	 */
-	synchronized private Vector<Vector<Move>> copyRangeMoves() {
-		Vector<Vector<Move>> out = new Vector<Vector<Move>>();
-		for(Vector<Move> vector : rangeMoves) {
-			out.add(new Vector<Move>(vector));
+	synchronized private Vector<HashSet<Move>> copyRangeMoves() {
+		Vector<HashSet<Move>> out = new Vector<HashSet<Move>>();
+		for(HashSet<Move> vector : rangeMoves) {
+			out.add(new HashSet<Move>(vector));
 		}
 
 		return out;
@@ -205,7 +206,7 @@ public class Entity {
 	/**
 	 * returns the Vector of Vector of the possible Moves
 	 */
-	public Vector<Vector<Move>> getMoves() {
+	public Vector<HashSet<Move>> getMoves() {
 		return rangeMoves;
 	}
 
@@ -277,7 +278,7 @@ public class Entity {
 	 */
 	synchronized public void decRange() {
 		moveCounter-= rangeMoves.elementAt(range).size();
-		rangeMoves.set(range, new Vector<Move>());
+		rangeMoves.set(range, new HashSet<Move>());
 		range--;
 
 	}
@@ -294,7 +295,7 @@ public class Entity {
 	 * same as incRange but uses given vector and int-array
 	 * @param rangeVector movevector for specific range
 	 */
-	synchronized public void incRange(Vector<Move> rangeVector) {
+	synchronized public void incRange(HashSet<Move> rangeVector) {
 		range++;
 		rangeMoves.set(range, rangeVector);
 		moveCounter += rangeVector.size();
@@ -333,7 +334,7 @@ public class Entity {
 	 */
 	synchronized public boolean hasMove(Position end, int range) {
 		Move move = new Move(pos, end);
-		for(Vector<Move> moves: rangeMoves) {
+		for(HashSet<Move> moves: rangeMoves) {
 			if(moves.contains(move)) {
 				return true;
 			}
@@ -353,9 +354,9 @@ public class Entity {
 	 * intitalises the rangeMoves-Vector
 	 */
 	synchronized private void initialiseMoves() {
-		rangeMoves = new Vector<Vector<Move>>(maxRange);
+		rangeMoves = new Vector<HashSet<Move>>(maxRange);
 		for(int i = 0; i < maxRange; ++i) {
-			rangeMoves.add(i, new Vector<Move>(i * 6 + 1));
+			rangeMoves.add(i, new HashSet<Move>(i * 6 + 1));
 		}
 	}
 	/**
@@ -371,7 +372,7 @@ public class Entity {
 	 * This method gives an Entity all moves
 	 * @param rangeMoves the moves in the vector of vectors
 	 */
-	public void setAllMoves(Vector<Vector<Move>> rangeMoves, int range, int moveCounter) {
+	public void setAllMoves(Vector<HashSet<Move>> rangeMoves, int range, int moveCounter) {
 		this.rangeMoves = rangeMoves;
 		this.range = range;
 		this.moveCounter = moveCounter;

@@ -1,6 +1,8 @@
 package towerwarspp.board;
 
 import towerwarspp.preset.*;
+
+import java.util.HashSet;
 import java.util.Vector;
 import java.lang.Exception;
 
@@ -21,7 +23,7 @@ public class BViewer implements Viewer {
 		Vector<Move> moves = new Vector<Move>();
 		if(ent.movable()) {
 			int range = ent.getRange();
-			Vector<Vector<Move>> entMoves = ent.getMoves();
+			Vector<HashSet<Move>> entMoves = ent.getMoves();
 			for(int i = 1; i <= range; ++i) {
 				moves.addAll(entMoves.get(i));
 			}

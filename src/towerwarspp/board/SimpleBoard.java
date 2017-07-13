@@ -7,6 +7,7 @@ import static towerwarspp.preset.Status.*;
 import static towerwarspp.main.WinType.*;
 import towerwarspp.main.WinType;
 import java.util.Vector;
+import java.util.HashSet;
 import java.util.ListIterator;
 import java.lang.Exception;
 
@@ -451,7 +452,7 @@ public class SimpleBoard implements Viewable {
 	*	lose as a result of blocking or dismantling of the tower in question.
 	*/
 	private void actualiseOwnTowerBlockedOrDecreased(Entity tower, int change) {
-		Vector<Move> moves = tower.getMoves().get(1);
+		HashSet<Move> moves = tower.getMoves().get(1);
 		if (tower.isBlocked()) {
 			removeAllMoves(tower);
 		}
@@ -479,7 +480,7 @@ public class SimpleBoard implements Viewable {
 	*	gain as a result of creating, increasing or unblocking of the tower in question.
 	*/
 	private void actualiseOwnTowerUnblockedOrIncreased(Entity tower, int change) {
-		Vector<Move> moves = tower.getMoves().get(1);
+		HashSet<Move> moves = tower.getMoves().get(1);
 		Position pos;
 		for(Move move: moves) {
 			pos = move.getEnd();
