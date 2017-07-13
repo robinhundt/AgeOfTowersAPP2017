@@ -61,15 +61,19 @@ public class GraphicIO extends JFrame implements IO {
     /**
      * Textarea for output of turn, player
      */
-    private JTextArea info;
+    private JTextField info;
 
     private JTextArea area;
 
     private JDialog dialog;
 
-    private boolean clicked = false;
+    private boolean clicked;
 
     private JDialog saveDialog;
+
+    private boolean save;
+
+    private String saveGameName;
 
     /**
      * Constructor
@@ -83,40 +87,56 @@ public class GraphicIO extends JFrame implements IO {
         jPanel = getJPanel();
         jPanel.addMouseListener(getMouseListener());
         jPanel.addMouseMotionListener(getMouseListener());
-        jPanel.setPreferredSize(new Dimension(this.jFrame.getWidth() - 200, this.jFrame.getHeight()));
+        jPanel.setPreferredSize(new Dimension(this.jFrame.getWidth() - 136, this.jFrame.getHeight()));
+        this.infoPanel = getInfoPanel();
+        this.info = getDebugLine();
+        this.dialog = getResultDialog();
+        this.saveDialog = getSaveDialog();
+        this.clicked = false;
+        this.save = false;
+    }
+
+    /**
+     * Creates the InfoPanel with the two Buttons surrender and save
+     * Surrender Button sends a null Move for surrendering
+     * save button opens a JDialog
+     * @return returns the InfoPanel
+     */
+    private JPanel getInfoPanel() {
+        JPanel infoPanel = new JPanel();
+        infoPanel.setLayout(new BoxLayout(infoPanel, BoxLayout.PAGE_AXIS));
+        infoPanel.setSize(new Dimension(135, 100));
         JButton surrenderButton = getSurrenderButton();
-        this.info = new JTextArea();
-        this.info.setEditable(false);
-        infoPanel = new JPanel(new BorderLayout());
-        infoPanel.setPreferredSize(new Dimension(135, 100));
-        infoPanel.add(surrenderButton, BorderLayout.NORTH);
-        JButton save = new JButton("Save");
+        surrenderButton.setSize(135,100);
+        infoPanel.add(surrenderButton);
+        JButton save = new JButton("Save and Exit");
         save.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent actionEvent) {
                 showSaveDialog();
             }
         });
-        infoPanel.add(save, BorderLayout.SOUTH);
-        infoPanel.add(this.info, BorderLayout.CENTER);
-        this.dialog = new JDialog(this.jFrame, "Result");
-        this.area = new JTextArea(200, 200);
-        JButton close = new JButton("Close");
-        close.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent actionEvent) {
-                System.exit(0);
-            }
-        });
-        this.area.setEditable(false);
-        this.dialog.setDefaultCloseOperation(DISPOSE_ON_CLOSE);
-        this.dialog.add(this.area, BorderLayout.LINE_START);
-        this.dialog.add(close, BorderLayout.AFTER_LAST_LINE);
-        this.dialog.setSize(new Dimension(450, 400));
-        this.dialog.setResizable(false);
-        this.saveDialog = getSaveDialog();
+        save.setSize(135,100);
+        infoPanel.add(save);
+        return infoPanel;
     }
 
+    /**
+     * Creates a TextField at the buttom of the JFrame
+     * and shows actual messages
+     * @return returns the DebugLine
+     */
+    private JTextField getDebugLine() {
+        JTextField debugLine = new JTextField();
+        debugLine.setPreferredSize(new Dimension(this.jPanel.getWidth(), 25));
+        debugLine.setVisible(true);
+        return debugLine;
+    }
+
+    /**
+     * Creates the SaveDialog where the humanPlayer can choose the savename
+     * @return returns the savedialog
+     */
     private JDialog getSaveDialog() {
         JDialog saveDialog = new JDialog();
         JPanel savePanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
@@ -128,7 +148,8 @@ public class GraphicIO extends JFrame implements IO {
             @Override
             public void actionPerformed(ActionEvent actionEvent) {
                 if(saveFileName.getText().equals("")) {
-                    System.out.println(saveFileName.getText());
+                    save = true;
+                    saveGameName = saveFileName.getText();
                 }
             }
         });
@@ -142,8 +163,34 @@ public class GraphicIO extends JFrame implements IO {
         return saveDialog;
     }
 
+    /**
+     * Set the saveDialog visible
+     */
     private void showSaveDialog() {
         this.saveDialog.setVisible(true);
+        this.save = true;
+    }
+
+    /**
+     * Creates the ResultDialog after a Tournament with a Close Button which closes the Application
+     * @return returns ResultDialog
+     */
+    private JDialog getResultDialog() {
+        JDialog resultDialog = new JDialog(this.jFrame, "Result");
+        this.area = new JTextArea();
+        JButton close = new JButton("Close");
+        close.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent actionEvent) {
+                System.exit(0);
+            }
+        });
+        this.area.setEditable(false);
+        resultDialog.setDefaultCloseOperation(DISPOSE_ON_CLOSE);
+        resultDialog.add(this.area, BorderLayout.LINE_START);
+        resultDialog.add(close, BorderLayout.AFTER_LAST_LINE);
+        resultDialog.setResizable(false);
+        return resultDialog;
     }
 
     /**
@@ -171,6 +218,7 @@ public class GraphicIO extends JFrame implements IO {
         return new ComponentAdapter() {
             @Override
             public void componentResized(ComponentEvent e) {
+                jPanel.setPreferredSize(new Dimension(jFrame.getWidth() - 136, jFrame.getHeight()));
                 setPolygonSize();
                 hexagonGrid.updatePolygonSize(polySize);
                 jPanel.repaint();
@@ -321,6 +369,11 @@ public class GraphicIO extends JFrame implements IO {
         };
     }
 
+    /**
+     * Draws the LetterLine on top
+     * @param g the graphics Object
+     * @param distance the distance of an Hexagoncenter to the edge
+     */
     private void drawLetters(Graphics2D g, int distance) {
         char[] topLetter = new char[1];
         topLetter[0] = 'A';
@@ -333,6 +386,10 @@ public class GraphicIO extends JFrame implements IO {
         }
     }
 
+    /**
+     * fills the Hexagons which have the hovered or clicked token can reach with Green
+     * @param g the graphics Object
+     */
     private void drawPossibleMoves(Graphics2D g) {
         if (this.possibleMoves != null) {
             for (Move move : this.possibleMoves) {
@@ -347,6 +404,12 @@ public class GraphicIO extends JFrame implements IO {
         }
     }
 
+    /**
+     * Draws the Numbers on the left side
+     * @param g the graphics Object
+     * @param distance the distance of an Hexagoncenter to the edge
+     * @param y the row count
+     */
     private void drawNumbers(Graphics2D g, int distance, int y) {
         String leftNumber;
         leftNumber = String.valueOf(y);
@@ -354,28 +417,15 @@ public class GraphicIO extends JFrame implements IO {
         g.drawString(leftNumber, (y - 1) * (distance / 2), hexagonGrid.getCenter(1, y).getY() + (polySize / 4));
     }
 
+    /**
+     * Draws the Entity
+     * @param g the graphics Object
+     * @param entity the entity on x and y
+     * @param distance the distance of an Hexagoncenter to the edge
+     * @param x the column count
+     * @param y the row count
+     */
     private void drawEntity(Graphics2D g, Entity entity, int distance, int x, int y) {
-        /*draw entities*/
-        //if (!viewer.isEmpty(position)) {
-        /*set color*/
-            /*if(viewer.getTurn() == viewer.getPlayerColor(position)) {
-                g.setColor((viewer.getPlayerColor(position) == PlayerColor.RED) ? Color.RED : Color.BLUE);
-                g.drawPolygon(markedPolygon[x][y]);
-            }
-            g.setColor(getColor(position));
-            int i = hexagonGrid.getCenter(x, y).getX() - (polySize / 2);
-            int i1 = hexagonGrid.getCenter(x, y).getY() - (polySize / 2);
-            int i2 = polySize - (polySize / 32);
-            int i3 = i2;
-            g.fillOval(i, i1, i2, i3);
-            g.setColor(Color.BLACK);
-            g.drawOval(i, i1, i2, i3);
-            if (!viewer.isEmpty(position) && viewer.getHeight(position) >= 0) {
-                g.setColor(Color.WHITE);
-                char[] chars = getChar(position);
-                g.drawChars(chars, 0, chars.length, i + (polySize - (polySize * 2 / 3)), i1 + (polySize - (distance / 5)));
-            }
-        }*/
         if(entity != null) {
             if(viewer.getTurn() == entity.getColor()) {
                 g.setColor((entity.getColor() == PlayerColor.RED ? Color.RED : Color.BLUE));
@@ -391,7 +441,7 @@ public class GraphicIO extends JFrame implements IO {
             if(entity.getHeight() >= 0) {
                 g.setColor(Color.WHITE);
                 char[] chars = getChar(entity);
-                g.drawChars(chars, 0, chars.length, i + (polySize - (polySize * 2 / 3)), i1 + (polySize - (distance / 5)));
+                g.drawChars(chars, 0, chars.length, chars[0] == 'T' || chars[0] == 'X' ? i + (polySize - (distance / 2)) : i + (polySize - (polySize * 2 / 3)), i1 + (polySize - (distance / 5)));
             }
         }
     }
@@ -426,21 +476,6 @@ public class GraphicIO extends JFrame implements IO {
      * @return the color of the Token
      */
     private Color getColor(Entity entity) {
-        /*if(!viewer.isEmpty(position)) {
-            if(viewer.getPlayerColor(position) == PlayerColor.RED) {
-                if(viewer.getHeight(position) == (viewer.getSize() / 3)) {
-                    return Color.PINK;
-                } else {
-                    return Color.RED;
-                }
-            } else if(viewer.getPlayerColor(position) == PlayerColor.BLUE) {
-                if(viewer.getHeight(position) == (viewer.getSize() / 3)) {
-                    return Color.CYAN;
-                } else {
-                    return Color.BLUE;
-                }
-            }
-        }*/
         if(entity != null) {
             if(entity.getColor() == PlayerColor.RED) {
                 if(entity.isMaxHeight()) {
@@ -460,21 +495,40 @@ public class GraphicIO extends JFrame implements IO {
     }
 
     /**
+     * Get if Game should be saved
+     * @return true if game should be saved
+     */
+    public boolean getSave() {
+        return this.save;
+    }
+
+    /**
+     * Get the Name of the SaveGame
+     * @return name of the savegame
+     */
+    public String getSaveGameName() {
+        return this.saveGameName;
+    }
+
+    /**
      * Setter of Viewer and Initialize of JPanels
      * @param viewer Viewer-Object
      */
     @Override
     public void setViewer(Viewer viewer) {
         this.viewer = viewer;
-        setPolygonSize();
-        this.hexagonGrid = new HexagonGrid(this.viewer.getSize(), polySize);
-        this.polygon = this.hexagonGrid.getPolygon();
-        this.markedPolygon = this.hexagonGrid.getMarkedPolygon();
-        jFrame.add(infoPanel, BorderLayout.EAST);
-        jFrame.add(jPanel, BorderLayout.WEST);
-        jFrame.pack();
-        if(!jFrame.isVisible()) {
-            jFrame.setVisible(true);
+        if(this.hexagonGrid == null) {
+            setPolygonSize();
+            this.hexagonGrid = new HexagonGrid(this.viewer.getSize(), polySize);
+            this.polygon = this.hexagonGrid.getPolygon();
+            this.markedPolygon = this.hexagonGrid.getMarkedPolygon();
+            jFrame.add(infoPanel, BorderLayout.EAST);
+            jFrame.add(jPanel, BorderLayout.WEST);
+            jFrame.add(info, BorderLayout.SOUTH);
+            jFrame.pack();
+            if (!jFrame.isVisible()) {
+                jFrame.setVisible(true);
+            }
         }
     }
 
@@ -484,6 +538,7 @@ public class GraphicIO extends JFrame implements IO {
     @Override
     public void dialog(String string) {
         this.area.setText(string);
+        this.dialog.pack();
         this.dialog.setVisible(true);
     }
 
