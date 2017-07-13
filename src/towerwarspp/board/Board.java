@@ -170,16 +170,12 @@ public class Board extends SimpleBoard {
 				}
 			}		
 		}
-		if(scoredMoves.isEmpty()) {
-			throw new IllegalStateException("scoredMoves.isEmpty()");
-		}
-		int curScore = scoredMoves.peek().getScore();
-		MoveResult curResult = scoredMoves.peek().getResult();
-		//System.out.println("Next:");
-		while(!scoredMoves.isEmpty() && scoredMoves.peek().getScore() == curScore && scoredMoves.peek().getResult() == curResult) {
-
-			//System.out.println(scoredMoves.peek().getMove() + " " + scoredMoves.peek().getResult() + " " + scoredMoves.peek().getScore());
-			bestMoves.add(scoredMoves.poll().getMove());
+		if(!scoredMoves.isEmpty()) {
+			int curScore = scoredMoves.peek().getScore();
+			MoveResult curResult = scoredMoves.peek().getResult();
+			while(!scoredMoves.isEmpty() && scoredMoves.peek().getScore() == curScore && scoredMoves.peek().getResult() == curResult) {
+				bestMoves.add(scoredMoves.poll().getMove());
+			}
 		}
 		return bestMoves;		
 	}
