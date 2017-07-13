@@ -4,11 +4,12 @@ import towerwarspp.preset.*;
 import towerwarspp.io.*;
 import static towerwarspp.preset.PlayerColor.*;
 import static towerwarspp.preset.Status.*;
+import static towerwarspp.board.MoveResult.*;
 import java.util.Vector;
 import java.util.Collection;
 import java.util.HashSet;
-import java.util.ListIterator;
-import java.lang.Exception;
+import java.util.PriorityQueue;
+import java.lang.IllegalStateException;
 
 public class Board extends SimpleBoard {
 	public static final int WIN = Integer.MAX_VALUE;
@@ -45,7 +46,7 @@ public class Board extends SimpleBoard {
 		}
 		return newList;
 	}
-	public int scoreMove(Move move, PlayerColor ownColor) {
+	public ScoreMove scoreMove(Move move, PlayerColor ownColor) {
 		return scoreMove(move, ownColor, true);
 	}
 
@@ -55,25 +56,38 @@ public class Board extends SimpleBoard {
 	* @return
 	*	a score of the move.
 	*/
-	public int scoreMove(Move move, PlayerColor ownColor, boolean ownBaseCanBeDestroyed) {
+	private ScoreMove scoreMove(Move move, PlayerColor ownColor, boolean ownBaseCanBeDestroyed) {
 		PlayerColor opponentColor = (ownColor == RED? BLUE: RED);
 		Status ownWin = (ownColor == RED? RED_WIN: BLUE_WIN);
-		Status ownLose = (ownColor == RED? BLUE_WIN: RED_WIN);
 		Position ownBase = (ownColor == RED? redBase: blueBase);
 		Position opponentBase = (ownColor == RED? blueBase: redBase);
+		int score = computeScore(move, opponentBase, ownColor);
+		// prove if I can beat the opponent's base: if so, return the Score with score and result = WIN
 		if(move.getEnd().equals(opponentBase)) {
-			return WIN;
+			return new ScoreMove(move, score, WIN2);
 		}
+		// prove if the opponet does not have moves after this move (if the opponent loses)
 		Board copy = this.clone();
 		copy.makeMove(move, ownColor);
 		if(copy.getStatus() == ownWin) {
-			return WIN;
+			return new ScoreMove(move, score, WIN2);
 		}
-		Vector<Entity> opponentEntities = (ownColor == RED? copy.listBlue: copy.listRed);
-		if(ownBaseCanBeDestroyed && canBeDestroyed(ownBase, opponentEntities)) {
-			return LOSE;
+		// prove if the opponet can reach my base in his turn after this move: if so, return score with result LOSE
+		if(ownBaseCanBeDestroyed && canBeDestroyed(ownBase, copy.getEntityList(opponentColor))) {
+			return new ScoreMove(move, score, LOSE2);
 		}
-		Vector<Entity> ownEntities = (ownColor == RED? copy.listRed: copy.listBlue);
+		// prove if the opponent can make a move so that I do not have possible moves after it (short varient). If so, return score with result = LOSE
+		if (haveManyMoves(copy.getEntityList(ownColor))) {
+			return new ScoreMove(move, score, UNKNOWN);
+		}
+		// prove if the opponent can make a move so that I do not have possible moves after it (longer varient: with executing the move). If so, return score with result = LOSE 
+		if(canWin(copy, opponentColor)) {
+			return new ScoreMove(move, score, LOSE2);
+		}
+		// return the score with the result UNKNOWN
+		return new ScoreMove(move, score, UNKNOWN);
+	}
+	private boolean haveManyMoves(Vector<Entity> ownEntities) {
 		int nHasManyMoves = 0;
 		int nStones = 0;
 		for(Entity ent : ownEntities) {
@@ -85,19 +99,23 @@ public class Board extends SimpleBoard {
 					++nStones;
 				}
 				if(nHasManyMoves > 1 || nStones > 1) {
-					return computeScore(move, opponentBase, ownColor);
+					return true;
 				}
 			}
 		}
-		Vector<Move> opponentMoves = copy.allPossibleMoves(opponentColor);
-		for(Move opponentMove: opponentMoves) {
-			Board cloneCopy = copy.clone();
-			Status prediction = cloneCopy.makeMove(opponentMove, opponentColor);
-			if (prediction == ownLose) {
-				return LOSE;
+		return false;
+	}
+	private boolean canWin(Board board, PlayerColor col) {
+		Status win = (col == RED? RED_WIN : BLUE_WIN);
+		Vector<Move> moves = board.allPossibleMoves(col);
+		for(Move move: moves) {
+			Board copy = board.clone();
+			Status prediction = copy.makeMove(move, col);
+			if (prediction == win) {
+				return true;
 			}
 		}
-		return computeScore(move, opponentBase, ownColor);
+		return false;
 	}
 	private int computeScore(Move move, Position opponentBase, PlayerColor ownColor) {
 		Position startPos = move.getStart();
@@ -124,7 +142,7 @@ public class Board extends SimpleBoard {
 		}
 		return false;
 	}
-	private Move findDestroyMove(Position endPos, Vector<Entity> entities) {
+	/*private Move findDestroyMove(Position endPos, Vector<Entity> entities) {
 		for(Entity ent: entities) {
 			int dist = distance(ent.getPosition(), endPos);
 			if(ent.hasMove(endPos, dist)) {
@@ -132,7 +150,7 @@ public class Board extends SimpleBoard {
 			}
 		}
 		return null;
-	}
+	}*/
 	public Vector<Move> getBestMoves(PlayerColor ownColor) {
 		PlayerColor opponentColor = (ownColor == RED? BLUE: RED);
 		Vector<Entity> ownEntityList = getEntityList(ownColor);
@@ -141,39 +159,27 @@ public class Board extends SimpleBoard {
 		Status ownLose = (ownColor == RED? BLUE_WIN: RED_WIN);
 		Position ownBase = (ownColor == RED? redBase: blueBase);
 		Position opponentBase = (ownColor == RED? blueBase: redBase);
-		boolean opponentCanDestroyBase;
+		boolean opponentCanDestroyBase = canBeDestroyed(ownBase, opponentEntityList);
 		Vector<Move> bestMoves = new Vector<Move>();
-		Move baseDestroyMove = findDestroyMove(opponentBase, ownEntityList);
-		if (baseDestroyMove != null) {
-			bestMoves.add(baseDestroyMove);
-			return bestMoves;	
-		}
-		int maxScore = LOSE;
-		opponentCanDestroyBase = canBeDestroyed(ownBase, opponentEntityList);
+		PriorityQueue<ScoreMove> scoredMoves = new PriorityQueue<ScoreMove>();
 		for(Entity ent : ownEntityList) {
 			Vector<HashSet<Move>> allMoves = ent.getMoves();
 			for(HashSet<Move> rangeMoves : allMoves) {
 				for(Move move : rangeMoves) {
-					if(bestMoves.isEmpty()) {
-						maxScore = scoreMove(move, ownColor, opponentCanDestroyBase);
-						bestMoves.add(move);
-						if (maxScore == WIN) {
-							return bestMoves;
-						}
-					}
-					else {
-						int score = scoreMove(move, ownColor, opponentCanDestroyBase);
-						if(score == maxScore) {
-							bestMoves.add(move);
-						}
-						else if(score > maxScore) {
-							maxScore = score;
-							bestMoves = new Vector<Move>();
-							bestMoves.add(move);
-						}
-					}
+					scoredMoves.add(scoreMove(move, ownColor, opponentCanDestroyBase));
 				}
 			}		
+		}
+		if(scoredMoves.isEmpty()) {
+			throw new IllegalStateException("scoredMoves.isEmpty()");
+		}
+		int curScore = scoredMoves.peek().getScore();
+		MoveResult curResult = scoredMoves.peek().getResult();
+		//System.out.println("Next:");
+		while(!scoredMoves.isEmpty() && scoredMoves.peek().getScore() == curScore && scoredMoves.peek().getResult() == curResult) {
+
+			//System.out.println(scoredMoves.peek().getMove() + " " + scoredMoves.peek().getResult() + " " + scoredMoves.peek().getScore());
+			bestMoves.add(scoredMoves.poll().getMove());
 		}
 		return bestMoves;		
 	}

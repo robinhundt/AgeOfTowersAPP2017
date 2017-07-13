@@ -45,34 +45,35 @@ public class SimplePlayer extends BasePlayer {
     @Override
     Move deliverMove() {
         // get all possible moves that this player has available
-        Vector<Move> moves = board.allPossibleMoves(color);
-        int maxScore = Board.LOSE;
+//        Vector<Move> moves = board.allPossibleMoves(color);
+//        int maxScore = Board.LOSE;
         // create new Vector of moves that will always hold the Move objects that have the highest score
-        Vector<Move> maxMoves = new Vector<>();
+//        Vector<Move> maxMoves = new Vector<>();
 
-        for(Move move : moves) {
+  //      for(Move move : moves) {
             // iterate over all possible moves and calculate their scores
-            int score = board.scoreMove(move, color);
+    //        int score = board.scoreMove(move, color);
 //            System.out.println(score + " " + move);
 //            System.out.println("score " + score + "Move " + move);
-            if(score == maxScore) {
-                maxMoves.add(move);
-            } else if(score > maxScore) {
+      //      if(score == maxScore) {
+        //        maxMoves.add(move);
+          //  } else if(score > maxScore) {
                 /*
                 * If the score of the last evaluated move is higher than the current maximum score, clear the maxMoves
                 * vector containing the prior best moves. Then add the new best move to the vector and update
                 * the maxScore variable to new Score
                 * */
-                maxMoves.clear();
+   /*             maxMoves.clear();
                 maxMoves.add(move);
                 maxScore = score;
                 // if the score indicates that this move is a winning move, break out of the loop and return it
                 if(score == Board.WIN) {
                     break;
                 }
-            }
-
-        }
+            }*/
+		Vector<Move> bestMoves = board.getBestMoves(color);
+		return bestMoves.get(rnd.nextInt(bestMoves.size()));
+       /* }
         Move move = maxMoves.get(rnd.nextInt(maxMoves.size()));
         if(board.moveAllowed(move, color))
             return move;
@@ -84,6 +85,6 @@ public class SimplePlayer extends BasePlayer {
                 e.printStackTrace();
             }
             return null;
-        }
+        }*/
     }
 }
