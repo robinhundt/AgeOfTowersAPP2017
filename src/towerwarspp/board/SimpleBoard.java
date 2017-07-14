@@ -117,7 +117,7 @@ public class SimpleBoard implements Viewable {
 	/**
 	* Finds all positions on the board which have the specified distance to the position cent.
 	* @param cent the position for which the distant positions have to be calculated.
-	* @range the distance between cent and the positions in question.
+	* @param range the distance between cent and the positions in question.
 	* @return a vector of all positions on the board with the distance range to the position cent. 
 	*/
 	public Vector<Position> findPositionsInRange(Position cent, int range) {
@@ -150,7 +150,7 @@ public class SimpleBoard implements Viewable {
 	/**
 	* Proves if the coordinates x and y in the argument lay on the board. If so, 
 	* a new Position object with these coordinates will be added to the specified vector of positions. 
-	* @x x-coordinate in question.
+	* @param x x-coordinate in question.
 	* @y y-coordinate in question.
 	* @res vector of positions to which the new position has to be added if it is located on the board.
 	*/	
@@ -177,9 +177,6 @@ public class SimpleBoard implements Viewable {
 			return false;
 		}
 		return true;
-	}
-	public Status makeMove(Move move, PlayerColor col) {
-		return update(move, col);
 	}
 	/**
 	* Checks if the specified move is possible and if so, updates the board: executes the move.

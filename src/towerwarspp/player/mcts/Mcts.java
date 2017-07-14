@@ -1,22 +1,24 @@
 package towerwarspp.player.mcts;
 
-import towerwarspp.board.Board;
-import towerwarspp.main.Debug;
-import towerwarspp.player.PlayStrategy;
-import towerwarspp.preset.Move;
-import towerwarspp.preset.PlayerColor;
-
-import java.util.ArrayList;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.Future;
-
 import static towerwarspp.main.debug.DebugLevel.*;
 import static towerwarspp.main.debug.DebugSource.PLAYER;
 import static towerwarspp.preset.PlayerColor.BLUE;
 import static towerwarspp.preset.PlayerColor.RED;
 import static towerwarspp.preset.Status.BLUE_WIN;
 import static towerwarspp.preset.Status.OK;
+
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.ArrayList;
+import java.util.concurrent.Future;
+
+import towerwarspp.board.Board;
+import towerwarspp.main.Debug;
+import towerwarspp.player.PlayStrategy;
+
+import towerwarspp.preset.Move;
+import towerwarspp.preset.PlayerColor;
+
 
 /**
  * This class implements a concurrent version of the Monte Carlo tree search algorithm. In order to balance between
@@ -44,7 +46,10 @@ import static towerwarspp.preset.Status.OK;
  * {@link Node#backPropagateScore(double, PlayerColor)} method on the Node where the simulation was run.
  *
  * By concurrent it's meant that the algorithm (the select - expand - simulate - backpropagate loop) is executed all the
- * time, even if it's the opponents turn. This means, that especially for opponents that need a long time to decide on their next
+ * time, even if it's the opponents turn. By specifying the {@link #parallelizationFactor} variable during object
+ * construction, the maximal amount of concurrent loop iterations can be controlled. On computers that have a high number of possible
+ * Threads setting this variable to a value up to twice the amount of possible Threads will cause the algorithm to converge
+ * against optimal play a lot faster. This means, that especially for opponents that need a long time to decide on their next
  * move (e.g. a human player or another ai that takes considerable time to choose a move) valuable information on the search
  * tree can be gathered by continuing the main algorithm loop. When the opponent decides on one of his possible moves,
  * the root of the tree is set to the Node representing this action und the resulting subtree is then used for the algorithm.
@@ -55,20 +60,32 @@ import static towerwarspp.preset.Status.OK;
  * @version 13-07-17
  */
 public class Mcts implements Runnable{
-    static double BIAS = 1.2;
     /**
-     * Reference to Debug object that is used to send debug messages.
+     * Bias that is used as a constant in the calculation of the UCB1 in formulae during {@link Node#bestUCBChild()}.
      */
-    private Debug debug;
+    static double BIAS = 1.5;
     /**
      * The default score that is backpropagated through the tree at the end of a simulation or when a terminal node is
      * reached.
      */
     static final int DEF_SCORE = 1;
-
+    /**
+     * Reference to Debug object that is used to send debug messages.
+     */
+    private Debug debug;
+    /**
+     * ExecutorService that is used to provide parallelization of the main select - expand - simulate - backpropagate
+     * loop of the algorithm. Is used to run instance of the Runnable {@link UpdateTree}.
+     */
     private ExecutorService updatePool;
-
+    /**
+     * Array of Futures that is used to store the Futures returned by the {@link ExecutorService#submit(Runnable)} method.
+     */
     private Future[] futures;
+    /**
+     * Specifies the number of Threads that is at most used to concurrently execute {@link UpdateTree} instances.
+     */
+    private int parallelizationFactor = 1;
     /**
      * The current root of the search tree.
      */
@@ -93,6 +110,11 @@ public class Mcts implements Runnable{
      */
     private Move enemyMove;
     /**
+     * If fairPlay is set to true, the algorithm will spend as much time calculating the next move as the enemy player
+     * took to decide on his last move.
+     */
+    private boolean fairPlay;
+    /**
      * Flag that is set to true when {@link #getMove()} is called.
      */
     private boolean moveRequested;
@@ -113,6 +135,10 @@ public class Mcts implements Runnable{
      */
     private long startTime;
     /**
+     * The time at which the algorithm decided on his next move.
+     */
+    private long endTime;
+    /**
      * The {@link PlayStrategy} used for this instance of the MCTS algorithm. If set to {@link PlayStrategy#LIGHT} random
      * games will be played in the simulation phase. If set to {@link PlayStrategy#HEAVY} the evaluation function
      * provided by {@link Board#altScore(Move, PlayerColor)} is used to carry out the simulated games.
@@ -124,34 +150,43 @@ public class Mcts implements Runnable{
      * returned by {@link Node#getWeight()} will be returned.
      * If set to {@link TreeSelectionStrategy#ROBUST} the move of the child with most played out games will be returned.
      */
-    private TreeSelectionStrategy treeSelectionStrategy = TreeSelectionStrategy.MAX;
+    private TreeSelectionStrategy treeSelectionStrategy = TreeSelectionStrategy.ROBUST;
 
 
     /**
      * Construct a new Mcts object that approximately takes the specified time per move in milliseconds to decide on a move after
      * one has been requested.
-     * @param timePerMove time in milliseconds that the algorithm will spend on deciding which move to make after the request
+     * @param timePerMove time in milliseconds that the algorithm will spend on deciding which move to make after the request.
+     * @param parallelizationFactor Specifies the number of Threads that is at most used to concurrently execute {@link UpdateTree} instances.
      */
-    public Mcts(long timePerMove) {
+    public Mcts(long timePerMove, int parallelizationFactor) {
         this.timePerMove = timePerMove;
+        this.parallelizationFactor = parallelizationFactor;
         debug = Debug.getInstance();
         updatePool = Executors.newWorkStealingPool();
-        futures = new Future[8];
+        futures = new Future[parallelizationFactor];
         debug.send(LEVEL_1, PLAYER, "Mcts: Created new mcts object.");
     }
 
     /**
      * Constructs a new Mcts object with the specified time per move, {@link PlayStrategy} and {@link TreeSelectionStrategy}
      * @param timePerMove time to decide on a move after a request
-     * @param playStrategy {@link PlayStrategy} to use in the simulation phase of the algorithm
+     * @param parallelizationFactor Specifies the number of Threads that is at most used to concurrently execute {@link UpdateTree} instances.
+     * @param playStrategy {@link PlayStrategy} to use in the simulation phase of the algorithm.
      * @param treeSelectionStrategy {@link TreeSelectionStrategy} to decide on the child representing a move when a move
-     *                                                           is requested
+     *                              is requested.
+     * @param fairPlay if set to true, the algorithm will spend approximately as much time deciding on it's next move,
+     *                 as the enemy took for his last move, the passed timPerMove will only be considered at his first move
+     *                 if the player is red.
      */
-    public Mcts(long timePerMove, PlayStrategy playStrategy, TreeSelectionStrategy treeSelectionStrategy) {
-        this(timePerMove);
+    public Mcts(long timePerMove, int parallelizationFactor, PlayStrategy playStrategy, TreeSelectionStrategy treeSelectionStrategy, boolean fairPlay) {
+        this(timePerMove, parallelizationFactor);
         this.playStrategy = playStrategy;
         this.treeSelectionStrategy = treeSelectionStrategy;
+        this.fairPlay = fairPlay;
     }
+
+
 
     /**
      * Reinitialize this Mcts object by setting the board to the new Board passed via {@link #newBoard}.
@@ -170,7 +205,7 @@ public class Mcts implements Runnable{
      * Method is called from other Thread.
      * Sets the {@link #newBoard} variable to the passed Board and set {@link #initFlag} to true to signal Thread containing
      * the {@link #run()} method that a new board is available and a new tree should be constructed.
-     * @param board
+     * @param board that will be used as new initial game state
      */
     public void setInit(Board board) {
         newBoard = board;
@@ -181,6 +216,10 @@ public class Mcts implements Runnable{
      * Main loop of the Monte Carlo tree search. As long as the Game is running the run method is executed.
      * Each iteration it is checked if any of the {@link #initFlag}, {@link #moveRequested} or {@link #moveReceived} is set
      * causing the board and tree to be reinitialized, a best Move to be chosen or the root to be reset respectively.
+     *
+     * If none of the flags is set and the board status is OK {@link #parallelizationFactor} many {@link UpdateTree}
+     * instances will be created per iteration and submitted to the {@link #updatePool}. After submitting those
+     * runnable's it's waited until all returned {@link #futures} are done. Then the loop is executed again.
      *
      * In case the status of the Game is != OK the Thread will sleep for some amount of time per loop iteration to not
      * waste processing power.
@@ -200,6 +239,7 @@ public class Mcts implements Runnable{
                 currentBestMove = bestMove();
                 debug.send(LEVEL_2, PLAYER, "Decided on move " + currentBestMove + " in "
                         + (System.currentTimeMillis() - startTime) + " ms.");
+                endTime = System.currentTimeMillis();
                 wakeUp();
             } else if(!initFlag && moveRequested && root.hasTerminalChild()) {
                 /* if a move has been requested and one of the child nodes of the root will lead to direct victory
@@ -207,10 +247,11 @@ public class Mcts implements Runnable{
                 moveRequested = false;
                 currentBestMove = root.getTerminalChild().getMove();
                 board.update(currentBestMove, board.getTurn());
+                endTime =System.currentTimeMillis();
                 wakeUp();
             }
             if(board.getStatus() == OK) {
-                for(int i=0; i < 8; i++) {
+                for(int i=0; i < parallelizationFactor; i++) {
                     futures[i] = updatePool.submit(new UpdateTree(board.clone(), root, playStrategy));
                 }
                 boolean updating = true;
@@ -249,7 +290,16 @@ public class Mcts implements Runnable{
         debug.send(LEVEL_2, PLAYER, "Mcts: Returning move " + selectedChild + " of max child, with weight: "
                 + selectedChild.getWeight());
         updateRoot(selectedChild);
+        checkTreeSelectionPolicy(selectedChild.getWeight());
         return selectedChild.getMove();
+    }
+
+    private void checkTreeSelectionPolicy(double weight) {
+        if(weight > 0.90) {
+            playStrategy = PlayStrategy.LIGHT;
+        } else {
+            playStrategy = PlayStrategy.HEAVY;
+        }
     }
 
     public synchronized Move getMove() {
@@ -264,6 +314,9 @@ public class Mcts implements Runnable{
     }
 
     public void feedEnemyMove(Move move) {
+        if(fairPlay) {
+            timePerMove = System.currentTimeMillis() - endTime;
+        }
         enemyMove = move;
         moveReceived = true;
     }

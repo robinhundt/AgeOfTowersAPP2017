@@ -68,7 +68,7 @@ public class Board extends SimpleBoard {
 		}
 		// prove if the opponet does not have moves after this move (if the opponent loses)
 		Board copy = this.clone();
-		copy.makeMove(move, ownColor);
+		copy.update(move, ownColor);
 		if(copy.getStatus() == ownWin) {
 			return new ScoreMove(move, score, WIN2);
 		}
@@ -110,7 +110,7 @@ public class Board extends SimpleBoard {
 		Vector<Move> moves = board.allPossibleMoves(col);
 		for(Move move: moves) {
 			Board copy = board.clone();
-			Status prediction = copy.makeMove(move, col);
+			Status prediction = copy.update(move, col);
 			if (prediction == win) {
 				return true;
 			}
