@@ -1,23 +1,24 @@
 package towerwarspp.io;
-
-import towerwarspp.board.Entity;
-import towerwarspp.preset.*;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
 import java.util.Vector;
-
+import towerwarspp.board.Entity;
+import towerwarspp.main.Debug;
+import towerwarspp.main.debug.DebugLevel;
+import towerwarspp.main.debug.DebugSource;
+import towerwarspp.preset.Viewer;
+import towerwarspp.preset.Move;
+import towerwarspp.preset.Position;
+import towerwarspp.preset.Status;
+import towerwarspp.preset.PlayerColor;
 /**
- * Class {@link GraphicIO} creates the graphic in- output
+ * Class {@link GraphicIO} interacts with the User over a GUI
  *
  * @version 0.6 July 07th 2017
  * @author Kai Kuhlmann
  */
 public class GraphicIO extends JFrame implements IO {
-    /**
-     * String for Home-Directory
-     */
-    private String home;
     /**
      * Viewer-Object
      */
@@ -55,31 +56,53 @@ public class GraphicIO extends JFrame implements IO {
      */
     private Move deliverMove;
     /**
-     * JPanel-Object for right infooutput
+     * JPanel-Object for right Buttons
      */
-    private JPanel infoPanel;
+    private JPanel buttonPanel;
     /**
      * Textarea for output of turn, player
      */
-    private JTextField info;
-
-    private JTextArea area;
-
-    private JDialog dialog;
-
-    private boolean clicked;
-
-    private JDialog saveDialog;
-
-    private boolean save;
-
-    private String saveGameName;
-
+    private JTextField debugLine;
     /**
-     * Constructor
+     * TextArea in ResultDialog
+     */
+    private JTextArea resultArea;
+    /**
+     * The ResultDialog on which is shown the result of the tournament or the game
+     */
+    private JDialog resultDialog;
+    /**
+     * Boolean if is clicked on a token
+     */
+    private boolean clicked;
+    /**
+     * The SaveDialog which names the savefile
+     */
+    private JDialog saveDialog;
+    /**
+     * Boolean if the saveButton is clicked
+     */
+    private boolean save;
+    /**
+     * The name of the savefile
+     */
+    private String saveGameName;
+    /**
+     * Debug Instance of {@link Debug}
+     */
+    private Debug debugInstance;
+    /**
+     * Constructor of the Class {@link GraphicIO}
+     *
+     * Creates a JFrame and add a ComponentListener which listens on the resize of the JFrame
+     *
+     * Adds to the JPanel an MouseMotionListener and an MouseMoveListener for the click Event and mousemouve Event
+     *
+     * Calculates the Size of the JPanel
+     *
      */
     public GraphicIO() {
-        this.home = System.getProperty("user.dir");
+        this.debugInstance = Debug.getInstance();
         this.jFrame = new JFrame("Age of Towers");
         this.jFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         this.jFrame.setSize(Toolkit.getDefaultToolkit().getScreenSize());
@@ -88,39 +111,127 @@ public class GraphicIO extends JFrame implements IO {
         jPanel.addMouseListener(getMouseListener());
         jPanel.addMouseMotionListener(getMouseListener());
         jPanel.setPreferredSize(new Dimension(this.jFrame.getWidth() - 136, this.jFrame.getHeight()));
-        this.infoPanel = getInfoPanel();
-        this.info = getDebugLine();
-        this.dialog = getResultDialog();
+        this.buttonPanel = getButtonPanel();
+        this.debugLine = getDebugLine();
+        this.resultDialog = getResultDialog();
         this.saveDialog = getSaveDialog();
         this.clicked = false;
         this.save = false;
+        debugInstance.send(DebugLevel.LEVEL_4, DebugSource.IO, "GraphicIO initialized.");
     }
-
     /**
-     * Creates the InfoPanel with the two Buttons surrender and save
+     * Get if Game should be saved
+     * @return true if game should be saved
+     */
+    public boolean getSave() {
+        return this.save;
+    }
+    /**
+     * Get the Name of the SaveGame
+     * @return name of the savegame
+     */
+    public String getSaveGameName() {
+        return this.saveGameName;
+    }
+    /**
+     * Setter of Viewer and Initialize of JPanels
+     *
+     * Creates the {@link HexagonGrid} when not initialized before
+     *
+     * Get the Arrays of {@link Polygon} which are
+     *  1. All Hexagons
+     *  2. All Hexagons a little smaller (for marking the tokens of the actual Player)
+     *
+     *  Add all JPanels to the JFrame
+     *
+     * @param viewer Viewer-Object
+     */
+    @Override
+    public void setViewer(Viewer viewer) {
+        this.viewer = viewer;
+        debugInstance.send(DebugLevel.LEVEL_3, DebugSource.IO, "Viewer is set.");
+        if(this.hexagonGrid == null) {
+            setPolygonSize();
+            this.hexagonGrid = new HexagonGrid(this.viewer.getSize(), polySize);
+            this.polygon = this.hexagonGrid.getPolygon();
+            this.markedPolygon = this.hexagonGrid.getMarkedPolygon();
+            jFrame.add(buttonPanel, BorderLayout.EAST);
+            jFrame.add(jPanel, BorderLayout.WEST);
+            jFrame.add(debugLine, BorderLayout.SOUTH);
+            jFrame.pack();
+            if (!jFrame.isVisible()) {
+                jFrame.setVisible(true);
+            }
+            debugInstance.send(DebugLevel.LEVEL_3, DebugSource.IO, "HexagonGrid, Polygon, markedPolygon and JFrame initialized/added");
+        }
+    }
+    /**
+     * Creates the ResultDialog after a Tournament with a Close Button which closes the Application
+     * @return returns ResultDialog
+     */
+    private JDialog getResultDialog() {
+        JDialog resultDialog = new JDialog(this.jFrame, "Result");
+        this.resultArea = new JTextArea();
+        JButton close = new JButton("Close");
+        close.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent actionEvent) {
+                debugInstance.send(DebugLevel.LEVEL_5, DebugSource.IO, "Close Button in ResultDialog clicked.");
+                System.exit(0);
+            }
+        });
+        this.resultArea.setEditable(false);
+        resultDialog.setDefaultCloseOperation(DISPOSE_ON_CLOSE);
+        resultDialog.add(this.resultArea, BorderLayout.LINE_START);
+        resultDialog.add(close, BorderLayout.AFTER_LAST_LINE);
+        resultDialog.setResizable(false);
+        debugInstance.send(DebugLevel.LEVEL_4, DebugSource.IO, "ResultDialog created.");
+        return resultDialog;
+    }
+    /**
+     * Set the Text of the ResultDialog and set the Dialog on visible
+     */
+    @Override
+    public void dialog(String string) {
+        this.resultArea.setText(string);
+        this.resultDialog.pack();
+        this.resultDialog.setVisible(true);
+        debugInstance.send(DebugLevel.LEVEL_4, DebugSource.IO, "ResultDialog shown.");
+    }
+    /**
+     * Sets the Title of the JFrame
+     * @param string String who should be in the Title
+     */
+    public void setTitle(String string) {
+        this.jFrame.setTitle("Age of Towers - " + string);
+        debugInstance.send(DebugLevel.LEVEL_5, DebugSource.IO, "Title of JFrame set.");
+    }
+    /**
+     * Creates the ButtonPanel with the two Buttons surrender and save
      * Surrender Button sends a null Move for surrendering
      * save button opens a JDialog
-     * @return returns the InfoPanel
+     * @return returns the ButtonPanel
      */
-    private JPanel getInfoPanel() {
-        JPanel infoPanel = new JPanel();
-        infoPanel.setLayout(new BoxLayout(infoPanel, BoxLayout.PAGE_AXIS));
-        infoPanel.setSize(new Dimension(135, 100));
+    private JPanel getButtonPanel() {
+        JPanel buttonPanel = new JPanel();
+        buttonPanel.setLayout(new BoxLayout(buttonPanel, BoxLayout.PAGE_AXIS));
+        buttonPanel.setSize(new Dimension(135, 100));
         JButton surrenderButton = getSurrenderButton();
         surrenderButton.setSize(135,100);
-        infoPanel.add(surrenderButton);
+        buttonPanel.add(surrenderButton);
         JButton save = new JButton("Save and Exit");
         save.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent actionEvent) {
+                debugInstance.send(DebugLevel.LEVEL_4, DebugSource.IO, "Savebutton clicked.");
                 showSaveDialog();
             }
         });
         save.setSize(135,100);
-        infoPanel.add(save);
-        return infoPanel;
+        buttonPanel.add(save);
+        debugInstance.send(DebugLevel.LEVEL_5, DebugSource.IO, "ButtonPanel initialized.");
+        return buttonPanel;
     }
-
     /**
      * Creates a TextField at the buttom of the JFrame
      * and shows actual messages
@@ -129,10 +240,19 @@ public class GraphicIO extends JFrame implements IO {
     private JTextField getDebugLine() {
         JTextField debugLine = new JTextField();
         debugLine.setPreferredSize(new Dimension(this.jPanel.getWidth(), 25));
+        debugLine.setEditable(false);
         debugLine.setVisible(true);
+        debugInstance.send(DebugLevel.LEVEL_5, DebugSource.IO, "DebugLine initialized.");
         return debugLine;
     }
-
+    /**
+     * Set the textarea of ButtonPanel to display e.g turn and player
+     * @param string Information which should be displayed
+     */
+    @Override
+    public void display(String string) {
+        debugLine.setText(string);
+    }
     /**
      * Creates the SaveDialog where the humanPlayer can choose the savename
      * @return returns the savedialog
@@ -150,6 +270,7 @@ public class GraphicIO extends JFrame implements IO {
                 if(saveFileName.getText().equals("")) {
                     save = true;
                     saveGameName = saveFileName.getText();
+                    debugInstance.send(DebugLevel.LEVEL_4, DebugSource.IO, "Save is true. saveFileName String is set.");
                 }
             }
         });
@@ -160,58 +281,23 @@ public class GraphicIO extends JFrame implements IO {
         saveDialog.add(savePanel);
         saveDialog.setSize(200, 100);
         saveDialog.setResizable(false);
+        debugInstance.send(DebugLevel.LEVEL_6, DebugSource.IO, "SaveDialog initialized.");
         return saveDialog;
     }
-
     /**
      * Set the saveDialog visible
      */
     private void showSaveDialog() {
         this.saveDialog.setVisible(true);
-        this.save = true;
+        debugInstance.send(DebugLevel.LEVEL_5, DebugSource.IO, "SaveDialog visible.");
     }
-
-    /**
-     * Creates the ResultDialog after a Tournament with a Close Button which closes the Application
-     * @return returns ResultDialog
-     */
-    private JDialog getResultDialog() {
-        JDialog resultDialog = new JDialog(this.jFrame, "Result");
-        this.area = new JTextArea();
-        JButton close = new JButton("Close");
-        close.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent actionEvent) {
-                System.exit(0);
-            }
-        });
-        this.area.setEditable(false);
-        resultDialog.setDefaultCloseOperation(DISPOSE_ON_CLOSE);
-        resultDialog.add(this.area, BorderLayout.LINE_START);
-        resultDialog.add(close, BorderLayout.AFTER_LAST_LINE);
-        resultDialog.setResizable(false);
-        return resultDialog;
-    }
-
-    /**
-     * Set the textarea of InfoPanel to display e.g turn and player
-     * @param string Information which should be displayed
-     */
-    @Override
-    public void display(String string) {
-        info.setText(string);
-    }
-
-    /**
-     * Sets the Title of the JFrame
-     * @param string String who should be in the Title
-     */
-    public void setTitle(String string) {
-        this.jFrame.setTitle("Age of Towers - " + string);
-    }
-
     /**
      * Listener on Resize of Frame
+     *
+     * Recalculate the {@link Polygon} size
+     *
+     * Update the {@link HexagonGrid}
+     *
      * @return the Adapter
      */
     private ComponentAdapter getFrameResize() {
@@ -222,12 +308,15 @@ public class GraphicIO extends JFrame implements IO {
                 setPolygonSize();
                 hexagonGrid.updatePolygonSize(polySize);
                 jPanel.repaint();
+                debugInstance.send(DebugLevel.LEVEL_3, DebugSource.IO, "Resize: Panel repainted.");
             }
         };
     }
-
     /**
      * Setter of the size of a single Polygon
+     *
+     * Calculates the {@link Polygon} size based on the size of the Frame
+     *
      */
     private void setPolygonSize() {
         double frameWidth = this.jFrame.getWidth() - 150;
@@ -237,9 +326,8 @@ public class GraphicIO extends JFrame implements IO {
         gridX = gridX * Math.cos(Math.toRadians(30.0));
         this.polySize = gridX < gridY ? (int)gridX : (int)gridY;
     }
-
     /**
-     * Get the coordinates of the clicked Entity
+     * Get the coordinates of the clicked token
      * @param mouseX X-Coordinate of the Mouse
      * @param mouseY Y-Coordinate of the Mouse
      * @return Coordinates of the Entity
@@ -251,13 +339,13 @@ public class GraphicIO extends JFrame implements IO {
                 if(this.polygon[x][y].contains(mouseX, mouseY)) {
                     coordinates[0] = x;
                     coordinates[1] = y;
+                    debugInstance.send(DebugLevel.LEVEL_5, DebugSource.IO, "Return coordinate of Hexagon. (" + x + ", " + y + ")");
                     return coordinates;
                 }
             }
         }
         return null;
     }
-
     /**
      * Creates the MouseListener for the JPanel for the clicks and hover on stones
      * When you hover over a token it shows the possible Moves of this token same for click,
@@ -274,15 +362,18 @@ public class GraphicIO extends JFrame implements IO {
                 int[] position = getCoordinatesOfPolygon(mouseX, mouseY);
                 /*-- left mouse click --*/
                 if (e.getButton() == 1 && position != null) {
+                    debugInstance.send(DebugLevel.LEVEL_6, DebugSource.IO, "Left Mouseclick.");
                     try {
                         positionStart = new Position(position[0], position[1]);
                         Entity entity = viewer.getEntity(positionStart);
                         /*-- not Empty & right player & not endofgame --*/
                         if (entity != null && viewer.getTurn() == entity.getColor() && viewer.getStatus() == Status.OK) {
+                            debugInstance.send(DebugLevel.LEVEL_5, DebugSource.IO, "Clicked on token.");
                             possibleMoves = viewer.getPossibleMoves(entity);
                             clicked = true;
                             jPanel.repaint();
                         } else {
+                            debugInstance.send(DebugLevel.LEVEL_5, DebugSource.IO, "Clicked on empty Hexagon.");
                             possibleMoves = null;
                             clicked = false;
                             jPanel.repaint();
@@ -292,6 +383,7 @@ public class GraphicIO extends JFrame implements IO {
                         System.exit(1);
                     }
                 } else if (e.getButton() == 3 && position != null) { /*-- right mouse click --*/
+                    debugInstance.send(DebugLevel.LEVEL_6, DebugSource.IO, "Right mouseclick.");
                     deliverMove = new Move(positionStart, new Position(position[0], position[1]));
                     possibleMoves = null;
                     clicked = false;
@@ -310,6 +402,7 @@ public class GraphicIO extends JFrame implements IO {
                         Entity entity = viewer.getEntity(positionStart);
                         /*-- not Empty & right player & not endofgame --*/
                         if (entity != null && viewer.getStatus() == Status.OK) {
+                            debugInstance.send(DebugLevel.LEVEL_5, DebugSource.IO, "Mouse on token.");
                             possibleMoves = viewer.getPossibleMoves(entity);
                             jPanel.repaint();
                         } else {
@@ -324,7 +417,6 @@ public class GraphicIO extends JFrame implements IO {
             }
         };
     }
-
     /**
      * Creates the JPanel where the HexagonGrid and the Entities are displayed
      * @return JPanel
@@ -355,7 +447,6 @@ public class GraphicIO extends JFrame implements IO {
                         for (int x = 1; x <= viewer.getSize(); ++x) {
                             Position position = new Position(x, y);
                             Entity entity = viewer.getEntity(position);
-
                             g.setFont(stoneFont);
                         /*-- draw Grid --*/
                             g.setColor(Color.BLACK);
@@ -368,84 +459,6 @@ public class GraphicIO extends JFrame implements IO {
             }
         };
     }
-
-    /**
-     * Draws the LetterLine on top
-     * @param g the graphics Object
-     * @param distance the distance of an Hexagoncenter to the edge
-     */
-    private void drawLetters(Graphics2D g, int distance) {
-        char[] topLetter = new char[1];
-        topLetter[0] = 'A';
-        int topLetterX = 0;
-        int topLetterY = 0;
-                /*-- draw the top Chars --*/
-        for (int i = 0; i < this.viewer.getSize(); ++i) {
-            g.drawChars(topLetter, 0, topLetter.length, (int) (topLetterX + (distance * i) + (0.5 * distance)), topLetterY + (distance / 2));
-            ++topLetter[0];
-        }
-    }
-
-    /**
-     * fills the Hexagons which have the hovered or clicked token can reach with Green
-     * @param g the graphics Object
-     */
-    private void drawPossibleMoves(Graphics2D g) {
-        if (this.possibleMoves != null) {
-            for (Move move : this.possibleMoves) {
-                int letter = move.getEnd().getLetter();
-                int number = move.getEnd().getNumber();
-
-                g.setColor(Color.GREEN);
-                g.fillPolygon(polygon[letter][number]);
-                g.setColor(Color.BLACK);
-                g.drawPolygon(polygon[letter][number]);
-            }
-        }
-    }
-
-    /**
-     * Draws the Numbers on the left side
-     * @param g the graphics Object
-     * @param distance the distance of an Hexagoncenter to the edge
-     * @param y the row count
-     */
-    private void drawNumbers(Graphics2D g, int distance, int y) {
-        String leftNumber;
-        leftNumber = String.valueOf(y);
-        g.setColor(Color.BLACK);
-        g.drawString(leftNumber, (y - 1) * (distance / 2), hexagonGrid.getCenter(1, y).getY() + (polySize / 4));
-    }
-
-    /**
-     * Draws the Entity
-     * @param g the graphics Object
-     * @param entity the entity on x and y
-     * @param distance the distance of an Hexagoncenter to the edge
-     * @param x the column count
-     * @param y the row count
-     */
-    private void drawEntity(Graphics2D g, Entity entity, int distance, int x, int y) {
-        if(entity != null) {
-            if(viewer.getTurn() == entity.getColor()) {
-                g.setColor((entity.getColor() == PlayerColor.RED ? Color.RED : Color.BLUE));
-                g.drawPolygon(markedPolygon[x][y]);
-            }
-            g.setColor(getColor(entity));
-            int i = hexagonGrid.getCenter(x, y).getX() - (polySize / 2);
-            int i1 = hexagonGrid.getCenter(x, y).getY() - (polySize / 2);
-            int i2 = polySize - (polySize / 32);
-            g.fillOval(i, i1, i2, i2);
-            g.setColor(Color.BLACK);
-            g.drawOval(i, i1, i2, i2);
-            if(entity.getHeight() >= 0) {
-                g.setColor(Color.WHITE);
-                char[] chars = getChar(entity);
-                g.drawChars(chars, 0, chars.length, chars[0] == 'T' || chars[0] == 'X' ? i + (polySize - (distance / 2)) : i + (polySize - (polySize * 2 / 3)), i1 + (polySize - (distance / 5)));
-            }
-        }
-    }
-
     /**
      * Returns the Char for the Token-Type
      * @param entity Tower or Stone
@@ -469,7 +482,6 @@ public class GraphicIO extends JFrame implements IO {
         }
         return chars;
     }
-
     /**
      * Returns the Color of the Token
      * @param entity Tower or Stone
@@ -493,55 +505,6 @@ public class GraphicIO extends JFrame implements IO {
         }
         return null;
     }
-
-    /**
-     * Get if Game should be saved
-     * @return true if game should be saved
-     */
-    public boolean getSave() {
-        return this.save;
-    }
-
-    /**
-     * Get the Name of the SaveGame
-     * @return name of the savegame
-     */
-    public String getSaveGameName() {
-        return this.saveGameName;
-    }
-
-    /**
-     * Setter of Viewer and Initialize of JPanels
-     * @param viewer Viewer-Object
-     */
-    @Override
-    public void setViewer(Viewer viewer) {
-        this.viewer = viewer;
-        if(this.hexagonGrid == null) {
-            setPolygonSize();
-            this.hexagonGrid = new HexagonGrid(this.viewer.getSize(), polySize);
-            this.polygon = this.hexagonGrid.getPolygon();
-            this.markedPolygon = this.hexagonGrid.getMarkedPolygon();
-            jFrame.add(infoPanel, BorderLayout.EAST);
-            jFrame.add(jPanel, BorderLayout.WEST);
-            jFrame.add(info, BorderLayout.SOUTH);
-            jFrame.pack();
-            if (!jFrame.isVisible()) {
-                jFrame.setVisible(true);
-            }
-        }
-    }
-
-    /**
-     * Dialog
-     */
-    @Override
-    public void dialog(String string) {
-        this.area.setText(string);
-        this.dialog.pack();
-        this.dialog.setVisible(true);
-    }
-
     /**
      * Creates a Button with the action of surrender
      * @return The surrender Button
@@ -551,13 +514,14 @@ public class GraphicIO extends JFrame implements IO {
         button.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent actionEvent) {
+                debugInstance.send(DebugLevel.LEVEL_4, DebugSource.IO, "Surrender Button clicked.");
                 deliverMove = null;
                 wakeUp();
             }
         });
+        debugInstance.send(DebugLevel.LEVEL_5, DebugSource.IO, "Surrender Button initialized.");
         return button;
     }
-
     /**
      * Updates the JPanel
      */
@@ -565,16 +529,9 @@ public class GraphicIO extends JFrame implements IO {
     public void visualize() {
         if(this.viewer.getStatus() != Status.ILLEGAL) {
             jPanel.repaint();
+            debugInstance.send(DebugLevel.LEVEL_4, DebugSource.IO, "visualize: JPanel repainted.");
         }
     }
-
-    /**
-     * Wakes the dormant Main-Thread
-     */
-    synchronized private void wakeUp() {
-        notify();
-    }
-
     /**
      * Waits for Player Input and set the Main-Thread to wait()
      * @return Move
@@ -582,7 +539,93 @@ public class GraphicIO extends JFrame implements IO {
      */
     @Override
     synchronized public Move deliver() throws Exception {
+        debugInstance.send(DebugLevel.LEVEL_4, DebugSource.IO, "Wait for Playerinput.");
         wait();
+        debugInstance.send(DebugLevel.LEVEL_4, DebugSource.IO, "Player has done the move.");
         return deliverMove;
+    }
+    /**
+     * Draws the LetterLine on top
+     * @param g the graphics Object
+     * @param distance the distance of an Hexagoncenter to the edge
+     */
+    private void drawLetters(Graphics2D g, int distance) {
+        char[] topLetter = new char[1];
+        topLetter[0] = 'A';
+        int topLetterX = 0;
+        int topLetterY = 0;
+                /*-- draw the top Chars --*/
+        for (int i = 0; i < this.viewer.getSize(); ++i) {
+            g.drawChars(topLetter, 0, topLetter.length, (int) (topLetterX + (distance * i) + (0.5 * distance)), topLetterY + (distance / 2));
+            ++topLetter[0];
+        }
+        debugInstance.send(DebugLevel.LEVEL_5, DebugSource.IO, "Letter draw complete.");
+    }
+    /**
+     * fills the Hexagons which have the hovered or clicked token can reach with Green
+     * @param g the graphics Object
+     */
+    private void drawPossibleMoves(Graphics2D g) {
+        if (this.possibleMoves != null) {
+            for (Move move : this.possibleMoves) {
+                int letter = move.getEnd().getLetter();
+                int number = move.getEnd().getNumber();
+
+                g.setColor(Color.GREEN);
+                g.fillPolygon(polygon[letter][number]);
+                g.setColor(Color.BLACK);
+                g.drawPolygon(polygon[letter][number]);
+            }
+            debugInstance.send(DebugLevel.LEVEL_5, DebugSource.IO, "possibleMoves draw complete.");
+        }
+    }
+    /**
+     * Draws the Numbers on the left side
+     * @param g the graphics Object
+     * @param distance the distance of an Hexagoncenter to the edge
+     * @param y the row count
+     */
+    private void drawNumbers(Graphics2D g, int distance, int y) {
+        String leftNumber;
+        leftNumber = String.valueOf(y);
+        g.setColor(Color.BLACK);
+        g.drawString(leftNumber, (y - 1) * (distance / 2), hexagonGrid.getCenter(1, y).getY() + (polySize / 4));
+    }
+    /**
+     * Draws the Entity
+     * @param g the graphics Object
+     * @param entity the entity on x and y
+     * @param distance the distance of an Hexagoncenter to the edge
+     * @param x the column count
+     * @param y the row count
+     */
+    private void drawEntity(Graphics2D g, Entity entity, int distance, int x, int y) {
+        if(entity != null) {
+            if(viewer.getTurn() == entity.getColor()) {
+                g.setColor((entity.getColor() == PlayerColor.RED ? Color.RED : Color.BLUE));
+                g.drawPolygon(markedPolygon[x][y]);
+                debugInstance.send(DebugLevel.LEVEL_6, DebugSource.IO, "Hexagon with Token. (" + entity.getColor() + ")");
+            }
+            g.setColor(getColor(entity));
+            int i = hexagonGrid.getCenter(x, y).getX() - (polySize / 2);
+            int i1 = hexagonGrid.getCenter(x, y).getY() - (polySize / 2);
+            int i2 = polySize - (polySize / 32);
+            g.fillOval(i, i1, i2, i2);
+            g.setColor(Color.BLACK);
+            g.drawOval(i, i1, i2, i2);
+            if(entity.getHeight() >= 0) {
+                g.setColor(Color.WHITE);
+                char[] chars = getChar(entity);
+                g.drawChars(chars, 0, chars.length, chars[0] == 'T' || chars[0] == 'X' ? i + (polySize - (distance / 2)) : i + (polySize - (polySize * 2 / 3)), i1 + (polySize - (distance / 5)));
+            }
+            debugInstance.send(DebugLevel.LEVEL_6, DebugSource.IO, "Entity on (" + x + ", " + y + ") drawn.");
+        }
+    }
+    /**
+     * Wakes the dormant Main-Thread
+     */
+    synchronized private void wakeUp() {
+        debugInstance.send(DebugLevel.LEVEL_4, DebugSource.IO, "MainThread wakes up.");
+        notify();
     }
 }

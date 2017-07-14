@@ -1,13 +1,17 @@
 package towerwarspp.io;
-
+import static towerwarspp.preset.PlayerColor.RED;
 import java.util.NoSuchElementException;
 import java.util.Scanner;
 import towerwarspp.board.Entity;
-import towerwarspp.preset.*;
-import static towerwarspp.preset.PlayerColor.RED;
-
+import towerwarspp.main.Debug;
+import towerwarspp.main.debug.DebugLevel;
+import towerwarspp.main.debug.DebugSource;
+import towerwarspp.preset.Position;
+import towerwarspp.preset.Viewer;
+import towerwarspp.preset.PlayerColor;
+import towerwarspp.preset.Move;
 /**
- * Class {@link TextIO} interacting with to user over the command line (standard-input)
+ * Class {@link TextIO} interacting with to user over the command line
  *
  * @version 1.5 July 06th 2017
  * @author Kai Kuhlmann, Niklas Mueller
@@ -49,25 +53,39 @@ public class TextIO implements IO {
      * Private Scanner-Object
      */
     private Scanner scanner;
-
+    /**
+     * Debug Instance of {@link Debug}
+     */
+    private Debug debugInstance;
     /**
      * Constructor to Initialize the TextIO
      */
     public TextIO() {
+        this.debugInstance = Debug.getInstance();
         this.scanner = new Scanner(System.in);
+        this.debugInstance.send(DebugLevel.LEVEL_2, DebugSource.IO, "TextIO initialized.");
     }
-
-
+    /**
+     * Overridden method setViewer() to set own {@link Viewer}
+     *
+     * @param viewer {@link Viewer} object to be set as {@link Viewer}
+     */
+    @Override
+    public void setViewer(Viewer viewer) {
+        this.viewer = viewer;
+        this.debugInstance.send(DebugLevel.LEVEL_3, DebugSource.IO, "Viewer is set.");
+    }
+    @Override
+    public void setTitle(String string) {
+    }
     /**
      * Output of the Board
      */
     public void visualize() {
         StringBuilder output = new StringBuilder();
-
         int size = this.viewer.getSize();
         char headChar = 'A';
         StringBuilder tap = new StringBuilder("  ");
-
         /*own StringBuilder for the letters to be displayed above and beneath the board*/
         StringBuilder letters = new StringBuilder();
         letters.append("    ");
@@ -101,7 +119,6 @@ public class TextIO implements IO {
         }
         System.out.println(output);
     }
-
     /**
      * Overriden method display to get possibility for other classes to inform user
      *
@@ -111,17 +128,9 @@ public class TextIO implements IO {
     public void display(String string) {
         System.out.println(string);
     }
-
     @Override
     public void dialog(String string) {
-        System.out.println(string);
     }
-
-    @Override
-    public void setTitle(String string) {
-
-    }
-
     /**
      * Method positionToString() showing if there is an {@link towerwarspp.board.Entity} at given {@link Position} and what kind
      *
@@ -139,7 +148,6 @@ public class TextIO implements IO {
             int maxHeight = this.viewer.getSize() / 3;
             String col;
             String s;
-
             /*check if entity is blocked or has maximum height, otherwise it's a stone*/
             if (blocked) {
                 /*colors for blocked towers*/
@@ -153,7 +161,6 @@ public class TextIO implements IO {
                 /*normal stones*/
                 col = color == RED ? ANSI_RED : ANSI_BLUE;
             }
-
             /*check if entity is base*/
             if (entity.isBase()) {
                 s = col + " B " + ANSI_RESET;
@@ -167,17 +174,6 @@ public class TextIO implements IO {
         /*if position is empty*/
         return " o ";
     }
-
-    /**
-     * Overridden method setViewer() to set own {@link Viewer}
-     *
-     * @param viewer {@link Viewer} object to be set as {@link Viewer}
-     */
-    @Override
-    public void setViewer(Viewer viewer) {
-        this.viewer = viewer;
-    }
-
     /**
      * Overridden method deliver() parsing a textual input from the standard-input into a {@link Move}
      *
@@ -195,6 +191,7 @@ public class TextIO implements IO {
             nextMove = this.scanner.nextLine();
             /*if user wants to surrender*/
             if (nextMove.equals("surrender")) {
+                this.debugInstance.send(DebugLevel.LEVEL_3, DebugSource.IO, "Game surrendered. Input: " + nextMove);
                 return null;
             }
             /*another option to surrender, but user will be asked twice*/
@@ -202,9 +199,11 @@ public class TextIO implements IO {
                 System.out.println("Do you really want to surrender? yes or no");
                 String answer = this.scanner.nextLine();
                 if (answer.equals("yes") || answer.equals("y")) {
+                    this.debugInstance.send(DebugLevel.LEVEL_3, DebugSource.IO, "Game surrendered. Input: " + nextMove + " and " + answer);
                     return null;
                 }
                 /*if something else then "yes" or "y" will be inputted, return illegal move, so user get's another chance*/
+                this.debugInstance.send(DebugLevel.LEVEL_3, DebugSource.IO, "Move illegal. (" + nextMove + ")");
                 return new Move(new Position(1, 1), new Position(1, 1));
             }
         }
@@ -215,13 +214,16 @@ public class TextIO implements IO {
         try {
             /*if something else but "surrender" or nothing has been inputted*/
             move = Move.parseMove(nextMove);
+            this.debugInstance.send(DebugLevel.LEVEL_3, DebugSource.IO, "Move parsed. (" + move + ")");
         }
         catch (Exception e) {
             /*if input did not have the correct format, give user another chance*/
             System.out.println("Couldn't interpret move. Move needs to be like 'A2->A3'");
+            this.debugInstance.send(DebugLevel.LEVEL_3, DebugSource.IO, "Wrong move format.");
             return new Move(new Position(1, 1), new Position(1, 1));
         }
         /*if everything went right, return the parsed move*/
+        this.debugInstance.send(DebugLevel.LEVEL_3, DebugSource.IO, "Returned move.");
         return move;
     }
 }
