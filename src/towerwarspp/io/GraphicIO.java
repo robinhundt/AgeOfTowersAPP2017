@@ -117,7 +117,7 @@ public class GraphicIO extends JFrame implements IO {
         this.saveDialog = getSaveDialog();
         this.clicked = false;
         this.save = false;
-        debugInstance.send(DebugLevel.LEVEL_4, DebugSource.IO, "GraphicIO initialized.");
+        debugInstance.send(DebugLevel.LEVEL_1, DebugSource.IO, "GraphicIO initialized.");
     }
     /**
      * Get if Game should be saved

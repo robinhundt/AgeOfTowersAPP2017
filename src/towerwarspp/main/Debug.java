@@ -34,7 +34,9 @@ public class Debug {
         }
     }
 
-
+    public boolean isCollecting() {
+        return debugging;
+    }
 
     public void send(DebugLevel level, DebugSource source, String msg) {
         if(debugging && debugSource != NO_SOURCE_DEBUG && level.compareTo(debugLevel) <= 0 && debugSource == source) {

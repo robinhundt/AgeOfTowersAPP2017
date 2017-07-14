@@ -1,10 +1,8 @@
 package towerwarspp.player;
 
-import towerwarspp.board.Board;
 import towerwarspp.preset.Move;
 
 import java.util.Random;
-import java.util.Vector;
 
 /**
  * Created by robin on 10.07.17.

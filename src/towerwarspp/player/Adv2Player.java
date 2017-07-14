@@ -8,25 +8,19 @@ import towerwarspp.preset.Move;
 import towerwarspp.preset.PlayerColor;
 import towerwarspp.preset.Status;
 
-import java.util.Random;
-
 /**
  * Created by robin on 23.06.17.
  */
 public class Adv2Player extends BasePlayer {
     private Debug debug;
-    private Random random;
     private Mcts mcts;
     private Thread ai;
 
-    private final long timePerMove;
 
 
-    public Adv2Player(long timePerMove) {
-        this.timePerMove = timePerMove;
+    public Adv2Player(long timePerMove, int parallelizationFactor) {
         debug = Debug.getInstance();
-        random = new Random();
-        mcts = new Mcts(timePerMove, 8);
+        mcts = new Mcts(timePerMove, parallelizationFactor);
         ai = new Thread(mcts);
         ai.setDaemon(true);
     }

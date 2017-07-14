@@ -282,7 +282,8 @@ public class AgeOfTowers {
             case ADVANCED_AI_1: player = new Adv1Player(); break;
             case ADVANCED_AI_2:
                 try {
-                    player = new Adv2Player(ap.isSet("thinktime") ? ap.getThinkingTime() : 2000);
+                    // TODO add setting for parallelizationfactor
+                    player = new Adv2Player(ap.isSet("thinktime") ? ap.getThinkingTime() : 2000, 8);
                 } catch (ArgumentParserException e) {
                     System.out.println(e.getMessage());
                     debug.send(LEVEL_1, MAIN, e.getMessage());
