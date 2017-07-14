@@ -39,7 +39,7 @@ class UpdateTree implements Runnable {
             selectedChild = selectedChild.bestUCBChild();
             debug.send(LEVEL_5, PLAYER, "Mcts: selected child " + selectedChild);
 
-            board.update(selectedChild.getMove(), selectedChild.getPlayer());
+            board.makeMove(selectedChild.getMove());
             if(board.getStatus() != OK) {
                 selectedChild.setTerminalTrue();
                 debug.send(LEVEL_5, PLAYER, "Mcts: Found terminal Node " + selectedChild);
@@ -56,7 +56,7 @@ class UpdateTree implements Runnable {
             Node expNode = selectedChild.expand(board);
             if(expNode != null) {
 
-                board.update(expNode.getMove(), expNode.getPlayer());
+                board.makeMove(expNode.getMove());
 
                 if(board.getStatus() != OK) {
                     expNode.setTerminalTrue();

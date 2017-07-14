@@ -60,7 +60,7 @@ public class SimplePlayer extends BasePlayer {
           //  } else if(score > maxScore) {
                 /*
                 * If the score of the last evaluated move is higher than the current maximum score, clear the maxMoves
-                * vector containing the prior best moves. Then add the new best move to the vector and update
+                * vector containing the prior best moves. Then add the new best move to the vector and makeMove
                 * the maxScore variable to new Score
                 * */
    /*             maxMoves.clear();

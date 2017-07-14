@@ -1,15 +1,13 @@
 package towerwarspp.board;
 
 import towerwarspp.preset.*;
-import towerwarspp.io.*;
+
 import static towerwarspp.preset.PlayerColor.*;
 import static towerwarspp.preset.Status.*;
 import static towerwarspp.board.MoveResult.*;
 import java.util.Vector;
-import java.util.Collection;
 import java.util.HashSet;
 import java.util.PriorityQueue;
-import java.lang.IllegalStateException;
 
 public class Board extends SimpleBoard {
 	public static final int WIN = Integer.MAX_VALUE;
@@ -68,7 +66,7 @@ public class Board extends SimpleBoard {
 		}
 		// prove if the opponet does not have moves after this move (if the opponent loses)
 		Board copy = this.clone();
-		copy.update(move, ownColor);
+		copy.makeMove(move);
 		if(copy.getStatus() == ownWin) {
 			return new ScoreMove(move, score, WIN2);
 		}
@@ -110,7 +108,7 @@ public class Board extends SimpleBoard {
 		Vector<Move> moves = board.allPossibleMoves(col);
 		for(Move move: moves) {
 			Board copy = board.clone();
-			Status prediction = copy.update(move, col);
+			Status prediction = copy.makeMove(move);
 			if (prediction == win) {
 				return true;
 			}

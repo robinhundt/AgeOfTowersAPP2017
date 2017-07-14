@@ -1,20 +1,19 @@
 package towerwarspp.main.game;
 
 
+import towerwarspp.preset.Move;
+
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
+import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.ArrayDeque;
-import java.io.IOException;
+import java.util.Iterator;
 import java.util.regex.*;
 
-import towerwarspp.main.game.LoadParserException;
-import towerwarspp.preset.*;
-import towerwarspp.main.game.*;
 
-
-public class Save {
+public class Save implements Iterable<Move> {
     /**
      * The History of the moves
      */
@@ -49,7 +48,7 @@ public class Save {
 
     /**
      * Constructor for Save-Object
-     * @param save the size of the board
+     * @param size the size of the board
      */
     public Save (int size) {
         this.size = size;
@@ -120,5 +119,21 @@ public class Save {
         } catch (Exception e){
             throw new LoadParserException("illegal Savefile!");
         } 
+    }
+
+    @Override
+    public Iterator<Move> iterator() {
+        return new Iterator<Move>() {
+            Iterator<Move> it = moveHistory.iterator();
+            @Override
+            public boolean hasNext() {
+                return it.hasNext();
+            }
+
+            @Override
+            public Move next() {
+                return it.next();
+            }
+        };
     }
 }

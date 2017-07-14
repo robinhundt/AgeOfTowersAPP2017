@@ -1,7 +1,7 @@
 package towerwarspp.board;
 
 import towerwarspp.preset.*;
-import towerwarspp.io.*;
+
 import static towerwarspp.preset.PlayerColor.*;
 import static towerwarspp.preset.Status.*;
 import static towerwarspp.main.WinType.*;
@@ -9,7 +9,6 @@ import towerwarspp.main.WinType;
 import java.util.Vector;
 import java.util.HashSet;
 import java.util.ListIterator;
-import java.lang.Exception;
 
 public class SimpleBoard implements Viewable {
         protected int size;
@@ -183,31 +182,24 @@ public class SimpleBoard implements Viewable {
 	* Illegal moves will not be executed.
 	* Changes the board status accordingly and returns it.
 	* @param move - new move to be executed.
-	* @param col - color of the figure which has to be moved.
 	* @return
 	*	a status of the board after checking or checking and executing the move.
 	*/
-	public Status update(Move move, PlayerColor col) {
+	public Status makeMove(Move move) {
 		if (move == null) {
 			turn = (turn == RED? BLUE: RED);
 			winType = SURRENDER;
-			return status = col == RED ? BLUE_WIN : RED_WIN;
+			return status = turn == RED ? BLUE_WIN : RED_WIN;
 		}
 		Position start = move.getStart();
 		Position end = move.getEnd();
 		Entity ent = getElement(start);
-		if(col != turn) {
-			status = ILLEGAL;
-			winType = ILLEGAL_MOVE;
-			throw new IllegalArgumentException("Board: turn is incorrect");
-			//return status;
-		}
-		if(!moveAllowed(move, col)) {
+		if(!moveAllowed(move, turn)) {
 			status = ILLEGAL;
 			if(ent == null) {
 				throw new IllegalArgumentException("Board: Entity not on the board " + move);
 			}
-			if(ent.getColor() != col) {
+			if(ent.getColor() != turn) {
 				throw new IllegalArgumentException("Board: false color " + move + " entity color: "+ ent.getColor());
 			}
 			throw new IllegalArgumentException("Board: move does not ex. " + move);

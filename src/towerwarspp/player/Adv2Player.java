@@ -26,7 +26,7 @@ public class Adv2Player extends BasePlayer {
         this.timePerMove = timePerMove;
         debug = Debug.getInstance();
         random = new Random();
-        mcts = new Mcts(timePerMove);
+        mcts = new Mcts(timePerMove, 8);
         ai = new Thread(mcts);
         ai.setDaemon(true);
     }

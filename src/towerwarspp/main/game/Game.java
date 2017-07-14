@@ -7,7 +7,6 @@ import towerwarspp.main.WinType;
 import towerwarspp.preset.*;
 
 import java.rmi.RemoteException;
-import java.util.ArrayDeque;
 
 import static towerwarspp.preset.Status.*;
 import static towerwarspp.preset.PlayerColor.BLUE;
@@ -155,7 +154,7 @@ public class Game {
             currentMove = currentPlayer.request();
 
             /*make move on board*/
-            board.update(currentMove, currentColor);
+            board.makeMove(currentMove);
             
 
             /*if debug mode is enabled output information*/

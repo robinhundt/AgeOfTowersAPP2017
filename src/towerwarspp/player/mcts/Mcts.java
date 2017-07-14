@@ -246,7 +246,7 @@ public class Mcts implements Runnable{
                 * than return this move instantly */
                 moveRequested = false;
                 currentBestMove = root.getTerminalChild().getMove();
-                board.update(currentBestMove, board.getTurn());
+                board.makeMove(currentBestMove);
                 endTime =System.currentTimeMillis();
                 wakeUp();
             }
@@ -329,7 +329,7 @@ public class Mcts implements Runnable{
                 root = node;
                 freeAncestorMemory(root);
                 debug.send(LEVEL_2, PLAYER, "Mcts: New root " + root);
-                board.update(root.getMove(), root.getPlayer());
+                board.makeMove(root.getMove());
                 if(board.getStatus() != OK)
                     root.setTerminalTrue();
                 else
@@ -342,7 +342,7 @@ public class Mcts implements Runnable{
     private void updateRoot(Node node) {
         root = node;
         freeAncestorMemory(root);
-        board.update(root.getMove(), root.getPlayer());
+        board.makeMove(root.getMove());
         if(board.getStatus() != OK)
             root.setTerminalTrue();
         else
@@ -360,7 +360,7 @@ public class Mcts implements Runnable{
             selectedChild = selectedChild.bestUCBChild();
             debug.send(LEVEL_5, PLAYER, "Mcts: selected child " + selectedChild);
 
-            tempBoard.update(selectedChild.getMove(), selectedChild.getPlayer());
+            tempBoard.makeMove(selectedChild.getMove());
             if(tempBoard.getStatus() != OK) {
                 selectedChild.setTerminalTrue();
                 debug.send(LEVEL_5, PLAYER, "Mcts: Found terminal Node " + selectedChild);
@@ -377,7 +377,7 @@ public class Mcts implements Runnable{
             Node expNode = selectedChild.expand(tempBoard);
             if(expNode != null) {
 
-                tempBoard.update(expNode.getMove(), expNode.getPlayer());
+                tempBoard.makeMove(expNode.getMove());
 
                 if(tempBoard.getStatus() != OK) {
                     expNode.setTerminalTrue();
@@ -393,7 +393,7 @@ public class Mcts implements Runnable{
         ArrayList<Node> unexploredNodes = root.fullExpand(board);
         for(Node unexplNode : unexploredNodes) {
             Board tempBoard = board.clone();
-            tempBoard.update(unexplNode.getMove(), unexplNode.getPlayer());
+            tempBoard.makeMove(unexplNode.getMove());
             if(tempBoard.getStatus() != OK) {
                 unexplNode.setTerminalTrue();
             } else {
@@ -409,7 +409,7 @@ public class Mcts implements Runnable{
                 move = PlayStrategy.rndPlay(board);
             else
                 move = PlayStrategy.heavyPlay(board);
-            board.update(move, board.getTurn());
+            board.makeMove(move);
         }
 
         switch (board.getStatus()) {

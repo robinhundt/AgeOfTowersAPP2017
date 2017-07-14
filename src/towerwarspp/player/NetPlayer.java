@@ -14,7 +14,7 @@ import java.rmi.server.UnicastRemoteObject;
  * on a local RMI. During the  constructor call a {@link Player} object has to be passed. Calling the {@link #request()},
  * {@link #confirm(Status)}, {@link #update(Move, Status)} and {@link #init(int, PlayerColor)} methods on a NetPlayer will
  * call the equivalent methods on the NetPlayers {@link #player} instance.
- * As with sub classes of {@link BasePlayer} request() - confirm() and update() must be called in the correct order.
+ * As with sub classes of {@link BasePlayer} request() - confirm() and makeMove() must be called in the correct order.
  * @author Robin Hundt
  * @version 08-07-17
  */
@@ -74,7 +74,7 @@ public class NetPlayer extends UnicastRemoteObject implements Player {
     }
 
     /**
-     * Calling update() will invoke a {@link #player#update(Move, Status)} call.
+     * Calling makeMove() will invoke a {@link #player#update(Move, Status)} call.
      * @param opponentMove opponents move to place on own Board
      * @param boardStatus opponents board status after Move to validate against own status
      * @throws Exception is thrown if method is called in wrong order, or status is ILLEGAL or different from passed status

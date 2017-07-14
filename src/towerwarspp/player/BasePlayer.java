@@ -1,20 +1,17 @@
 package towerwarspp.player;
 
 import towerwarspp.board.Board;
-import towerwarspp.io.View;
 import towerwarspp.preset.*;
 
 import static towerwarspp.preset.Status.*;
 import static towerwarspp.preset.PlayerColor.*;
 
-import java.rmi.RemoteException;
-
 /**
  * Partial implementation of Player Interface that is used as Super-Class for specialized players (eg. Human, Random, etc.).
- * The request(), confirm(), update() and init() method are implemented and thus are the same for all subclasses. By using
+ * The request(), confirm(), makeMove() and init() method are implemented and thus are the same for all subclasses. By using
  * the enum PlayerState it is guaranteed that the methods are always called in the correct order. All players have their own Board
  * instance on which they place their own and their opponent moves. If the State of the board is ILLEGAL or does'nt match
- * with the passed States in confirm() and update() an exception is thrown.
+ * with the passed States in confirm() and makeMove() an exception is thrown.
  *
  * @author Robin Hundt
  * @version 07-07-17
@@ -26,7 +23,7 @@ abstract class BasePlayer implements Player {
      */
     protected Board board;
     /**
-     * State that represents the point in the request - confirm - update cycle of the Player
+     * State that represents the point in the request - confirm - makeMove cycle of the Player
      */
     private PlayerState state;
     /**
@@ -37,7 +34,7 @@ abstract class BasePlayer implements Player {
     /**
      * Only abstract method. Is called inside the request method. Subclasses of BasePlayer should put their logic into
      * their implementation of deliverMove(). This way it is guaranteed that all Player classes share the same
-     * request - confirm - update - init logic and their only difference is the specific Move returned by request()
+     * request - confirm - makeMove - init logic and their only difference is the specific Move returned by request()
      * depending on their type.
      * @return Move that the Player intends to make
      * @throws Exception
@@ -66,10 +63,10 @@ abstract class BasePlayer implements Player {
     @Override
     public Move request() throws Exception {
         if(state != PlayerState.REQUEST)
-            throw new Exception("Illegal PlayerState. Request can only be called after after init or update");
+            throw new Exception("Illegal PlayerState. Request can only be called after after init or makeMove");
         state = state.next();
         Move move = deliverMove();
-        board.update(move, color);
+        board.makeMove(move);
         return move;
     }
 
@@ -100,9 +97,9 @@ abstract class BasePlayer implements Player {
     @Override
     public void update(Move opponentMove, Status boardStatus) throws Exception {
         if(state != PlayerState.UPDATE)
-            throw new Exception("Illegal PlayerState. update can only be called after confirm or at first if Player is Blue");
+            throw new Exception("Illegal PlayerState. makeMove can only be called after confirm or at first if Player is Blue");
 
-        board.update(opponentMove, color == BLUE ? RED : BLUE);
+        board.makeMove(opponentMove);
 
         if(!board.getStatus().equals(boardStatus) || board.getStatus() == ILLEGAL) {
             throw new Exception("Illegal PlayerState. Confirmation unsuccessful. Illegal or non matching status of player board and passed status");

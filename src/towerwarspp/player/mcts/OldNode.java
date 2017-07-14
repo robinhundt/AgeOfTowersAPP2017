@@ -148,7 +148,7 @@ public class OldNode implements Comparable<OldNode> {
 
 //    not working like intended
 //    void feedEnemyMove(Move move) {
-//        board.update(move, enemyColor);
+//        board.makeMove(move, enemyColor);
 //        for(OldNode child : children) {
 //            try {
 //                child.feedEnemyMove(move);
