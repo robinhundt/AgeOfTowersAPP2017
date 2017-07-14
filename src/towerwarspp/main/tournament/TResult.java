@@ -144,7 +144,7 @@ public class TResult {
                 "-wins per surrender of blue:\t \t" + surrender[RED] + "\n" +
                 "-wins per illegal move of blue:\t" + illegalMove[RED] + "\n" +
                 "-wins per immobility of blue:\t \t" + noPosMoves[RED] + "\n" +
-                "-total moves: \t \t \t" + totalMoves[RED] + "\n" +
+                "-total winning moves: \t \t" + totalMoves[RED] + "\n" +
                 "-average amount of moves per win:\t" + String.format("%.1f" ,avgMoves[RED]) + "\n" +
 
                 "\n" +
@@ -154,7 +154,7 @@ public class TResult {
                 "-wins per surrender of red:\t \t" + surrender[BLUE] + "\n" +
                 "-wins per illegal move of red:\t" + illegalMove[BLUE] + "\n" +
                 "-wins per immobility of red:\t \t" + noPosMoves[BLUE] + "\n" +
-                "-total moves: \t \t \t" + totalMoves[BLUE] + "\n" +
+                "-total winning moves: \t \t" + totalMoves[BLUE] + "\n" +
                 "-average amount of moves per win:\t" + String.format("%.1f" ,avgMoves[BLUE]) + "\n" +
                 "\n-games ended with timeout: \t" + timeoutGames;
 

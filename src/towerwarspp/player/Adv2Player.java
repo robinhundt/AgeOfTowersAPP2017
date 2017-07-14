@@ -1,7 +1,5 @@
 package towerwarspp.player;
 
-import towerwarspp.board.Board;
-import towerwarspp.io.View;
 import towerwarspp.main.Debug;
 import towerwarspp.main.debug.DebugLevel;
 import towerwarspp.main.debug.DebugSource;
@@ -11,11 +9,6 @@ import towerwarspp.preset.PlayerColor;
 import towerwarspp.preset.Status;
 
 import java.util.Random;
-import java.util.Vector;
-
-import static towerwarspp.preset.PlayerColor.BLUE;
-import static towerwarspp.preset.PlayerColor.RED;
-import static towerwarspp.preset.Status.OK;
 
 /**
  * Created by robin on 23.06.17.
@@ -55,7 +48,7 @@ public class Adv2Player extends BasePlayer {
     @Override
     public void init(int boardSize, PlayerColor playerColor) {
         super.init(boardSize, playerColor);
-        mcts.setInit(board.clone(), playerColor);
+        mcts.setInit(board.clone());
         if(!ai.isAlive())
             ai.start();
     }

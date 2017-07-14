@@ -18,9 +18,7 @@ import java.util.Random;
  */
 
 public class Node {
-    private static double BIAS = 0.4;
     private static Debug debug;
-
     private static Random random = new Random();
     private Move move;
     private PlayerColor player;
@@ -51,7 +49,7 @@ public class Node {
         }
     }
 
-    Node(Move move, Node parent) {
+    private Node(Move move, Node parent) {
         debug = Debug.getInstance();
         this.move = move;
         this.parent = parent;
@@ -60,7 +58,7 @@ public class Node {
         this.children = new ArrayList<>();
     }
 
-    Node expand(Board board) {
+    synchronized Node expand(Board board) {
         if(expanded)
             throw new IllegalStateException("Node already expanded.");
         if(terminal)
@@ -111,14 +109,14 @@ public class Node {
         return unexploredChildren;
     }
 
-    Node bestChild() {
+    Node bestUCBChild() {
         if(!expanded)
-            throw new IllegalStateException("bestChild can only be called on expanded Nodes");
+            throw new IllegalStateException("bestUCBChild can only be called on expanded Nodes");
 
         Node bestChild = null;
         double highestBound = Double.MIN_VALUE;
         for(Node child : children) {
-            double bound = child.upperConfBound(BIAS);
+            double bound = child.upperConfBound(Mcts.BIAS);
             debug.send(LEVEL_7, PLAYER, "Node: UCB of " + child + " : " + bound);
             if(Double.isNaN(bound))
                 bound = Double.POSITIVE_INFINITY;
@@ -130,6 +128,7 @@ public class Node {
         }
         return bestChild;
     }
+
 
     Node maxChild() {
         Node maxChild = null;

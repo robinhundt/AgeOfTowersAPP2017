@@ -109,6 +109,8 @@ public class AgeOfTowers {
             if(ap.isSet("output")) {
                 setUpIO(ap.getOutputType());
             } else {
+                System.out.println("Starting game in standard graphic output mode. If text or no output is wished" +
+                        " set -output {text, none}. Flag --graphic is deprecated and has no use.");
                 setUpIO(DEF_OUTPUT);
             }
 

@@ -723,7 +723,7 @@ public class SimpleBoard implements Viewable {
 	}*/
 	/**
 	* Returns true if at least one of the entities returned by the iterator in the argument can be moved.
-	* @param it iterator over a list of Entities (listRed or listBlue) for which the move possibility has to be proved.
+	* @param list iterator over a list of Entities (listRed or listBlue) for which the move possibility has to be proved.
 	* @return true if at least one of the entities returned by the iterator it can be moved.
 	*/
 	private boolean hasMoves (Vector<Entity> list) {

@@ -25,7 +25,7 @@ public class Debug {
      debugMessages = new StringBuffer();
     }
 
-    public static Debug getInstance() {
+    public synchronized static Debug getInstance() {
         if(debug == null) {
             debug = new Debug();
             return debug;
@@ -44,7 +44,8 @@ public class Debug {
         }
     }
 
-    public String getDebugOutput() {
+
+    String getDebugOutput() {
         String debug = "";
         if(debugMessages.length() > 1) {
             debug =  debugMessages.deleteCharAt(debugMessages.length()-1).toString();

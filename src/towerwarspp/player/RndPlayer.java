@@ -1,11 +1,7 @@
 package towerwarspp.player;
 
-import towerwarspp.io.View;
+import towerwarspp.board.Board;
 import towerwarspp.preset.Move;
-import towerwarspp.preset.Status;
-
-import java.util.Random;
-import java.util.Vector;
 
 /**
  * Class that implements a Random Player. Is a subclass of {@link BasePlayer}. The only difference is the implementation of
@@ -15,27 +11,14 @@ import java.util.Vector;
  */
 public class RndPlayer extends BasePlayer {
     /**
-     * Random instance that is used to generate pseudo-random Integers that are used to pick a random move from all
-     * possible moves for ths player.
-     */
-    private Random rnd;
-
-    /**
-     * Construct a new Random Player. For the initialization of the {@link #rnd} object no seed is used, which causes
-     * per specification the seed to be set "a value very likely to be distinct from any other invocation of this constructor."
-     */
-    public RndPlayer() {
-        rnd = new Random();
-    }
-
-    /**
-     * Implementation of the {@link BasePlayer#deliverMove()} method. Randomly selects one move from all the possible
-     * moves that are available for this player {@link #color} and returns it.
-     * @return randomly selected move out of all possible moves.
+     * Implementation of the {@link BasePlayer#deliverMove()} method. Uses the method {@link PlayStrategy#rndPlay(Board)}
+     * to get a random from all the possible moves of this player at the current game state. The PlayerColor does not
+     * need to  be passed, because the board itself knows whose turn it is and this method should only be called if it's
+     * also this players turn.
+     * @return randomly selected move out of all possible moves for this player
      */
     @Override
     Move deliverMove() {
-        Vector<Move> moves = board.allPossibleMoves(color);
-        return moves.get(rnd.nextInt(moves.size()));
+        return PlayStrategy.rndPlay(board);
     }
 }
