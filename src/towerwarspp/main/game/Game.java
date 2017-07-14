@@ -246,8 +246,6 @@ public class Game {
         if (moveCounter == timeOut) {
             return new Result(moveCounter, WinType.TIMEOUT);
         }
-
-        Save loadtest;
         /*create result object with playercolor, number of moves and type of win*/
         if (board.getStatus() == RED_WIN) {
             return new Result(RED, winnerMoves(moveCounter), board.getWinType());

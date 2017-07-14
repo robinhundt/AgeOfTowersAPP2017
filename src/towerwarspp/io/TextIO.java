@@ -58,6 +58,15 @@ public class TextIO implements IO {
      */
     private Debug debugInstance;
     /**
+     * name of the Save-game
+     */
+    private String saveGameName;
+
+    /**
+     * shows, if the user wants to save the game
+     */
+    private boolean save = false;
+    /**
      * Constructor to Initialize the TextIO
      */
     public TextIO() {
@@ -206,6 +215,13 @@ public class TextIO implements IO {
                 this.debugInstance.send(DebugLevel.LEVEL_3, DebugSource.IO, "Move illegal. (" + nextMove + ")");
                 return new Move(new Position(1, 1), new Position(1, 1));
             }
+
+            else if (nextMove.equals("save")) {
+                System.out.println("Please name your Savefile");
+                String saveGameName = this.scanner.nextLine();
+                save = true;
+                return null;
+            }
         }
         /*if no line was found*/
         catch (NoSuchElementException e) {
@@ -225,5 +241,15 @@ public class TextIO implements IO {
         /*if everything went right, return the parsed move*/
         this.debugInstance.send(DebugLevel.LEVEL_3, DebugSource.IO, "Returned move.");
         return move;
+    }
+    
+    @Override
+    public String getSaveGameName() {
+        return saveGameName;
+    }
+
+    @Override
+    public boolean getSave() {
+        return save;
     }
 }
