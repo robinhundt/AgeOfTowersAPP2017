@@ -218,7 +218,8 @@ public class TextIO implements IO {
 
             else if (nextMove.equals("save")) {
                 System.out.println("Please name your Savefile");
-                String saveGameName = this.scanner.nextLine();
+                saveGameName = this.scanner.nextLine();
+                System.out.println(saveGameName);
                 save = true;
                 return null;
             }

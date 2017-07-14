@@ -186,7 +186,7 @@ public class Game {
             System.out.println(debugMsg);
         /*set redPlayer as first player, red as first color, and counter of move*/
         Player currentPlayer = turn == RED ? redPlayer : bluePlayer;
-        PlayerColor currentColor = RED;
+        PlayerColor currentColor = turn;
         Move currentMove;
         int moveCounter = 0;
         
@@ -217,6 +217,9 @@ public class Game {
             if (debug && currentMove != null && hasView) {
                 view.display(currentColor + "'move :" + currentMove);
                 view.display("Status: " + board.getStatus());
+            }
+            if(currentMove == null && view.getSave() == true) {
+                saveGame.export(view.getSaveGameName());
             }
             saveGame.add(currentMove);
             /*check if boardstatus of player is equal to own boardstatus*/

@@ -110,8 +110,10 @@ public class Save implements Iterable<Move> {
      * @param move the move to be added
      */
     public void add(Move move) {
-        moveHistory.add(move);
-        historySize++;
+        if(move != null) {
+            moveHistory.add(move);
+            historySize++;
+        }        
     }
 
     /**
