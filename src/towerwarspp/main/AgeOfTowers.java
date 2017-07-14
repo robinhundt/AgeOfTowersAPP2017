@@ -6,8 +6,7 @@ import towerwarspp.io.IO;
 import towerwarspp.io.TextIO;
 import towerwarspp.io.View;
 import towerwarspp.main.debug.DebugLevel;
-import towerwarspp.main.game.Game;
-import towerwarspp.main.game.Result;
+import towerwarspp.main.game.*;
 import towerwarspp.main.tournament.TResult;
 import towerwarspp.main.tournament.Tournament;
 import towerwarspp.network.Remote;
@@ -18,6 +17,8 @@ import static towerwarspp.main.debug.DebugLevel.*;
 import static towerwarspp.main.debug.DebugSource.MAIN;
 
 import javax.swing.*;
+import javax.xml.crypto.dsig.spec.ExcC14NParameterSpec;
+
 import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
@@ -66,6 +67,11 @@ public class AgeOfTowers {
      * final integer BLUE with {@value}
      */
     private final int BLUE = 1;
+
+    /**
+     * saveObject for save
+     */
+    private Save save;
 
 
 
@@ -117,13 +123,21 @@ public class AgeOfTowers {
             /*check which way of game needs to be started: network (hosting or offering) or local*/
             if(ap.isSet("offer")) {
                 findRemotePlay();
-            } else if(ap.isSet("blue") && ap.isSet("red") && ap.isSet("size")) {
-                /*check if board size is valid*/
-                if(ap.getSize() >= 4 && ap.getSize() <= 26) {
-                    initBoard(ap.getSize());
+            } else if(ap.isSet("blue") && ap.isSet("red") && (ap.isSet("size") || ap.isSet("load"))) {
+                if(ap.isSet("load")) {
+                    try {
+                        save = Save.load(ap.getLoadName());
+                    } catch(Exception e) {
+                        System.out.println("Loading Failed");
+                    }
                 } else {
-                    System.out.println("-size of Board must be between 4 and 26");
-                    System.exit(1);
+                    /*check if board size is valid*/
+                    if(ap.getSize() >= 4 && ap.getSize() <= 26) {
+                        initBoard(ap.getSize());
+                    } else {
+                        System.out.println("-size of Board must be between 4 and 26");
+                        System.exit(1);
+                    }
                 }
                 /*create players with given PlayerTypes*/
                 Player[] players = createPlayers();
@@ -292,9 +306,15 @@ public class AgeOfTowers {
     private void startGame(Player redPlayer, Player bluePlayer) {
         Result result = null;
         try {
-            Game game = new Game(redPlayer, bluePlayer, ap.getSize(), io, ap.isDebug(),
-                    ap.isSet("delay") ? ap.getDelay() : 0);
-            result = game.play(ap.isSet("timeout") ? ap.getTimeOut() : 0);
+            if(ap.isSet("load")) {
+                Game game = new Game(redPlayer, bluePlayer, io, ap.isDebug(), 
+                ap.isSet("delay") ? ap.getDelay() : 0, save);
+                result = game.play(ap.isSet("timeout") ? ap.getTimeOut() : 0, game.turn());
+            } else {
+                Game game = new Game(redPlayer, bluePlayer, ap.getSize(), io, ap.isDebug(), 
+                ap.isSet("delay") ? ap.getDelay() : 0);
+                result = game.play(ap.isSet("timeout") ? ap.getTimeOut() : 0, game.turn());
+            }
 
         } catch (Exception e) {
             e.printStackTrace();

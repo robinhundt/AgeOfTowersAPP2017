@@ -361,4 +361,8 @@ public class ArgumentParser {
         return parseDebugSource((String) getSetting("dsource"));
     }
 
+    public String getLoadName() throws ArgumentParserException {
+        return (String)getSetting("load");
+    }
+
 }

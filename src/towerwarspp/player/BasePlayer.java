@@ -16,7 +16,7 @@ import static towerwarspp.preset.PlayerColor.*;
  * @author Robin Hundt
  * @version 07-07-17
  */
-abstract class BasePlayer implements Player {
+public abstract class BasePlayer implements Player {
     /**
      * Board instance on which the player places all his own and opponent moves. Is used to guarantee
      * that no moves are played that are considered Illegal by ones own Board implementation (necessary for remote play)
@@ -52,6 +52,17 @@ abstract class BasePlayer implements Player {
     Viewer getViewer() {
         return board.viewer();
     }
+
+    /**
+     * sets the {@link Board} of the Player to given Board and updates the {@link PlayerState}.
+     * used for loading and replaying games
+     * @param board the new board
+     */
+    public void setBoard(Board board) {
+        this.board = board;
+        this.state = board.getTurn() == color ? PlayerState.REQUEST : PlayerState.UPDATE;
+    }
+
 
     /**
      * Request method as specified in the {@link Player} Interface. Can only be called after {@link #init(int, PlayerColor)} or
@@ -126,5 +137,4 @@ abstract class BasePlayer implements Player {
         else if(color == BLUE)
             state = PlayerState.UPDATE;
     }
-
 }

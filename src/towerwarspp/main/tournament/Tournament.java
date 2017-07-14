@@ -3,7 +3,7 @@ package towerwarspp.main.tournament;
 import towerwarspp.io.View;
 import towerwarspp.main.game.Game;
 import towerwarspp.main.game.Result;
-import towerwarspp.preset.Player;
+import towerwarspp.preset.*;
 
 /**
  * Class {@link Tournament} to start a given number of {@link Game}s
@@ -95,7 +95,7 @@ public class Tournament {
             /*start game, output result of this game and include result in the statistic about this tournament*/
             try {
                 /*start game and store result*/
-                Result result = game.play(timeOut);
+                Result result = game.play(timeOut, PlayerColor.RED);
                 /*include result in statistic*/
                 tResult.addResult(result);
                 if(hasView) {

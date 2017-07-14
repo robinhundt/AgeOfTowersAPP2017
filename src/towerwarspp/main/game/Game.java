@@ -5,6 +5,7 @@ import towerwarspp.io.View;
 import towerwarspp.main.Debug;
 import towerwarspp.main.WinType;
 import towerwarspp.preset.*;
+import towerwarspp.player.*;
 
 import java.rmi.RemoteException;
 
@@ -115,6 +116,61 @@ public class Game {
             System.out.println(debugMsg);
     }
 
+    /**
+     * Constructor for loading games from an .aot-Save-File
+     * @param redPlayer {@link Player} with {@link PlayerColor} RED
+     * @param bluePlayer {@link Player} with {@link PlayerColor} BLUE
+     * @param view {@link View} object providing possibility for visualization
+     * @param debug integer debug activating debug mode if true
+     * @param delayTime time to wait after every turn (in millisecond)
+     * @param saveGame Save-Object from Save-File
+     */
+    public Game (Player redPlayer, Player bluePlayer, View view, boolean debug, int delayTime, Save saveGame) {
+        debugMsg = Debug.getInstance();
+        /*if one of the players is null*/
+        if (redPlayer == null || bluePlayer == null) {
+            throw new IllegalArgumentException("Player cannot be null!");
+        }
+        /*set players , debug-mode, delay time and viewer*/
+        this.redPlayer = redPlayer;
+        this.bluePlayer = bluePlayer;
+        this.debug = debug;
+        this.delayTime = delayTime;
+        this.view = view;
+        this.saveGame = saveGame;
+        this.boardSize = saveGame.getSize();
+        
+
+        if(debug)
+            System.out.println(debugMsg);
+
+        /*create new board and include viewer object in view*/
+        board = new Board(boardSize);
+        if(view != null) {
+            view.setViewer(board.viewer());
+            hasView = true;
+        }
+
+        if(debug)
+            System.out.println(debugMsg);
+
+        /*try to initialized players*/
+        try {
+            this.redPlayer.init(board.getSize(), RED);
+            this.bluePlayer.init(board.getSize(), BLUE);
+        }
+        catch (Exception e) {
+            e.printStackTrace();
+            System.exit(1);
+        }
+
+        if(debug)
+            System.out.println(debugMsg);
+        replay(saveGame);
+        ((BasePlayer)redPlayer).setBoard(board.clone());
+        ((BasePlayer)bluePlayer).setBoard(board.clone());
+    }
+
 
     /**
      * Method play to start the {@link Game}, means requesting {@link Move}s from {@link Player}s, updating the {@link Board}
@@ -125,11 +181,11 @@ public class Game {
      * @throws RemoteException if an error occurs with the connection in a network game
      * @throws Exception if an error occurs in the {@link Board} or {@link View} object
      */
-    public Result play(int timeOut) throws Exception {
+    public Result play(int timeOut, PlayerColor turn) throws Exception {
         if(debug)
             System.out.println(debugMsg);
         /*set redPlayer as first player, red as first color, and counter of move*/
-        Player currentPlayer = redPlayer;
+        Player currentPlayer = turn == RED ? redPlayer : bluePlayer;
         PlayerColor currentColor = RED;
         Move currentMove;
         int moveCounter = 0;
@@ -213,5 +269,22 @@ public class Game {
      */
     private int winnerMoves(int combinedMoveCounter) {
         return (int) (Math.ceil((double) combinedMoveCounter/2.0));
+    }
+
+    /**
+     * This Method uses the {@link Save} to replay a game
+     * @param save the Saveobject to be replayed
+     */
+    private void replay(Save save) {
+        for(int i = 0; i < save.getHistorySize(); i++) {
+            Status stat = board.makeMove(save.getNextMove());
+        }
+    }
+
+    /**
+     * returns the the playercolor of the player, who has to play now
+     */
+    public PlayerColor turn () {
+        return board.getTurn();
     }
 }
