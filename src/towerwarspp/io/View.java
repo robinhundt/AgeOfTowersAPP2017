@@ -38,4 +38,14 @@ public interface View {
      * @param string information which should be displayed on that Dialog.
      */
     void dialog(String string);
+    /**
+     * Is Save Button clicked
+     * @return true if the Save Button is clicked
+     */
+    boolean getSave();
+    /**
+     * Get the String which the user has chosen for the Filename
+     * @return the Filename
+     */
+    String getSaveGameName();
 }
