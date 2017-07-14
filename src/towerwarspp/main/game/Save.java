@@ -2,10 +2,12 @@ package towerwarspp.main.game;
 
 
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.FileReader;
 import java.io.PrintWriter;
 import java.util.ArrayDeque;
 import java.io.IOException;
+import java.util.regex.*;
 
 import towerwarspp.main.game.LoadParserException;
 import towerwarspp.preset.*;
@@ -32,6 +34,18 @@ public class Save {
      * variables for the PlayerColor
      */
     private static final boolean RED = true, BLUE = false;
+
+    /**
+     * the pattern for one move as string. used for parsing moves from savefile
+     */
+    private static final Pattern movePattern = 
+    Pattern.compile("[A-Z]([1-9]|1[0-9]|2[0-6])->[A-Z]([1-9]|1[0-9]|2[0-6])");
+
+    /**
+     * path to the Folder of the Savegames
+     */
+    private static final String savePath = System.getProperty("user.home") +
+    File.separator + "AOT_Saves" + File.separator;
 
     /**
      * Constructor for Save-Object
@@ -62,7 +76,9 @@ public class Save {
      */
     public void export(String dateName) {
         try{
-            PrintWriter writer = new PrintWriter(dateName + ".aot", "UTF-8");
+            File dir = new File(savePath);
+            dir.mkdir();
+            PrintWriter writer = new PrintWriter(savePath + dateName + ".aot", "UTF-8");
             writer.println(size);
             boolean currentPlayer = RED;
             for(Move i : moveHistory) {
@@ -81,29 +97,26 @@ public class Save {
      * @param file the name of the file to be loaded
      * @return the parsed Save-Object
      */
-    public Save load(String file) {
-        try (BufferedReader br = new BufferedReader(new FileReader(file))){
-            Save a = new Save(Integer.parseInt(br.readLine()));
-            String line = br.readLine();
-            while(line != null) {
-                a.add(parseLoad(line));    
-                line = br.readLine();            
-            }
-            return a; 
-        } catch (Exception e) {
-            System.out.println("Loading Failed");
+    public static Save load(String file) throws Exception {
+        BufferedReader br = new BufferedReader(new FileReader(savePath + file));
+        Save a = new Save(Integer.parseInt(br.readLine()));
+        String line = br.readLine();
+        while(line != null) {
+            a.add(parseLoad(line));    
+            line = br.readLine();            
         }
-        return null;
+        return a;
     }
 
     /**
      * parses a line of the savefile into a move-object
      */
 
-    private Move parseLoad(String str) throws LoadParserException {
+    private static Move parseLoad(String str) throws LoadParserException  {
         try {
-            String[] parse = str.split(",");
-            return Move.parseMove(parse[0]);
+            Matcher m = movePattern.matcher(str);
+            m.find();
+            return Move.parseMove(m.group(0));
         } catch (Exception e){
             throw new LoadParserException("illegal Savefile!");
         } 
