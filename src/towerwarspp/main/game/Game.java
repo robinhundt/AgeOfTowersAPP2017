@@ -163,9 +163,9 @@ public class Game {
             e.printStackTrace();
             System.exit(1);
         }
-
         if(debug)
             System.out.print(debugMsg);
+        //replays the savegame and sets the board of the players
         replay(saveGame);
         ((BasePlayer)redPlayer).setBoard(board.clone());
         ((BasePlayer)bluePlayer).setBoard(board.clone());
@@ -277,8 +277,8 @@ public class Game {
      * @param save the Saveobject to be replayed
      */
     private void replay(Save save) {
-        for(int i = 0; i < save.getHistorySize(); i++) {
-            Status stat = board.makeMove(save.getNextMove());
+        for(Move i : saveGame) {
+            Status stat = board.makeMove(i);
         }
     }
 

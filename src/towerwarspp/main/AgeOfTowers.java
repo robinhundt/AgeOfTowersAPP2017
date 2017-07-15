@@ -1,29 +1,29 @@
 package towerwarspp.main;
 
+import static towerwarspp.main.debug.DebugLevel.*;
+import static towerwarspp.main.debug.DebugSource.MAIN;
+
 import towerwarspp.board.Board;
 import towerwarspp.io.GraphicIO;
 import towerwarspp.io.IO;
 import towerwarspp.io.TextIO;
 import towerwarspp.io.View;
+import javax.swing.*;
+import javax.xml.crypto.dsig.spec.ExcC14NParameterSpec;
+import java.awt.*;
+
 import towerwarspp.main.debug.DebugLevel;
 import towerwarspp.main.game.*;
-import towerwarspp.main.tournament.TResult;
-import towerwarspp.main.tournament.Tournament;
+import towerwarspp.main.tournament.*;
 import towerwarspp.network.Remote;
 import towerwarspp.player.*;
 import towerwarspp.player.mcts.Mcts;
 import towerwarspp.player.mcts.TreeSelectionStrategy;
 import towerwarspp.preset.*;
 
-import static towerwarspp.main.debug.DebugLevel.*;
-import static towerwarspp.main.debug.DebugSource.MAIN;
 
-import javax.swing.*;
-import javax.xml.crypto.dsig.spec.ExcC14NParameterSpec;
 
-import java.awt.*;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
+
 
 /**
  * Class AgeOfTower - main class to start a new game of TowerWarsPP.

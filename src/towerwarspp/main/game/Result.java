@@ -27,9 +27,6 @@ public class Result {
         this.winType = winType;
     }
 
-    /**
-     *
-     */
     Result(int moves, WinType winType) {
         this.winner = null;
         this.winnerMoves = moves;

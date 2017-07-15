@@ -72,7 +72,7 @@ public class TResult {
     /**
      * Constructor declaring the array and variables
      */
-    TResult() {
+    public TResult() {
         wins = new int[2];
         baseDestroyed = new int[2];
         noPosMoves = new int[2];
@@ -86,36 +86,72 @@ public class TResult {
         return Arrays.copyOf(wins, wins.length);
     }
 
+    public void setWins(int[] wins) {
+        this.wins = wins;
+    }
+
     public int[] getBaseDestroyed() {
         return Arrays.copyOf(baseDestroyed, baseDestroyed.length);
+    }
+
+    public void setBaseDestroyed(int[] baseDestroyed) {
+        this.baseDestroyed = baseDestroyed;
     }
 
     public int[] getNoPosMoves() {
         return Arrays.copyOf(noPosMoves, noPosMoves.length);
     }
 
+    public void setNoPosMoves(int[] noPosMoves) {
+        this.noPosMoves = noPosMoves;
+    }
+
     public int[] getIllegalMove() {
         return Arrays.copyOf(illegalMove, illegalMove.length);
+    }
+
+    public void setIllegalMove(int[] illegalMove) {
+        this.illegalMove = illegalMove;
     }
 
     public int[] getSurrender() {
         return Arrays.copyOf(surrender, surrender.length);
     }
 
+    public void setSurrender(int[] surrender) {
+        this.surrender = surrender;
+    }
+
     public double[] getAvgMoves() {
         return Arrays.copyOf(avgMoves, avgMoves.length);
+    }
+
+    public void setAvgMoves(double[] avgMoves) {
+        this.avgMoves = avgMoves;
     }
 
     public int[] getTotalMoves() {
         return Arrays.copyOf(totalMoves, totalMoves.length);
     }
 
+    public void setTotalMoves(int[] totalMoves) {
+        this.totalMoves = totalMoves;
+    }
+
     public int getTimeoutGames() {
         return timeoutGames;
     }
 
+    public void setTimeoutGames(int timeoutGames) {
+        this.timeoutGames = timeoutGames;
+    }
+
     public int getTotalGames() {
         return totalGames;
+    }
+
+    public void setTotalGames (int totalGames) {
+        this.totalGames = totalGames;
     }
 
     /**
