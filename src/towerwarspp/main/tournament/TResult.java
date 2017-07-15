@@ -4,6 +4,8 @@ import towerwarspp.main.game.Result;
 import towerwarspp.main.WinType;
 import towerwarspp.preset.PlayerColor;
 
+import java.util.Arrays;
+
 
 /**
  * Class TResult to provide a statistic about a {@link Tournament}.
@@ -78,6 +80,42 @@ public class TResult {
         surrender = new int[2];
         avgMoves = new double[2];
         totalMoves = new int[2];
+    }
+
+    public int[] getWins() {
+        return Arrays.copyOf(wins, wins.length);
+    }
+
+    public int[] getBaseDestroyed() {
+        return Arrays.copyOf(baseDestroyed, baseDestroyed.length);
+    }
+
+    public int[] getNoPosMoves() {
+        return Arrays.copyOf(noPosMoves, noPosMoves.length);
+    }
+
+    public int[] getIllegalMove() {
+        return Arrays.copyOf(illegalMove, illegalMove.length);
+    }
+
+    public int[] getSurrender() {
+        return Arrays.copyOf(surrender, surrender.length);
+    }
+
+    public double[] getAvgMoves() {
+        return Arrays.copyOf(avgMoves, avgMoves.length);
+    }
+
+    public int[] getTotalMoves() {
+        return Arrays.copyOf(totalMoves, totalMoves.length);
+    }
+
+    public int getTimeoutGames() {
+        return timeoutGames;
+    }
+
+    public int getTotalGames() {
+        return totalGames;
     }
 
     /**
