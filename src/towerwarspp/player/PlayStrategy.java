@@ -11,7 +11,8 @@ import java.util.Vector;
  */
 public enum PlayStrategy {
     LIGHT,
-    HEAVY;
+    HEAVY,
+    DYNAMIC;
 
     private static Random random = new Random();
 

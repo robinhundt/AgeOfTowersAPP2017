@@ -24,6 +24,10 @@ import towerwarspp.preset.PlayerColor;
 
 public class Node {
     /**
+     * Bias that is used as a constant in the calculation of the UCB1 in formulae during {@link Node#bestUCBChild()}.
+     */
+    private static double bias;
+    /**
      * {@link Debug} instance that is used to send Debug messages.
      */
     private static Debug debug;
@@ -84,10 +88,11 @@ public class Node {
      * of the root with all possible  next game states.
      * @param board board with initial state to build up tree from
      */
-    Node(Board board) {
+    Node(Board board, double bias) {
         debug = Debug.getInstance();
         this.player = board.getTurn() == RED ? BLUE : RED;
         this.enemy = player == RED ? BLUE : RED;
+        this.bias = bias;
 
         children = new ArrayList<>();
 
@@ -325,7 +330,7 @@ public class Node {
         Node bestChild = null;
         double highestBound = Double.MIN_VALUE;
         for(Node child : children) {
-            double bound = child.upperConfBound(Mcts.BIAS);
+            double bound = child.upperConfBound(bias);
             if(debug.isCollecting())
                 debug.send(LEVEL_7, PLAYER, "Node: UCB of " + child + " : " + bound);
             if(Double.isNaN(bound))
@@ -344,7 +349,7 @@ public class Node {
             throw new IllegalStateException("bestUCBChild can only be called on expanded Nodes");
         ArrayList<ScoredNode> scoredNodes = new ArrayList<>(children.size());
         for(Node node : children) {
-            scoredNodes.add(new ScoredNode(node, node.upperConfBound(Mcts.BIAS)));
+            scoredNodes.add(new ScoredNode(node, node.upperConfBound(bias)));
         }
         Collections.sort(scoredNodes);
         return scoredNodes.get(scoredNodes.size()  - nthHighest).node;

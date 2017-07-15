@@ -60,9 +60,13 @@ import towerwarspp.preset.PlayerColor;
  */
 public class Mcts implements Runnable{
     /**
+     * Default Bias that is used as a constant in the calculation of the UCB1 in formulae during {@link Node#bestUCBChild()}.
+     */
+    public static final double DEF_BIAS = 2;
+    /**
      * Bias that is used as a constant in the calculation of the UCB1 in formulae during {@link Node#bestUCBChild()}.
      */
-    static double BIAS = 2;
+    double bias = DEF_BIAS;
     /**
      * The default score that is backpropagated through the tree at the end of a simulation or when a terminal node is
      * reached.
@@ -95,7 +99,7 @@ public class Mcts implements Runnable{
      */
     private Board board;
     /**
-     * This variable can be set from outside this Thread. If {@link #initFlag} is also set to true, the main loop in
+     * This variable can be set from outside this Thread. If a {@link Task#INIT} is at the front of the queue, the main loop in
      * {@link #run()} will register the change and reinitialize the tree.
      */
     private Board newBoard;
@@ -113,23 +117,6 @@ public class Mcts implements Runnable{
      * took to decide on his last move.
      */
     private boolean fairPlay;
-    /**
-     * Flag that is set to true when {@link #getMove()} is called.
-     */
-    private boolean moveRequested;
-    /**
-     * Flag that is set to true when {@link #feedEnemyMove(Move)} is called.
-     */
-    private boolean moveReceived;
-    /**
-     * If set to true, the algorithm will change to a {@link PlayStrategy#LIGHT} once the executed moves reach a certain
-     * weight threshold (currently at 0.95).
-     */
-    private boolean dynamicPlayoutStrategy = true;
-    /**
-     * Flag that is set to true when {@link #setInit(Board)} is called.
-     */
-    private boolean initFlag;
     /**
      * The time the algorithm will spend expanding the tree once {@link #getMove()} has been called.
      */
@@ -186,11 +173,13 @@ public class Mcts implements Runnable{
      *                 as the enemy took for his last move, the passed timPerMove will only be considered at his first move
      *                 if the player is red.
      */
-    public Mcts(long timePerMove, int parallelizationFactor, PlayStrategy playStrategy, TreeSelectionStrategy treeSelectionStrategy, boolean fairPlay) {
+    public Mcts(long timePerMove, int parallelizationFactor, PlayStrategy playStrategy, TreeSelectionStrategy treeSelectionStrategy,
+                boolean fairPlay, double bias) {
         this(timePerMove, parallelizationFactor);
         this.playStrategy = playStrategy;
         this.treeSelectionStrategy = treeSelectionStrategy;
         this.fairPlay = fairPlay;
+        this.bias = bias;
     }
 
 
@@ -230,7 +219,7 @@ public class Mcts implements Runnable{
 
     /**
      * This method is always called fro outside this Thread. It will set {@link #startTime} to the current System time.
-     * Then set {@link #moveRequested} to true and set the callers Thread to wait(). If the Thread is woke up, it
+     * Then add a {@link Task#MOVE_REQUESTED} to the queue and set the callers Thread to wait(). If the Thread is woke up, it
      * will return the Move currently store in {@link #currentBestMove}.
      * @return
      */
@@ -247,7 +236,7 @@ public class Mcts implements Runnable{
 
     /**
      * Method is called from other Thread.
-     * Sets the {@link #newBoard} variable to the passed Board and set {@link #initFlag} to true to signal Thread containing
+     * Sets the {@link #newBoard} variable to the passed Board and add a {@link Task#INIT} to the queue to signal Thread containing
      * the {@link #run()} method that a new board is available and a new tree should be constructed.
      * @param board that will be used as new initial game state
      */
@@ -259,7 +248,7 @@ public class Mcts implements Runnable{
     /**
      * Use to update the state of the tree after the enemy has made a move.
      * If {@link #fairPlay} is set to true, {@link #timePerMove} is set to the time the enemy spend deciding on his move.
-     * {@link #enemyMove} is set to the passed Move and {@link #moveReceived} is set to true, to notify the algorithm
+     * {@link #enemyMove} is set to the passed Move and a {@link Task#MOVE_RECEIVED} is added to the queue, to notify the algorithm
      * Thread that the enemy has made a move.
      * @param move that the enemy made.
      */
@@ -273,7 +262,12 @@ public class Mcts implements Runnable{
 
     /**
      * Main loop of the Monte Carlo tree search. As long as the Game is running the run method is executed.
-     * Each iteration it is checked if any of the {@link #initFlag}, {@link #moveRequested} or {@link #moveReceived} is set
+     * Each iteration it is checked if the {@link #tasks} queue contains any submitted {@link Task}'s, if  that is the case
+     * {@link #peekTask()} is called to get the task at the front of the queue. In the case of {@link Task#INIT} and
+     * {@link Task#MOVE_RECEIVED} the tasks will be executed by calling the necessary functions and the completed task
+     * is deleted from the queue by calling {@link #removeTask()}. If the Task at the front of the queue is
+     * {@link Task#MOVE_REQUESTED} it will be ignored as long the algorithm {@link #timePerMove} hasn't run out or
+     * the root of the tree has a terminal
      * causing the board and tree to be reinitialized, a best Move to be chosen or the root to be reset respectively.
      *
      * If none of the flags is set and the board status is OK {@link #parallelizationFactor} many {@link UpdateTree}
@@ -323,31 +317,6 @@ public class Mcts implements Runnable{
                         break;
                 }
             }
-
-
-//            if(initFlag) {
-//                init();
-//            } else if(!initFlag && moveReceived) {
-//                moveReceived = false;
-//                updateRoot(enemyMove);
-//            } else if(!initFlag && moveRequested && System.currentTimeMillis() > startTime + timePerMove) {
-//                moveRequested = false;
-//                currentBestMove = bestMove();
-//                debug.send(LEVEL_2, PLAYER, "Decided on move " + currentBestMove + " in "
-//                        + (System.currentTimeMillis() - startTime) + " ms.");
-//                endTime = System.currentTimeMillis();
-//                /* wake up the Thread that requested the Move*/
-//                wakeUp();
-//            } else if(!initFlag && moveRequested && root.hasTerminalChild()) {
-//                /* if a move has been requested and one of the child nodes of the root will lead to direct victory
-//                * than return this move instantly and wake up the Thread that requested the move*/
-//                moveRequested = false;
-//                currentBestMove = root.getTerminalChild().getMove();
-//                board.makeMove(currentBestMove);
-//                endTime = System.currentTimeMillis();
-//                wakeUp();
-//            }
-
 
             if(board.getStatus() == OK) {
                 /* ExecutorService is used to compute iterations of the selecet - expand - simulate - backpropagate
@@ -411,7 +380,7 @@ public class Mcts implements Runnable{
         return tasks.poll();
     }
 
-    synchronized private Task peekTask() {
+    private Task peekTask() {
         return tasks.peek();
     }
 
@@ -424,12 +393,11 @@ public class Mcts implements Runnable{
      */
     private void init() {
         board = newBoard;
-        root = new Node(board);
-        if(dynamicPlayoutStrategy)
+        root = new Node(board, bias);
+        if(playStrategy == PlayStrategy.DYNAMIC)
             playStrategy = PlayStrategy.HEAVY;
         rootPlayout();
         debug.send(LEVEL_1, PLAYER, "Mcts: Initialized adv2 player and expanded root.");
-        initFlag = false;
     }
 
     /**
@@ -446,7 +414,7 @@ public class Mcts implements Runnable{
      * @param weight
      */
     private void checkPlayoutStrategy(double weight) {
-        if(dynamicPlayoutStrategy) {
+        if(playStrategy == PlayStrategy.DYNAMIC) {
             if(weight > 0.98) {
                 playStrategy = PlayStrategy.LIGHT;
             } else {

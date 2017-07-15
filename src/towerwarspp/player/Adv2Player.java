@@ -4,6 +4,7 @@ import towerwarspp.main.Debug;
 import towerwarspp.main.debug.DebugLevel;
 import towerwarspp.main.debug.DebugSource;
 import towerwarspp.player.mcts.Mcts;
+import towerwarspp.player.mcts.TreeSelectionStrategy;
 import towerwarspp.preset.Move;
 import towerwarspp.preset.PlayerColor;
 import towerwarspp.preset.Status;
@@ -12,15 +13,18 @@ import towerwarspp.preset.Status;
  * Created by robin on 23.06.17.
  */
 public class Adv2Player extends BasePlayer {
+    public static final int DEF_PARALLELIZATION = 8;
+    public static final long DEF_TIME_PER_MOVE = 2000;
     private Debug debug;
     private Mcts mcts;
     private Thread ai;
 
 
 
-    public Adv2Player(long timePerMove, int parallelizationFactor) {
+    public Adv2Player(long timePerMove, int parallelizationFactor, TreeSelectionStrategy selectionStrategy,
+                      PlayStrategy playStrategy, boolean fairPlay, double bias) {
         debug = Debug.getInstance();
-        mcts = new Mcts(timePerMove, parallelizationFactor);
+        mcts = new Mcts(timePerMove, parallelizationFactor, playStrategy, selectionStrategy, fairPlay, bias);
         ai = new Thread(mcts);
         ai.setDaemon(true);
     }

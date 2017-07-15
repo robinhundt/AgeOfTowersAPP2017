@@ -11,6 +11,8 @@ import towerwarspp.main.tournament.TResult;
 import towerwarspp.main.tournament.Tournament;
 import towerwarspp.network.Remote;
 import towerwarspp.player.*;
+import towerwarspp.player.mcts.Mcts;
+import towerwarspp.player.mcts.TreeSelectionStrategy;
 import towerwarspp.preset.*;
 
 import static towerwarspp.main.debug.DebugLevel.*;
@@ -282,20 +284,39 @@ public class AgeOfTowers {
             case RANDOM_AI: player = new RndPlayer(); break;
             case SIMPLE_AI: player = new SimplePlayer(); break;
             case ADVANCED_AI_1: player = new Adv1Player(); break;
-            case ADVANCED_AI_2:
-                try {
-                    // TODO add setting for parallelizationfactor
-                    player = new Adv2Player(ap.isSet("thinktime") ? ap.getThinkingTime() : 2000, 6);
-                } catch (ArgumentParserException e) {
-                    System.out.println(e.getMessage());
-                    debug.send(LEVEL_1, MAIN, e.getMessage());
-                    System.exit(1);
-                }
-                break;
+            case ADVANCED_AI_2: player = createAdv2Player(); break;
             case REMOTE: player = getRemotePlayer(); break;
             default: System.out.println("Unsupported PlayerType."); System.exit(1);
         }
         return player;
+    }
+
+    private Adv2Player createAdv2Player() {
+        TreeSelectionStrategy treeSelectionStrategy = TreeSelectionStrategy.MAX;
+        PlayStrategy playStrategy = PlayStrategy.DYNAMIC;
+        long timePerMove = Adv2Player.DEF_TIME_PER_MOVE;
+        int parallelFactor = Adv2Player.DEF_PARALLELIZATION;
+        double bias = Mcts.DEF_BIAS;
+        boolean fairPlay = false;
+        try {
+
+            if(ap.isSet("tstrategy"))
+                    treeSelectionStrategy =  ap.getTreeSelectionStrategy();
+            if(ap.isSet("pstrategy"))
+                playStrategy = ap.getPlayStrategy();
+            if(ap.isSet("thinktime"))
+                timePerMove = ap.getThinkingTime();
+            if(ap.isSet("prallel"))
+                parallelFactor = ap.getParrallelFactor();
+            if(ap.isSet("bias"))
+                bias = ap.getBias();
+            fairPlay = ap.isFairplay();
+
+        } catch (ArgumentParserException e) {
+            System.out.println(e.getMessage());
+            System.exit(1);
+        }
+        return new Adv2Player(timePerMove, parallelFactor, treeSelectionStrategy, playStrategy, fairPlay, bias);
     }
 
 
@@ -402,8 +423,9 @@ public class AgeOfTowers {
                 "--statistic \t activates the constant output of the tournament statistic, \n" +
                 "            \t only takes effect if a tournament has been started" +
                 "--debug     \t activates the debug-mode: shows additional information for every move \n" +
+                "------------ \n" +
                 "\n" +
-                "Advanced settings for adv2 AI:" +
+                "Advanced settings for adv2 AI:\n" +
                 "-thinktime \t set the time (in ms) adv2 AI will spend deciding on a move per round (default 2000ms)\n" +
                 "-pstrategy \t set the playout strategy of adv2 AI to either light (l) or heavy (h).\n" +
                 "           \t See  the documentation for more information.\n" +
@@ -411,7 +433,8 @@ public class AgeOfTowers {
                 "           \t information.\n" +
                 "-bias      \t set the bias factor used in the UCB1 formulae of the Monte Carlo tree search.\n" +
                 "-parallel  \t set a value for the amount of parrallelization to employ. Roughly corresponds to the \n" +
-                "           \t  the maximum number of Thread running in parralel ( +-1).\n";
+                "           \t  the maximum number of Thread running in parralel ( +-1).\n" +
+                "--fair";
 
     }
 }

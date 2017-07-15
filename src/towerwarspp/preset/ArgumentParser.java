@@ -298,6 +298,8 @@ public class ArgumentParser {
             case "l":   return PlayStrategy.LIGHT;
             case "heavy": return PlayStrategy.HEAVY;
             case "h": return PlayStrategy.HEAVY;
+            case "dynamic": return PlayStrategy.DYNAMIC;
+            case "d": return PlayStrategy.DYNAMIC;
             default: throw new ArgumentParserException("Unkown PlayStrategy: " + strategy);
         }
     }
@@ -348,6 +350,18 @@ public class ArgumentParser {
     //  Hier koennen weitere Schalter und Einstellungen ergaenzt werden...
     // ********************************************************************
 
+    public boolean isHelp() throws ArgumentParserException {
+        return getFlag("help");
+    }
+
+    public boolean isStatistic() throws ArgumentParserException {
+        return getFlag("statistic");
+    }
+
+    public boolean isFairplay() throws ArgumentParserException {
+        return getFlag("fair");
+    }
+
     public String getHost() throws ArgumentParserException {
         return (String) getSetting("host");
     }
@@ -364,10 +378,6 @@ public class ArgumentParser {
         return parseOutputType((String) getSetting("output"));
     }
 
-    public boolean isHelp() throws ArgumentParserException {
-        return getFlag("help");
-    }
-
     public int getGameCount() throws ArgumentParserException {
         return Integer.parseInt((String) getSetting("games"));
     }
@@ -378,10 +388,6 @@ public class ArgumentParser {
 
     public PlayerType getOfferedType() throws ArgumentParserException {
         return parsePlayerType((String) getSetting("offer"));
-    }
-
-    public boolean isStatistic() throws ArgumentParserException {
-        return getFlag("statistic");
     }
     public long getThinkingTime() throws ArgumentParserException {
         return  Long.parseLong((String) getSetting("thinktime"));
