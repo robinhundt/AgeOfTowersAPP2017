@@ -4,9 +4,7 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
-import java.util.concurrent.ExecutionException;
+import java.util.ArrayList;
 
 /**
  * Class Parameter Input to provide a graphical option to select settings and flags for the game
@@ -37,19 +35,27 @@ public class ParameterInput {
     JRadioButton blueAdvanced3;
     JRadioButton redRemote;
     JRadioButton blueRemote;
+    JLabel thinkTime;
+    JTextField redThinkTime;
+    JTextField blueThinkTime;
     ButtonGroup redPlayer;
     ButtonGroup bluePlayer;
+    ButtonGroup outputGroup;
+
+    ArrayList<JRadioButton> redRadioButtons;
+    ArrayList<JRadioButton> blueRadioButtons;
 
     JButton done = new JButton("Done");
 
     ParameterInput() {
-        string = new String[13];
         frame = new JFrame("Parameter Input");
         JPanel panel = new JPanel();
         panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
         frame.add(panel);
         panel.setPreferredSize(new Dimension(400, 650));
 
+        thinkTime = new JLabel("Thinking time:");
+        thinkTime.setVisible(false);
         JLabel output = new JLabel("Output type:");
         JLabel size = new JLabel("Size:");
         JLabel delayTime = new JLabel("Delaytime:");
@@ -60,22 +66,30 @@ public class ParameterInput {
         graphic = new JRadioButton("graphic");
         graphic.setSelected(true);
         none = new JRadioButton("none");
+        outputGroup = new ButtonGroup();
+        outputGroup.add(graphic);
+        outputGroup.add(text);
+        outputGroup.add(none);
+
+        redRadioButtons = new ArrayList<>();
+        blueRadioButtons = new ArrayList<>();
+
         redPlayer = new ButtonGroup();
         bluePlayer = new ButtonGroup();
-        redHuman = new JRadioButton("human");
-        blueHuman = new JRadioButton("human");
-        redRandom = new JRadioButton("random");
-        blueRandom = new JRadioButton("random");
-        redSimple = new JRadioButton("simple");
-        blueSimple = new JRadioButton("simple");
-        redAdvanced1 = new JRadioButton("adv1");
-        blueAdvanced1 = new JRadioButton("adv1");
-        redAdvanced2 = new JRadioButton("adv2");
-        blueAdvanced2 = new JRadioButton("adv2");
-        redAdvanced3 = new JRadioButton("adv3");
-        blueAdvanced3 = new JRadioButton("adv3");
-        redRemote = new JRadioButton("remote");
-        blueRemote = new JRadioButton("remote");
+        redRadioButtons.add(redHuman = new JRadioButton("human"));
+        blueRadioButtons.add(blueHuman = new JRadioButton("human"));
+        redRadioButtons.add(redRandom = new JRadioButton("random"));
+        blueRadioButtons.add(blueRandom = new JRadioButton("random"));
+        redRadioButtons.add(redSimple = new JRadioButton("simple"));
+        blueRadioButtons.add(blueSimple = new JRadioButton("simple"));
+        redRadioButtons.add(redAdvanced1 = new JRadioButton("adv1"));
+        blueRadioButtons.add(blueAdvanced1 = new JRadioButton("adv1"));
+        redRadioButtons.add(redAdvanced2 = new JRadioButton("adv2"));
+        blueRadioButtons.add(blueAdvanced2 = new JRadioButton("adv2"));
+        redRadioButtons.add(redAdvanced3 = new JRadioButton("adv3"));
+        blueRadioButtons.add(blueAdvanced3 = new JRadioButton("adv3"));
+        redRadioButtons.add(redRemote = new JRadioButton("remote"));
+        blueRadioButtons.add(blueRemote = new JRadioButton("remote"));
         JCheckBox games = new JCheckBox("Tournament");
         JCheckBox delay = new JCheckBox("Delay");
         JCheckBox debug = new JCheckBox("Debug-Mode");
@@ -83,6 +97,10 @@ public class ParameterInput {
         JTextField sizeInput = new JTextField();
         JTextField gamesInput = new JTextField();
         JTextField delayInput = new JTextField();
+        redThinkTime = new JTextField();
+        redThinkTime.setVisible(false);
+        blueThinkTime = new JTextField();
+        blueThinkTime.setVisible(false);
         panel.add(output);
         panel.add(text);
         panel.add(graphic);
@@ -90,60 +108,72 @@ public class ParameterInput {
         panel.add(size);
         panel.add(sizeInput);
         panel.add(red);
-        redPlayer.add(redHuman);
-        redPlayer.add(redRandom);
-        redPlayer.add(redSimple);
-        redPlayer.add(redAdvanced1);
-        redPlayer.add(redAdvanced2);
-        redPlayer.add(redAdvanced3);
-        redPlayer.add(redRemote);
-        //panel.add(redPlayer);
+        for(JRadioButton radioButton : redRadioButtons) {
+            redPlayer.add(radioButton);
+            panel.add(radioButton);
+            if(radioButton.getActionCommand().equals("adv2")) {
+                panel.add(thinkTime);
+                panel.add(redThinkTime);
+            }
+        }
         panel.add(blue);
-        bluePlayer.add(blueHuman);
-        bluePlayer.add(blueRandom);
-        bluePlayer.add(blueSimple);
-        bluePlayer.add(blueAdvanced1);
-        bluePlayer.add(blueAdvanced2);
-        bluePlayer.add(blueAdvanced3);
-        bluePlayer.add(blueRemote);
-        //panel.add(bluePlayer);
+        for(JRadioButton radioButton : blueRadioButtons) {
+            bluePlayer.add(radioButton);
+            panel.add(radioButton);
+            if(radioButton.getActionCommand().equals("adv2")) {
+                panel.add(thinkTime);
+                panel.add(blueThinkTime);
+            }
+        }
+        gamesNo.setVisible(false);
+        gamesInput.setVisible(false);
         panel.add(games);
         panel.add(gamesNo);
         panel.add(gamesInput);
+        delayTime.setVisible(false);
+        delayInput.setVisible(false);
         panel.add(delay);
         panel.add(delayTime);
         panel.add(delayInput);
         panel.add(debug);
         panel.add(statistic);
         panel.add(done);
+        setBluePlayerActionListener();
+        setRedPlayerActionListener();
 
-        text.addMouseListener(new MouseAdapter() {
+        games.addActionListener(new ActionListener() {
             @Override
-            public void mouseClicked(MouseEvent mouseEvent) {
-                super.mouseClicked(mouseEvent);
-                if (text.isSelected()) {
-                    graphic.setSelected(false);
-                    none.setSelected(false);
+            public void actionPerformed(ActionEvent actionEvent) {
+                if(games.isSelected()) {
+                    gamesNo.setVisible(true);
+                    gamesInput.setVisible(true);
+                } else {
+                    gamesNo.setVisible(false);
+                    gamesInput.setVisible(false);
                 }
+                frame.repaint();
             }
         });
-        graphic.addMouseListener(new MouseAdapter() {
+
+        delay.addActionListener(new ActionListener() {
             @Override
-            public void mouseClicked(MouseEvent mouseEvent) {
-                super.mouseClicked(mouseEvent);
-                if (graphic.isSelected()) {
-                    text.setSelected(false);
-                    none.setSelected(false);
+            public void actionPerformed(ActionEvent actionEvent) {
+                if(delay.isSelected()) {
+                    delayTime.setVisible(true);
+                    delayInput.setVisible(true);
+                } else  {
+                    delayTime.setVisible(false);
+                    delayInput.setVisible(false);
                 }
+                frame.repaint();
             }
         });
-        none.addMouseListener(new MouseAdapter() {
+
+        debug.addActionListener(new ActionListener() {
             @Override
-            public void mouseClicked(MouseEvent mouseEvent) {
-                super.mouseClicked(mouseEvent);
-                if (none.isSelected()) {
-                    text.setSelected(false);
-                    graphic.setSelected(false);
+            public void actionPerformed(ActionEvent actionEvent) {
+                if(debug.isSelected()) {
+
                 }
             }
         });
@@ -152,77 +182,66 @@ public class ParameterInput {
             @Override
             public void actionPerformed(ActionEvent actionEvent) {
 
-                if (text.isSelected()) {
-                    string[5] = ("-output text");
-                }
-                else if (none.isSelected()) {
-                    string[5] = ("-output none");
+                StringBuilder args = new StringBuilder();
+                StringBuilder error = new StringBuilder();
+
+                if(none.isSelected()) {
+                    args.append("-output none").append(" ");
+                } else if(text.isSelected()) {
+                    args.append("-output text").append(" ");
+                } else if(graphic.isSelected()) {
+                    args.append("-output graphic").append(" ");
+                } else {
+                    error.append("No Output selected.").append(" ");
                 }
 
-                //if (!offer.isChecked())
-                /*RED*/
-                if (redHuman.isSelected()) {
-                    string[0] = ("-red human");
-                }
-                else if (redAdvanced1.isSelected()) {
-                    string[0] = ("red- adv1");
-                }
-                else if (redAdvanced2.isSelected()) {
-                    string[0] = ("-red adv2");
-                }
-                else if (redAdvanced3.isSelected()) {
-                    string[0] = ("-red adv3");
-                }
-                else if (redSimple.isSelected()) {
-                    string[0] = ("-red simple");
-                }
-                else if (redRemote.isSelected()) {
-                    string[0] = ("-red remote");
+                if(!sizeInput.getText().equals("")) {
+                    args.append("-size ").append(sizeInput.getText()).append(" ");
+                } else {
+                    error.append("No Size is defined.").append(" ");
                 }
 
-                /*BLUE*/
-                if (blueHuman.isSelected()) {
-                    string[1] = ("-blue human");
-                }
-                else if (blueAdvanced1.isSelected()) {
-                    string[1] = ("blue- adv1");
-                }
-                else if (blueAdvanced2.isSelected()) {
-                    string[1] = ("-blue adv2");
-                }
-                else if (blueAdvanced3.isSelected()) {
-                    string[1] = ("-blue adv3");
-                }
-                else if (blueSimple.isSelected()) {
-                    string[1] = ("-blue simple");
-                }
-                else if (blueRemote.isSelected()) {
-                    string[1] = ("-blue remote");
+                if(redHuman.isSelected()) {
+                    args.append("-red human").append(" ");
+                } else if(redRandom.isSelected()) {
+                    args.append("-red random").append(" ");
+                } else if(redSimple.isSelected()) {
+                    args.append("-red simple").append(" ");
+                } else if (redAdvanced1.isSelected()) {
+                    args.append("-red adv1").append(" ");
+                } else if (redAdvanced2.isSelected()) {
+                    args.append("-red adv2").append(" ");
+                } else if (redAdvanced3.isSelected()) {
+                    args.append("-red adv3").append(" ");
+                } else if(redRemote.isSelected()) {
+                    args.append("-red remote").append(" ");
                 }
 
-                /*SIZE*/
-                if (!size.getText().equals("")) {
-                    string[2] = ("-size " + size.getText());
+                if(blueHuman.isSelected()) {
+                    args.append("-blue human").append(" ");
+                } else if(blueRandom.isSelected()) {
+                    args.append("-blue random").append(" ");
+                } else if(blueSimple.isSelected()) {
+                    args.append("-blue simple").append(" ");
+                } else if (blueAdvanced1.isSelected()) {
+                    args.append("-blue adv1").append(" ");
+                } else if (blueAdvanced2.isSelected()) {
+                    args.append("-blue adv2").append(" ");
+                } else if (blueAdvanced3.isSelected()) {
+                    args.append("-blue adv3").append(" ");
+                } else if(redRemote.isSelected()) {
+                    args.append("-blue remote").append(" ");
                 }
 
-                /*DEBUG*/
-                if (debug.isSelected()) {
-                    string[12] = ("--debug");
-                }
-                /*STATISTIC*/
-                if (statistic.isSelected()) {
-                    string[11] = ("--statistic");
-                }
-                /*TOURNAMENT*/
-                if (games.isSelected() && !gamesInput.getText().equals("")) {
-                    string[6] = (gamesInput.getText());
-                }
-                /*DELAY*/
-                if (delay.isSelected() && !delayInput.getText().equals("")) {
-                    string[7] = ("-delay " + delayInput.getText());
+                if((blueAdvanced2.isSelected() || redAdvanced2.isSelected()) && (!blueThinkTime.getText().equals("") || !redThinkTime.getText().equals(""))) {
+                    args.append("-thinktime ").append(blueThinkTime.getText()).append(" ");
                 }
 
 
+
+                System.out.println(args);
+                String argsString = args.toString();
+                string = argsString.split(" ");
                 frame.dispose();
                 wakeup();
             }
@@ -245,11 +264,70 @@ public class ParameterInput {
         frame.pack();
     }
 
+    private void setRedPlayerActionListener() {
+        for(JRadioButton radioButton : redRadioButtons) {
+            if(radioButton.getActionCommand().equals("adv2")) {
+                radioButton.addActionListener(new ActionListener() {
+                    @Override
+                    public void actionPerformed(ActionEvent actionEvent) {
+                        if(!redThinkTime.isVisible()) {
+                            redThinkTime.setVisible(true);
+                            thinkTime.setVisible(true);
+                            frame.repaint();
+                        }
+                    }
+                });
+            } else {
+                radioButton.addActionListener(new ActionListener() {
+                    @Override
+                    public void actionPerformed(ActionEvent actionEvent) {
+                        if(redThinkTime.isVisible()) {
+                            redThinkTime.setVisible(false);
+                            thinkTime.setVisible(false);
+                            frame.repaint();
+                        }
+                    }
+                });
+            }
+        }
+    }
+    private void setBluePlayerActionListener() {
+        for(JRadioButton radioButton : blueRadioButtons) {
+            if(radioButton.getActionCommand().equals("adv2")) {
+                radioButton.addActionListener(new ActionListener() {
+                    @Override
+                    public void actionPerformed(ActionEvent actionEvent) {
+                        if(!blueThinkTime.isVisible()) {
+                            blueThinkTime.setVisible(true);
+                            thinkTime.setVisible(true);
+                            frame.repaint();
+                        }
+                    }
+                });
+            } else {
+                radioButton.addActionListener(new ActionListener() {
+                    @Override
+                    public void actionPerformed(ActionEvent actionEvent) {
+                        if(blueThinkTime.isVisible()) {
+                            blueThinkTime.setVisible(false);
+                            thinkTime.setVisible(false);
+                            frame.repaint();
+                        }
+                    }
+                });
+            }
+        }
+    }
+
     synchronized private void wakeup() {
         notify();
     }
 
-    synchronized public String[] getString() {
+    synchronized public String[] getString() throws Exception {
+        wait();
+        for(int i = 0; i < string.length; ++i) {
+            System.out.print(string[i]);
+        }
         return string;
     }
 }

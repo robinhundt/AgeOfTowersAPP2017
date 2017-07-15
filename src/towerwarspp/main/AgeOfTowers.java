@@ -82,14 +82,18 @@ public class AgeOfTowers {
      */
     private AgeOfTowers(String[] args) {
         try {
-            /*try {
-                args = initArguments();
-            } catch (Exception e) {}*/
+            if(args.length == 0) {
+                try {
+                    args = initArguments();
+                } catch (Exception e) {
+
+                }
+            }
             /*create new ArgumentParser to get access to settings and flags*/
             ap = new ArgumentParser(args);
 
             /*check if no parameters have been given, or flag --help is activated*/
-            if (args.length == 0 || ap.isHelp()) {
+            if (ap.isHelp()) {
                 System.out.println(helpOutput());
                 System.exit(0);
             }
@@ -164,7 +168,6 @@ public class AgeOfTowers {
      */
     synchronized private String[] initArguments() throws Exception {
         ParameterInput parameterInput = new ParameterInput();
-        wait();
         return parameterInput.getString();
     }
 
