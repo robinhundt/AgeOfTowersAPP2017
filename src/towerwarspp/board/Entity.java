@@ -246,13 +246,12 @@ public class Entity {
 	 * @return true if this entity can be moved.
 	 */
 	public boolean isMovable() {
-		if(!isBase && !isBlocked && moveCounter > 0) {
-			return true;
-			/*for(int i = 1; i <= range; ++i) {
+		if(!isBase && !isBlocked) {
+			for(int i = 1; i <= range; ++i) {
 				if(!allMoves.get(i).isEmpty()) {
 					return true;
 				}
-			}*/
+			}
 		}
 		return false;
 	}

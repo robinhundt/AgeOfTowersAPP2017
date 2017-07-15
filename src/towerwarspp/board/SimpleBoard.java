@@ -779,6 +779,7 @@ public class SimpleBoard implements Viewable {
 	 * @param tower the tower whose possible moves have to be found.
 	 */
 	private void findTowerMoves(Entity tower) {
+		removeAllMoves(tower);
 		Vector<Position> positions = findPositionsInRange(tower.getPosition(), 1);
 		for(Position endPos: positions) {
 			if(checkMoveForTower(endPos, tower.getColor())) {
