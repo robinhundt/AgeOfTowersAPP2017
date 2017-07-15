@@ -256,7 +256,7 @@ public class Node {
     synchronized Node expand(Board board) {
         if(expanded) {
             debug.send(LEVEL_4, PLAYER, "Node: expand() called on already expanded Node from " + Thread.currentThread());
-            throw new IllegalStateException("Node already expanded.");
+            return null;
         }
         if(terminal) {
             debug.send(LEVEL_1, PLAYER, "Node: expand() called on terminal Node.");

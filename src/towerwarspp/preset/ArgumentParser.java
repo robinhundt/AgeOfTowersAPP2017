@@ -3,6 +3,8 @@ package towerwarspp.preset;
 import towerwarspp.main.OutputType;
 import towerwarspp.main.debug.DebugLevel;
 import towerwarspp.main.debug.DebugSource;
+import towerwarspp.player.PlayStrategy;
+import towerwarspp.player.mcts.TreeSelectionStrategy;
 
 import java.util.HashMap;
 
@@ -284,6 +286,38 @@ public class ArgumentParser {
         }
     }
 
+    /**
+     * Parse the {@link PlayStrategy} entered by the user.
+     * @param strategy user input
+     * @return Play strategy to use for AI Player
+     * @throws ArgumentParserException if strategy is unknown
+     */
+    private PlayStrategy parsePlayStrategy(String strategy) throws ArgumentParserException {
+        switch (strategy) {
+            case "light":  return PlayStrategy.LIGHT;
+            case "l":   return PlayStrategy.LIGHT;
+            case "heavy": return PlayStrategy.HEAVY;
+            case "h": return PlayStrategy.HEAVY;
+            default: throw new ArgumentParserException("Unkown PlayStrategy: " + strategy);
+        }
+    }
+
+    /**
+     * Parse the {@link TreeSelectionStrategy} entered by the user.
+     * @param strategy user input
+     * @return tree selection strategy to use for Monte Carlo tree search
+     * @throws ArgumentParserException if strategy is unknown
+     */
+    private TreeSelectionStrategy parseTreeSelectionStrategy(String strategy) throws ArgumentParserException {
+        switch (strategy) {
+            case "max": return TreeSelectionStrategy.MAX;
+            case "m": return TreeSelectionStrategy.MAX;
+            case "robust": return TreeSelectionStrategy.ROBUST;
+            case "r": return TreeSelectionStrategy.ROBUST;
+            default: throw new ArgumentParserException("Unknown tree selection policy: " + strategy);
+        }
+    }
+
     // ------------------------------------------------------------
 
     public boolean isGraphic() throws ArgumentParserException {
@@ -363,6 +397,22 @@ public class ArgumentParser {
 
     public String getLoadName() throws ArgumentParserException {
         return (String)getSetting("load");
+    }
+
+    public PlayStrategy getPlayStrategy() throws ArgumentParserException {
+        return parsePlayStrategy((String) getSetting("pstrategy"));
+    }
+
+    public TreeSelectionStrategy getTreeSelectionStrategy() throws ArgumentParserException {
+        return parseTreeSelectionStrategy((String) getSetting("tstrategy"));
+    }
+
+    public int getParrallelFactor() throws ArgumentParserException {
+        return Integer.parseInt((String) getSetting("parallel"));
+    }
+
+    public int getBias() throws ArgumentParserException {
+        return Integer.parseInt((String) getSetting("bias"));
     }
 
 }

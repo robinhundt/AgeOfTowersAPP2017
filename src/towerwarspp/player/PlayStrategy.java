@@ -30,8 +30,6 @@ public enum PlayStrategy {
         for(Move move : moves) {
             // iterate over all possible moves and calculate their scores
             int score = board.altScore(move, board.getTurn());
-//            System.out.println(score + " " + move);
-//            System.out.println("score " + score + "Move " + move);
             if(score == maxScore) {
                 maxMoves.add(move);
             } else if(score > maxScore) {

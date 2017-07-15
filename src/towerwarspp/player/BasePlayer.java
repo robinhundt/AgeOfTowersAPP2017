@@ -1,6 +1,9 @@
 package towerwarspp.player;
 
 import towerwarspp.board.Board;
+import towerwarspp.main.Debug;
+import towerwarspp.main.debug.DebugLevel;
+import towerwarspp.main.debug.DebugSource;
 import towerwarspp.preset.*;
 
 import static towerwarspp.preset.Status.*;
@@ -30,6 +33,8 @@ public abstract class BasePlayer implements Player {
      * Color of this Player instance
      */
     protected PlayerColor color;
+
+    private Debug debug = Debug.getInstance();
 
     /**
      * Only abstract method. Is called inside the request method. Subclasses of BasePlayer should put their logic into
@@ -77,6 +82,7 @@ public abstract class BasePlayer implements Player {
             throw new Exception("Illegal PlayerState. Request can only be called after after init or makeMove");
         state = state.next();
         Move move = deliverMove();
+        debug.send(DebugLevel.LEVEL_1, DebugSource.PLAYER, "BasePlayer: " + color + " playing move " + move);
         board.makeMove(move);
         return move;
     }

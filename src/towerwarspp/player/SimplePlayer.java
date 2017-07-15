@@ -1,6 +1,7 @@
 package towerwarspp.player;
 
 import towerwarspp.board.Board;
+import towerwarspp.main.Debug;
 import towerwarspp.preset.Move;
 import towerwarspp.preset.PlayerColor;
 
@@ -72,6 +73,7 @@ public class SimplePlayer extends BasePlayer {
                 }
             }*/
 		Vector<Move> bestMoves = board.getBestMoves(color);
+
 		return bestMoves.get(rnd.nextInt(bestMoves.size()));
        /* }
         Move move = maxMoves.get(rnd.nextInt(maxMoves.size()));

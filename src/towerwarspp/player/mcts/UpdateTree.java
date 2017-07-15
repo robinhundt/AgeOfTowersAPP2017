@@ -38,13 +38,26 @@ class UpdateTree implements Runnable {
      * The play strategy employed in the simulation phase of the algorithm
      */
     private PlayStrategy playStrategy;
+    /**
+     * Variable specifying which subtree of the current root to explore. For example if set to 3, in the first selection
+     * step the Node with the third highest UCB1 score is selected. From there on only Nodes that have a maximal
+     * UCB1 score are selected.
+     */
+    private int nthSubtree;
 
-
-    UpdateTree(Board board, Node root, PlayStrategy playStrategy) {
+    /**
+     * Constructor to construct a new
+     * @param board
+     * @param root
+     * @param playStrategy
+     * @param nthSubtree
+     */
+    UpdateTree(Board board, Node root, PlayStrategy playStrategy, int nthSubtree) {
         this.debug = Debug.getInstance();
         this.board = board;
         this.root = root;
         this.playStrategy = playStrategy;
+        this.nthSubtree = nthSubtree;
     }
 
     static PlayerColor playout(Board board, PlayStrategy playStrategy) {
@@ -69,76 +82,79 @@ class UpdateTree implements Runnable {
         Node selectedChild = root;
         debug.send(LEVEL_3, PLAYER, "Mcts: Select on " + root);
         debug.send(LEVEL_4, PLAYER, "Roots children: " + root.getChildren().toString());
-//        if(selectedChild.isExpanded() && !selectedChild.isTerminal()) {
-//           selectedChild = selectedChild.nthBestUCBChild(nthSubtree % selectedChild.childCount());
-//        }
-//        Node expNode = null;
-//        do {
-//            while (selectedChild.isExpanded() && !selectedChild.isTerminal()) {
-//                selectedChild = selectedChild.bestUCBChild();
-//                debug.send(LEVEL_5, PLAYER, "Mcts: selected child " + selectedChild);
-//
-//                board.makeMove(selectedChild.getMove());
-//                if(board.getStatus() != OK) {
-//                    selectedChild.setTerminalTrue();
-//                    debug.send(LEVEL_5, PLAYER, "Mcts: Found terminal Node " + selectedChild);
-//                }
-//            }
-//
-//            debug.send(LEVEL_3, PLAYER, "Mcts: Found best child " + selectedChild);
-//
-//            if(selectedChild.isTerminal()) {
-//                selectedChild.backPropagateScore(DEF_SCORE, board.getStatus() == BLUE_WIN ? BLUE : RED);
-//            }
-//
-//            if(!selectedChild.isTerminal() && !selectedChild.isExpanded()) {
-//                expNode = selectedChild.expand(board);
-//                if(expNode != null) {
-//
-//                    board.makeMove(expNode.getMove());
-//
-//                    if(board.getStatus() != OK) {
-//                        expNode.setTerminalTrue();
-//                    } else {
-//                        expNode.backPropagateScore(DEF_SCORE, playout(board, playStrategy));
-//                    }
-//                }
-//            }
-//
-//        } while (expNode == null && !selectedChild.isTerminal());
-
-
-
-
-        while (selectedChild.isExpanded() && !selectedChild.isTerminal()) {
-            selectedChild = selectedChild.bestUCBChild();
-            debug.send(LEVEL_5, PLAYER, "Mcts: selected child " + selectedChild);
-
-            board.makeMove(selectedChild.getMove());
+        if(selectedChild.isExpanded() && !selectedChild.isTerminal()) {
+           selectedChild = selectedChild.nthBestUCBChild(nthSubtree % selectedChild.childCount());
+           board.makeMove(selectedChild.getMove());
             if(board.getStatus() != OK) {
                 selectedChild.setTerminalTrue();
                 debug.send(LEVEL_5, PLAYER, "Mcts: Found terminal Node " + selectedChild);
             }
         }
+        Node expNode = null;
+            while (selectedChild.isExpanded() && !selectedChild.isTerminal()) {
+                selectedChild = selectedChild.bestUCBChild();
+                debug.send(LEVEL_5, PLAYER, "Mcts: selected child " + selectedChild);
 
-        debug.send(LEVEL_3, PLAYER, "Mcts: Found best child " + selectedChild);
-
-        if(selectedChild.isTerminal()) {
-            selectedChild.backPropagateScore(DEF_SCORE, board.getStatus() == BLUE_WIN ? BLUE : RED);
-        }
-
-        if(!selectedChild.isTerminal() && !selectedChild.isExpanded()) {
-            Node expNode = selectedChild.expand(board);
-            if(expNode != null) {
-
-                board.makeMove(expNode.getMove());
-
+                board.makeMove(selectedChild.getMove());
                 if(board.getStatus() != OK) {
-                    expNode.setTerminalTrue();
-                } else {
-                    expNode.backPropagateScore(DEF_SCORE, playout(board, playStrategy));
+                    selectedChild.setTerminalTrue();
+                    debug.send(LEVEL_5, PLAYER, "Mcts: Found terminal Node " + selectedChild);
                 }
             }
-        }
+
+            debug.send(LEVEL_3, PLAYER, "Mcts: Found best child " + selectedChild);
+
+            if(selectedChild.isTerminal()) {
+                selectedChild.backPropagateScore(DEF_SCORE, board.getStatus() == BLUE_WIN ? BLUE : RED);
+            }
+
+            if(!selectedChild.isTerminal() && !selectedChild.isExpanded()) {
+                expNode = selectedChild.expand(board);
+                if(expNode != null) {
+
+                    board.makeMove(expNode.getMove());
+
+                    if(board.getStatus() != OK) {
+                        expNode.setTerminalTrue();
+                    } else {
+                        expNode.backPropagateScore(DEF_SCORE, playout(board, playStrategy));
+                    }
+                }
+            }
+
+
+
+//
+//
+//        while (selectedChild.isExpanded() && !selectedChild.isTerminal()) {
+//            selectedChild = selectedChild.bestUCBChild();
+//            debug.send(LEVEL_5, PLAYER, "Mcts: selected child " + selectedChild);
+//
+//            board.makeMove(selectedChild.getMove());
+//            if(board.getStatus() != OK) {
+//                selectedChild.setTerminalTrue();
+//                debug.send(LEVEL_5, PLAYER, "Mcts: Found terminal Node " + selectedChild);
+//            }
+//        }
+//
+//        debug.send(LEVEL_3, PLAYER, "Mcts: Found best child " + selectedChild);
+//
+//        if(selectedChild.isTerminal()) {
+//            selectedChild.backPropagateScore(DEF_SCORE, board.getStatus() == BLUE_WIN ? BLUE : RED);
+//        }
+//
+//        if(!selectedChild.isTerminal() && !selectedChild.isExpanded()) {
+//            Node expNode = selectedChild.expand(board);
+//            if(expNode != null) {
+//
+//                board.makeMove(expNode.getMove());
+//
+//                if(board.getStatus() != OK) {
+//                    expNode.setTerminalTrue();
+//                } else {
+//                    expNode.backPropagateScore(DEF_SCORE, playout(board, playStrategy));
+//                }
+//            }
+//        }
     }
 }

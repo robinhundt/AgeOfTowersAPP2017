@@ -60,7 +60,7 @@ public class Mcts implements Runnable{
     /**
      * Bias that is used as a constant in the calculation of the UCB1 in formulae during {@link Node#bestUCBChild()}.
      */
-    static double BIAS = 1.5;
+    static double BIAS = 2;
     /**
      * The default score that is backpropagated through the tree at the end of a simulation or when a terminal node is
      * reached.
@@ -120,6 +120,11 @@ public class Mcts implements Runnable{
      */
     private boolean moveReceived;
     /**
+     * If set to true, the algorithm will change to a {@link PlayStrategy#LIGHT} once the executed moves reach a certain
+     * weight threshold (currently at 0.95).
+     */
+    private boolean dynamicPlayoutStrategy = true;
+    /**
      * Flag that is set to true when {@link #setInit(Board)} is called.
      */
     private boolean initFlag;
@@ -147,7 +152,7 @@ public class Mcts implements Runnable{
      * returned by {@link Node#getWeight()} will be returned.
      * If set to {@link TreeSelectionStrategy#ROBUST} the move of the child with most played out games will be returned.
      */
-    private TreeSelectionStrategy treeSelectionStrategy = TreeSelectionStrategy.ROBUST;
+    private TreeSelectionStrategy treeSelectionStrategy = TreeSelectionStrategy.MAX;
 
 
     /**
@@ -160,7 +165,7 @@ public class Mcts implements Runnable{
         this.timePerMove = timePerMove;
         this.parallelizationFactor = parallelizationFactor;
         debug = Debug.getInstance();
-        updatePool = Executors.newWorkStealingPool();
+        updatePool = Executors.newFixedThreadPool(parallelizationFactor);
         futures = new Future[parallelizationFactor];
         debug.send(LEVEL_1, PLAYER, "Mcts: Created new mcts object.");
     }
@@ -292,7 +297,7 @@ public class Mcts implements Runnable{
                 in parallel. It's waited until all futures returned by updatePool.submit() are done working.
                 */
                 for(int i=0; i < parallelizationFactor; i++) {
-                    futures[i] = updatePool.submit(new UpdateTree(board.clone(), root, playStrategy));
+                    futures[i] = updatePool.submit(new UpdateTree(board.clone(), root, playStrategy, i));
                 }
                 boolean updating = true;
                 while (updating) {
@@ -345,6 +350,8 @@ public class Mcts implements Runnable{
     private void init() {
         board = newBoard;
         root = new Node(board);
+        if(dynamicPlayoutStrategy)
+            playStrategy = PlayStrategy.HEAVY;
         rootPlayout();
         debug.send(LEVEL_1, PLAYER, "Mcts: Initialized adv2 player and expanded root.");
         initFlag = false;
@@ -364,10 +371,12 @@ public class Mcts implements Runnable{
      * @param weight
      */
     private void checkPlayoutStrategy(double weight) {
-        if(weight > 0.90) {
-            playStrategy = PlayStrategy.LIGHT;
-        } else {
-            playStrategy = PlayStrategy.HEAVY;
+        if(dynamicPlayoutStrategy) {
+            if(weight > 0.98) {
+                playStrategy = PlayStrategy.LIGHT;
+            } else {
+                playStrategy = PlayStrategy.HEAVY;
+            }
         }
     }
 
