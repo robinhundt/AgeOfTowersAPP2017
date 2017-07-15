@@ -90,7 +90,7 @@ public class Game {
         
 
         if(debug)
-            System.out.println(debugMsg);
+            System.out.print(debugMsg);
 
         /*create new board and include viewer object in view*/
         board = new Board(boardSize);
@@ -100,7 +100,7 @@ public class Game {
         }
 
         if(debug)
-            System.out.println(debugMsg);
+            System.out.print(debugMsg);
 
         /*try to initialized players*/
         try {
@@ -113,7 +113,7 @@ public class Game {
         }
 
         if(debug)
-            System.out.println(debugMsg);
+            System.out.print(debugMsg);
     }
 
     /**
@@ -152,7 +152,7 @@ public class Game {
         }
 
         if(debug)
-            System.out.println(debugMsg);
+            System.out.print(debugMsg);
 
         /*try to initialized players*/
         try {
@@ -165,7 +165,7 @@ public class Game {
         }
 
         if(debug)
-            System.out.println(debugMsg);
+            System.out.print(debugMsg);
         replay(saveGame);
         ((BasePlayer)redPlayer).setBoard(board.clone());
         ((BasePlayer)bluePlayer).setBoard(board.clone());
@@ -183,7 +183,7 @@ public class Game {
      */
     public Result play(int timeOut, PlayerColor turn) throws Exception {
         if(debug)
-            System.out.println(debugMsg);
+            System.out.print(debugMsg);
         /*set redPlayer as first player, red as first color, and counter of move*/
         Player currentPlayer = turn == RED ? redPlayer : bluePlayer;
         PlayerColor currentColor = turn;
@@ -199,7 +199,7 @@ public class Game {
         /*as long as a valid move has been made and none of the players did not win, ask for next moves*/
         while (board.getStatus() == OK && ((timeOut != 0 && moveCounter < timeOut) || timeOut == 0)) {
             if (debug)
-                System.out.println(debugMsg);
+                System.out.print(debugMsg);
             /*increment move count*/
             moveCounter++;
             /*output turn*/

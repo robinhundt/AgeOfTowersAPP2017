@@ -43,8 +43,10 @@ public class Adv2Player extends BasePlayer {
     public void init(int boardSize, PlayerColor playerColor) {
         super.init(boardSize, playerColor);
         mcts.setInit(board.clone());
-        if(!ai.isAlive())
+        if(!ai.isAlive()){
             ai.start();
+            debug.send(DebugLevel.LEVEL_2, DebugSource.PLAYER, "Started Thread " + ai.toString());
+        }
     }
 
 }

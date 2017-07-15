@@ -1,6 +1,5 @@
 package towerwarspp.player;
 
-import towerwarspp.io.View;
 import towerwarspp.preset.Move;
 import towerwarspp.preset.PlayerColor;
 import towerwarspp.preset.Requestable;
@@ -35,15 +34,20 @@ public class HumanPlayer extends BasePlayer {
      * will call deliver() on instance {@link #requestable} object as long as no valid move per {@link towerwarspp.board.Board#moveAllowed(Move, PlayerColor)}
      * is returned.
      * @return move validated by {@link towerwarspp.board.Board#moveAllowed(Move, PlayerColor)}.
-     * @throws Exception
+     * @throws Exception in case {@link Requestable#deliver()} causes any Exceptio, the Exceptions message is wrapped into a normal
+     * Exception and passed up.
      */
     @Override
-    Move deliverMove() throws Exception {
+    Move deliverMove() throws Exception{
         Move move;
-        do {
-            move = requestable.deliver();
-        } while (!board.moveAllowed(move, color));
-        return move;
+        try {
+            do {
+                move = requestable.deliver();
+            } while (!board.moveAllowed(move, color));
+            return move;
+        } catch (Exception e) {
+            throw new Exception(e.getMessage());
+        }
     }
 
 }

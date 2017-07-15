@@ -411,8 +411,8 @@ public class ArgumentParser {
         return Integer.parseInt((String) getSetting("parallel"));
     }
 
-    public int getBias() throws ArgumentParserException {
-        return Integer.parseInt((String) getSetting("bias"));
+    public double getBias() throws ArgumentParserException {
+        return Double.parseDouble((String) getSetting("bias"));
     }
 
 }

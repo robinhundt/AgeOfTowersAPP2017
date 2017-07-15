@@ -50,7 +50,7 @@ public class Debug {
     String getDebugOutput() {
         String debug = "";
         if(debugMessages.length() > 1) {
-            debug =  debugMessages.deleteCharAt(debugMessages.length()-1).toString();
+            debug =  debugMessages.toString();
             debugMessages = new StringBuffer();
         }
         return debug;

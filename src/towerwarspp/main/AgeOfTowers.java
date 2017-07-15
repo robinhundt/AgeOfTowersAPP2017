@@ -200,7 +200,8 @@ public class AgeOfTowers {
             }
 
         } catch (Exception e) {
-            e.printStackTrace();
+            System.out.println(e.getMessage());
+            System.out.println("Couldn't offer ");
             System.exit(1);
         }
 
@@ -281,7 +282,7 @@ public class AgeOfTowers {
             case ADVANCED_AI_2:
                 try {
                     // TODO add setting for parallelizationfactor
-                    player = new Adv2Player(ap.isSet("thinktime") ? ap.getThinkingTime() : 2000, 8);
+                    player = new Adv2Player(ap.isSet("thinktime") ? ap.getThinkingTime() : 2000, 6);
                 } catch (ArgumentParserException e) {
                     System.out.println(e.getMessage());
                     debug.send(LEVEL_1, MAIN, e.getMessage());
@@ -395,8 +396,19 @@ public class AgeOfTowers {
                 "delay:  \t  integer bigger than 0 (in milliseconds) \n" +
 
                 "\nFLAGS: \n" +
-                "--statistic \t activated the constant output of the tournament statistic, \n" +
-                "            \t only effects if a tournament has been started" +
-                "--debug     \t activates the debug-mode: shows additional information for every move \n";
+                "--statistic \t activates the constant output of the tournament statistic, \n" +
+                "            \t only takes effect if a tournament has been started" +
+                "--debug     \t activates the debug-mode: shows additional information for every move \n" +
+                "\n" +
+                "Advanced settings for adv2 AI:" +
+                "-thinktime \t set the time (in ms) adv2 AI will spend deciding on a move per round (default 2000ms)" +
+                "-pstrategy \t set the playout strategy of adv2 AI to either light (l) or heavy (h)." +
+                "           \t See  the documentation for more information." +
+                "-tstrategy \t set the tree selection policy to either max (m) or robust (r). See documentation for more" +
+                "           \t information." +
+                "-bias      \t set the bias factor used in the UCB1 formulae of the Monte Carlo tree search." +
+                "-parallel  \t set a value for the amount of parrallelization to employ. Roughly corresponds to the " +
+                "           \t  the maximum number of Thread running in parralel ( +-1).";
+
     }
 }

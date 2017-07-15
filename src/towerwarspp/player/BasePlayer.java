@@ -100,7 +100,7 @@ public abstract class BasePlayer implements Player {
         if(state != PlayerState.CONFIRM)
             throw new Exception("Illegal PlayerState. confirm can only be called after request");
         if(!board.getStatus().equals(boardStatus) || board.getStatus() == ILLEGAL)
-            throw new Exception("Board staus:" + board.getStatus() + " Confirmation unsuccessful. Illegal or non matching status of player board and passed status");
+            throw new Exception("Board status:" + board.getStatus() + " Confirmation unsuccessful. Illegal or non matching status of player board and passed status");
         state = state.next();
     }
 

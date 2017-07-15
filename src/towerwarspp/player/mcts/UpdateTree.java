@@ -46,11 +46,13 @@ class UpdateTree implements Runnable {
     private int nthSubtree;
 
     /**
-     * Constructor to construct a new
-     * @param board
-     * @param root
-     * @param playStrategy
-     * @param nthSubtree
+     * Constructor to construct a new UpdateTree object. As {@link Board} only copies of the actual board the game is
+     * played on should be passed to this object.
+     * @param board the {@link Board} object used to to run simulation of the game on. Only copies of Boards should be passsed
+     *              since they'll be changed by the {@link #playStrategy} and {@link #run()} methods.
+     * @param root  Node representing the game state from which the algorithm should be executed.
+     * @param playStrategy {@link PlayStrategy} to employ during the simulation phase
+     * @param nthSubtree which subtree from the root to continue the selection phase on
      */
     UpdateTree(Board board, Node root, PlayStrategy playStrategy, int nthSubtree) {
         this.debug = Debug.getInstance();
@@ -121,40 +123,5 @@ class UpdateTree implements Runnable {
                     }
                 }
             }
-
-
-
-//
-//
-//        while (selectedChild.isExpanded() && !selectedChild.isTerminal()) {
-//            selectedChild = selectedChild.bestUCBChild();
-//            debug.send(LEVEL_5, PLAYER, "Mcts: selected child " + selectedChild);
-//
-//            board.makeMove(selectedChild.getMove());
-//            if(board.getStatus() != OK) {
-//                selectedChild.setTerminalTrue();
-//                debug.send(LEVEL_5, PLAYER, "Mcts: Found terminal Node " + selectedChild);
-//            }
-//        }
-//
-//        debug.send(LEVEL_3, PLAYER, "Mcts: Found best child " + selectedChild);
-//
-//        if(selectedChild.isTerminal()) {
-//            selectedChild.backPropagateScore(DEF_SCORE, board.getStatus() == BLUE_WIN ? BLUE : RED);
-//        }
-//
-//        if(!selectedChild.isTerminal() && !selectedChild.isExpanded()) {
-//            Node expNode = selectedChild.expand(board);
-//            if(expNode != null) {
-//
-//                board.makeMove(expNode.getMove());
-//
-//                if(board.getStatus() != OK) {
-//                    expNode.setTerminalTrue();
-//                } else {
-//                    expNode.backPropagateScore(DEF_SCORE, playout(board, playStrategy));
-//                }
-//            }
-//        }
     }
 }

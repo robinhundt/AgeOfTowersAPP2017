@@ -358,11 +358,11 @@ public class Node {
      */
     Node maxChild() {
         Node maxChild = null;
-        double maxWeight = 0;
+        double maxWeight = Double.NEGATIVE_INFINITY;
         debug.send(LEVEL_3, PLAYER, "Node: Selecting best Move from: ");
         for(Node child : children) {
             double weight = child.getWeight();
-            debug.send(LEVEL_3, PLAYER, "Node: Child Node: " + child + " weight: " + child.getWeight());
+            debug.send(LEVEL_3, PLAYER,"Node: Child Node: " + child + " weight: " + weight);
             if(weight > maxWeight) {
                 maxChild = child;
                 maxWeight = weight;

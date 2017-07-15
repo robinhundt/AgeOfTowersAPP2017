@@ -1,16 +1,17 @@
 package towerwarspp.player;
 
-import towerwarspp.board.Board;
-import towerwarspp.main.Debug;
-import towerwarspp.preset.Move;
-import towerwarspp.preset.PlayerColor;
-
 import java.util.Random;
 import java.util.Vector;
 
+import towerwarspp.board.Board;
+
+import towerwarspp.preset.Move;
+import towerwarspp.preset.PlayerColor;
+
+
 /**
  * Class that implements a simple AI opponent as specified in the project description. The AI chooses which move to place
- * by using the {@link towerwarspp.board.Board#scoreMove(Move, PlayerColor)} method, that uses the following formulae to
+ * by using the {@link Board#getBestMoves(PlayerColor)} method, that uses the following formulae to
  * calculate the score:
  * First a base distance-bonus is calculated: dBonus = d1 - d2 with d1 being the distance to the
  * enemy base before the move and d2 after the move. Then a second bonus bBonus is calculated: bBonus = 0 if no enemy
@@ -45,48 +46,7 @@ public class SimplePlayer extends BasePlayer {
      */
     @Override
     Move deliverMove() {
-        // get all possible moves that this player has available
-//        Vector<Move> moves = board.allPossibleMoves(color);
-//        int maxScore = Board.LOSE;
-        // create new Vector of moves that will always hold the Move objects that have the highest score
-//        Vector<Move> maxMoves = new Vector<>();
-
-  //      for(Move move : moves) {
-            // iterate over all possible moves and calculate their scores
-    //        int score = board.scoreMove(move, color);
-//            System.out.println(score + " " + move);
-//            System.out.println("score " + score + "Move " + move);
-      //      if(score == maxScore) {
-        //        maxMoves.add(move);
-          //  } else if(score > maxScore) {
-                /*
-                * If the score of the last evaluated move is higher than the current maximum score, clear the maxMoves
-                * vector containing the prior best moves. Then add the new best move to the vector and makeMove
-                * the maxScore variable to new Score
-                * */
-   /*             maxMoves.clear();
-                maxMoves.add(move);
-                maxScore = score;
-                // if the score indicates that this move is a winning move, break out of the loop and return it
-                if(score == Board.WIN) {
-                    break;
-                }
-            }*/
 		Vector<Move> bestMoves = board.getBestMoves(color);
-
 		return bestMoves.get(rnd.nextInt(bestMoves.size()));
-       /* }
-        Move move = maxMoves.get(rnd.nextInt(maxMoves.size()));
-        if(board.moveAllowed(move, color))
-            return move;
-        else {
-            System.out.println("Passed illegal move: " + move + " " + color);
-            try{
-                Thread.sleep(50000);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
-            return null;
-        }*/
     }
 }

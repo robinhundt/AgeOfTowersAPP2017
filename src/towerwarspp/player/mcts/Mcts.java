@@ -2,8 +2,10 @@ package towerwarspp.player.mcts;
 
 import static towerwarspp.main.debug.DebugLevel.*;
 import static towerwarspp.main.debug.DebugSource.PLAYER;
+import static towerwarspp.player.mcts.Task.*;
 import static towerwarspp.preset.Status.OK;
 
+import java.util.ArrayDeque;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.ArrayList;
@@ -154,6 +156,8 @@ public class Mcts implements Runnable{
      */
     private TreeSelectionStrategy treeSelectionStrategy = TreeSelectionStrategy.MAX;
 
+    private ArrayDeque<Task> tasks;
+
 
     /**
      * Construct a new Mcts object that approximately takes the specified time per move in milliseconds to decide on a move after
@@ -167,6 +171,7 @@ public class Mcts implements Runnable{
         debug = Debug.getInstance();
         updatePool = Executors.newFixedThreadPool(parallelizationFactor);
         futures = new Future[parallelizationFactor];
+        tasks = new ArrayDeque<>();
         debug.send(LEVEL_1, PLAYER, "Mcts: Created new mcts object.");
     }
 
@@ -231,7 +236,7 @@ public class Mcts implements Runnable{
      */
     public synchronized Move getMove() {
         startTime = System.currentTimeMillis();
-        moveRequested = true;
+        addTask(MOVE_REQUESTED);
         try {
             wait();
         } catch (InterruptedException e) {
@@ -248,7 +253,22 @@ public class Mcts implements Runnable{
      */
     public void setInit(Board board) {
         newBoard = board;
-        initFlag = true;
+        addTask(INIT);
+    }
+
+    /**
+     * Use to update the state of the tree after the enemy has made a move.
+     * If {@link #fairPlay} is set to true, {@link #timePerMove} is set to the time the enemy spend deciding on his move.
+     * {@link #enemyMove} is set to the passed Move and {@link #moveReceived} is set to true, to notify the algorithm
+     * Thread that the enemy has made a move.
+     * @param move that the enemy made.
+     */
+    public void feedEnemyMove(Move move) {
+        if(fairPlay) {
+            timePerMove = System.currentTimeMillis() - endTime;
+        }
+        enemyMove = move;
+        addTask(MOVE_RECEIVED);
     }
 
     /**
@@ -268,28 +288,65 @@ public class Mcts implements Runnable{
 
 
         while (true) {
-            if(initFlag) {
-                init();
-            } else if(!initFlag && moveReceived) {
-                moveReceived = false;
-                updateRoot(enemyMove);
-            } else if(!initFlag && moveRequested && System.currentTimeMillis() > startTime + timePerMove) {
-                moveRequested = false;
-                currentBestMove = bestMove();
-                debug.send(LEVEL_2, PLAYER, "Decided on move " + currentBestMove + " in "
-                        + (System.currentTimeMillis() - startTime) + " ms.");
-                endTime = System.currentTimeMillis();
-                /* wake up the Thread that requested the Move*/
-                wakeUp();
-            } else if(!initFlag && moveRequested && root.hasTerminalChild()) {
-                /* if a move has been requested and one of the child nodes of the root will lead to direct victory
-                * than return this move instantly and wake up the Thread that requested the move*/
-                moveRequested = false;
-                currentBestMove = root.getTerminalChild().getMove();
-                board.makeMove(currentBestMove);
-                endTime =System.currentTimeMillis();
-                wakeUp();
+
+            if (!tasks.isEmpty()) {
+//                for(Task task : tasks)
+//                    System.out.println(task + Thread.currentThread().toString());
+                Task task = peekTask();
+                switch (task) {
+                    case INIT:
+                        init();
+                        removeTask();
+                        break;
+                    case MOVE_RECEIVED:
+                        updateRoot(enemyMove);
+                        removeTask();
+                        break;
+                    case MOVE_REQUESTED:
+                        if(System.currentTimeMillis() > startTime + timePerMove) {
+                            if(root.childCount() > 0 && !root.isTerminal()) {
+                                currentBestMove = bestMove();
+                                debug.send(LEVEL_2, PLAYER, "Decided on move " + currentBestMove + " in "
+                                        + (System.currentTimeMillis() - startTime) + " ms.");
+                                endTime = System.currentTimeMillis();
+                            /* wake up the Thread that requested the Move*/
+                                removeTask();
+                                wakeUp();
+                            }
+                        } else if(root.hasTerminalChild()) {
+                            currentBestMove = root.getTerminalChild().getMove();
+                            board.makeMove(currentBestMove);
+                            endTime = System.currentTimeMillis();
+                            removeTask();
+                            wakeUp();
+                        }
+                        break;
+                }
             }
+
+
+//            if(initFlag) {
+//                init();
+//            } else if(!initFlag && moveReceived) {
+//                moveReceived = false;
+//                updateRoot(enemyMove);
+//            } else if(!initFlag && moveRequested && System.currentTimeMillis() > startTime + timePerMove) {
+//                moveRequested = false;
+//                currentBestMove = bestMove();
+//                debug.send(LEVEL_2, PLAYER, "Decided on move " + currentBestMove + " in "
+//                        + (System.currentTimeMillis() - startTime) + " ms.");
+//                endTime = System.currentTimeMillis();
+//                /* wake up the Thread that requested the Move*/
+//                wakeUp();
+//            } else if(!initFlag && moveRequested && root.hasTerminalChild()) {
+//                /* if a move has been requested and one of the child nodes of the root will lead to direct victory
+//                * than return this move instantly and wake up the Thread that requested the move*/
+//                moveRequested = false;
+//                currentBestMove = root.getTerminalChild().getMove();
+//                board.makeMove(currentBestMove);
+//                endTime = System.currentTimeMillis();
+//                wakeUp();
+//            }
 
 
             if(board.getStatus() == OK) {
@@ -342,6 +399,24 @@ public class Mcts implements Runnable{
         return selectedChild.getMove();
     }
 
+    synchronized private void addTask(Task task) {
+        tasks.add(task);
+    }
+
+    synchronized private void removeTask() {
+        tasks.removeFirst();
+    }
+
+    synchronized private Task pollTask() {
+        return tasks.poll();
+    }
+
+    synchronized private Task peekTask() {
+        return tasks.peek();
+    }
+
+
+
     /**
      * Reinitialize this Mcts object by setting the board to the new Board passed via {@link #newBoard}.
      * A new {@link #root} is constructed and {@link #rootPlayout()} is called to fully expand the root and do a
@@ -378,21 +453,6 @@ public class Mcts implements Runnable{
                 playStrategy = PlayStrategy.HEAVY;
             }
         }
-    }
-
-    /**
-     * Use to update the state of the tree after the enemy has made a move.
-     * If {@link #fairPlay} is set to true, {@link #timePerMove} is set to the time the enemy spend deciding on his move.
-     * {@link #enemyMove} is set to the passed Move and {@link #moveReceived} is set to true, to notify the algorithm
-     * Thread that the enemy has made a move.
-     * @param move that the enemy made.
-     */
-    public void feedEnemyMove(Move move) {
-        if(fairPlay) {
-            timePerMove = System.currentTimeMillis() - endTime;
-        }
-        enemyMove = move;
-        moveReceived = true;
     }
 
     /**
@@ -443,7 +503,6 @@ public class Mcts implements Runnable{
      * is executed and the result backpropagated up the tree.
      */
     private void rootPlayout() {
-
         ArrayList<Node> unexploredNodes = root.fullExpand(board);
         for(Node unexplNode : unexploredNodes) {
             Board tempBoard = board.clone();
