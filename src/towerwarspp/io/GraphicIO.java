@@ -137,8 +137,10 @@ public class GraphicIO extends JFrame implements IO {
     /**
      * Get the Name of the SaveGame
      * @return name of the savegame
+     * @throws Exception
      */
-    public String getSaveGameName() {
+    synchronized public String getSaveGameName() throws Exception {
+        wait();
         return this.saveGameName;
     }
     /**
@@ -283,6 +285,7 @@ public class GraphicIO extends JFrame implements IO {
                 if(!saveFileName.getText().equals("")) {
                     saveGameName = saveFileName.getText();
                     debugInstance.send(DebugLevel.LEVEL_4, DebugSource.IO, "Save is true. saveFileName String is set.");
+                    wakeUp();
                     saveDialog.dispose();
                 }
             }

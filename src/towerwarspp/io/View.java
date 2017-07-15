@@ -46,6 +46,7 @@ public interface View {
     /**
      * Get the String which the user has chosen for the Filename
      * @return the Filename
+     * @throws Exception
      */
-    String getSaveGameName();
+    String getSaveGameName() throws Exception;
 }
