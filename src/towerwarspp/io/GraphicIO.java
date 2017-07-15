@@ -283,6 +283,7 @@ public class GraphicIO extends JFrame implements IO {
                 if(!saveFileName.getText().equals("")) {
                     saveGameName = saveFileName.getText();
                     debugInstance.send(DebugLevel.LEVEL_4, DebugSource.IO, "Save is true. saveFileName String is set.");
+                    saveDialog.dispose();
                 }
             }
         });
