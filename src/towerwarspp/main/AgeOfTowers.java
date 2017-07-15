@@ -401,14 +401,14 @@ public class AgeOfTowers {
                 "--debug     \t activates the debug-mode: shows additional information for every move \n" +
                 "\n" +
                 "Advanced settings for adv2 AI:" +
-                "-thinktime \t set the time (in ms) adv2 AI will spend deciding on a move per round (default 2000ms)" +
-                "-pstrategy \t set the playout strategy of adv2 AI to either light (l) or heavy (h)." +
-                "           \t See  the documentation for more information." +
-                "-tstrategy \t set the tree selection policy to either max (m) or robust (r). See documentation for more" +
-                "           \t information." +
-                "-bias      \t set the bias factor used in the UCB1 formulae of the Monte Carlo tree search." +
-                "-parallel  \t set a value for the amount of parrallelization to employ. Roughly corresponds to the " +
-                "           \t  the maximum number of Thread running in parralel ( +-1).";
+                "-thinktime \t set the time (in ms) adv2 AI will spend deciding on a move per round (default 2000ms)\n" +
+                "-pstrategy \t set the playout strategy of adv2 AI to either light (l) or heavy (h).\n" +
+                "           \t See  the documentation for more information.\n" +
+                "-tstrategy \t set the tree selection policy to either max (m) or robust (r). See documentation for more\n" +
+                "           \t information.\n" +
+                "-bias      \t set the bias factor used in the UCB1 formulae of the Monte Carlo tree search.\n" +
+                "-parallel  \t set a value for the amount of parrallelization to employ. Roughly corresponds to the \n" +
+                "           \t  the maximum number of Thread running in parralel ( +-1).\n";
 
     }
 }
