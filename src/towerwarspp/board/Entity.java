@@ -1,10 +1,16 @@
 package towerwarspp.board;
 
-import towerwarspp.preset.*;
+import static towerwarspp.main.debug.DebugLevel.*;
+import static towerwarspp.main.debug.DebugSource.*;
 
 import java.util.Vector;
 import java.util.HashSet;
 
+import towerwarspp.main.debug.*;
+import towerwarspp.main.Debug;
+import towerwarspp.preset.Move;
+import towerwarspp.preset.PlayerColor;
+import towerwarspp.preset.Position;
 /**
  * This Class provides several Functions, used for TowerwarsPP. It's instances are the Stones and
  * Towers of the Game
@@ -13,59 +19,34 @@ import java.util.HashSet;
  * @version 0.2.2.8
  */
 public class Entity {
-	/**
-	 * The ANSI-Escape for Red. used for toString
-	 */
-	public static final String ANSI_RED = "\u001B[31m";
-	/**
-	 * The ANSI-Escape for Blue. used for toString
-	 */
-	public static final String ANSI_BLUE = "\u001B[34m";
-	/**
-	 * The ANSI-Escape for Purple. used for toString
-	 */
-	public static final String ANSI_PURPLE = "\u001B[35m";
-	/**
-	 * The ANSI-Escape for Yellow. used for toString
-	 */
-	public static final String ANSI_YELLOW = "\u001B[33m";
-	/**
-	 * The ANSI-Escape for Cyan. used for toString
-	 */
-	public static final String ANSI_CYAN = "\u001B[36m";
-	/**
-	 * The ANSI-Escape for White. used for toString
-	 */
-	public static final String ANSI_WHITE = "\u001B[37m";
-
 
 	/**
-	 * This is the Position of the Entity at the Board
+	 * The Position of the Entity on the board.
 	 */
 	private Position pos;
 
 	/**
-	 * Color of the Entity
+	 * The color of the Entity.
 	 */
 	private final PlayerColor color;
 
 	/**
-	 * height of the Entity. 0 == normal stone. >0 == Tower
+	 * The height of the Entity. If height == 0, this entity represents a normal stone. If height > 0, it is a tower.
 	 */
 	private int height;
 
 	/**
-	 * max height of the Game
+	 * The maximum allowed height.
 	 */
 	private final int maxHeight;
 
 	/**
-	 * shows, weather the Entity is blocked or not
+	 * Shows whether the Entity is blocked or not.
 	 */
 	private boolean blocked = false;
 
 	/**
-	 * this variable contains the maximum range of the entity
+	 * Represents the current step range of the Entity.
 	 */
 	private int range = 1;
 
@@ -167,8 +148,8 @@ public class Entity {
 	}
 
 	/**
-	 * returns the Position
-	 * @return the Position
+	 * Returns the Position.
+	 * @return the Position.
 	 */
 	public Position getPosition() {
 		return pos;
@@ -210,6 +191,15 @@ public class Entity {
 		return rangeMoves;
 	}
 
+	public Vector<Move> getMovesAsVector() {
+		Vector<Move> moves = new Vector<Move>();
+		if(movable()) {
+			for(int i = 1; i <= range; ++i) {
+				moves.addAll(rangeMoves.get(i));
+			}
+		}
+		return moves;
+	}
 	/**
 	 * checks if this entity is a base or not
 	 * @return true if base, false if not
@@ -280,7 +270,6 @@ public class Entity {
 		moveCounter-= rangeMoves.elementAt(range).size();
 		rangeMoves.set(range, new HashSet<Move>());
 		range--;
-
 	}
 
 	/**
@@ -308,9 +297,8 @@ public class Entity {
 	 * @param range distance of the endposition
 	 */
 	synchronized public void addMove(Position end, int range) {
-		if(!hasMove(end, range)){
-			rangeMoves.elementAt(range).add(new Move(pos, end));
-			moveCounter++;
+		if(rangeMoves.get(range).add(new Move(pos, end))) {
+			++moveCounter;
 		}
 	}
 
@@ -321,9 +309,8 @@ public class Entity {
 	 * @param range distance of the endposition
 	 */
 	synchronized public void removeMove(Position end, int range) {
-		if(hasMove(end, range)) {
-			rangeMoves.elementAt(range).remove(new Move(pos, end));
-			moveCounter--;
+		if(rangeMoves.get(range).remove(new Move(pos, end))) {
+			--moveCounter;
 		}
 	}
 
@@ -333,13 +320,7 @@ public class Entity {
 	 * @param range the range of the move
 	 */
 	synchronized public boolean hasMove(Position end, int range) {
-		Move move = new Move(pos, end);
-		for(HashSet<Move> moves: rangeMoves) {
-			if(moves.contains(move)) {
-				return true;
-			}
-		}
-		return false;
+		return rangeMoves.get(range).contains(new Move(pos, end));
 	}
 
 	/**
@@ -349,7 +330,14 @@ public class Entity {
 	public boolean movable() {
 		return !(blocked || moveCounter == 0);
 	}
-
+	private boolean hasPossibleMove() {
+		for(int i = 1; i <= range; ++i) {
+			if(!rangeMoves.get(range).isEmpty()) {
+				return true;
+			}
+		}
+		return false;
+	}
 	/**
 	 * intitalises the rangeMoves-Vector
 	 */
@@ -385,44 +373,5 @@ public class Entity {
 	@Override
 	synchronized public Entity clone() {
 		return new Entity(this);
-	}
-
-	/**
-	 * the to string-method, used for converting an entity to a suseful string
-	 * @return "S", if the entity is stone, "T"+ height, if tower, "B", if base
-	 */
-	public String toString() {
-		String col;
-		String s;
-		if(color == PlayerColor.RED) { 
-			if(blocked) {
-				col = ANSI_WHITE;
-			}
-			else if (isMaxHeight()) {
-				col = ANSI_YELLOW;
-			}
-			else {
-				col = ANSI_RED;
-			}
-		}
-		else {
-			if(blocked) {
-				col = ANSI_CYAN;
-			}
-			else if (isMaxHeight()){
-				col = ANSI_PURPLE;
-			}
-			else {
-				col = ANSI_BLUE;
-			}
-
-		}
-		if(base) {
-			s = col + "B" + ANSI_WHITE;
-		}
-		else {
-			s = col + height + ANSI_WHITE;
-		}
-		return s;
 	}
 }

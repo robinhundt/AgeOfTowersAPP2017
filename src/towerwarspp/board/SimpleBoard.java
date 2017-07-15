@@ -1,35 +1,105 @@
 package towerwarspp.board;
 
-import towerwarspp.preset.*;
-
 import static towerwarspp.preset.PlayerColor.*;
 import static towerwarspp.preset.Status.*;
+import static towerwarspp.main.debug.DebugLevel.*;
+import static towerwarspp.main.debug.DebugSource.*;
 import static towerwarspp.main.WinType.*;
-import towerwarspp.main.WinType;
-import java.util.Vector;
+
 import java.util.HashSet;
 import java.util.ListIterator;
+import java.util.Vector;
 
+import towerwarspp.main.debug.*;
+import towerwarspp.main.Debug;
+import towerwarspp.main.WinType;
+import towerwarspp.preset.Move;
+import towerwarspp.preset.PlayerColor;
+import towerwarspp.preset.Position;
+import towerwarspp.preset.Status;
+import towerwarspp.preset.Viewable;
+import towerwarspp.preset.Viewer;
+
+/**
+* This class represents the board on which all players' moves have to be executed.
+* It contains information about all tokens which are currently on the board as well as about the current turn and game status. 
+* It executes new moves conducting all necessary changes respectively and recognises if the new move is a legal one 
+* and if it leads to the end of the game. Illegal moves will not be executed. Instead, the SimpleBoard's status will be set to ILLEGAL.
+* If the game is finished, the SimpleBoard saves the information on the win type.
+*  
+* @author Anastasiia Kysliak
+* @version 15-07-17 
+*/
 public class SimpleBoard implements Viewable {
-        protected int size;
-        protected PlayerColor turn = RED;
-        protected Status status = OK;
-        protected Vector<Entity> listRed = new Vector<Entity>();
-        protected Vector<Entity> listBlue = new Vector<Entity>();
-        protected Entity[][] board;
-        protected Position redBase;
-        protected Position blueBase;
-	protected WinType winType = null;
+	/**
+	* The size of the board.
+	*/
+	protected int size;
+	/**
+	* The current turn.
+	*/
+	protected PlayerColor turn = RED;
+	/**
+	* The current board satus.
+	*/
+	private Status status = OK;
+	/**
+	* A list of all potentially movable tokens belonging to the red player.
+	* This list contais only stones and towers (blocked and not blocked), but not the base.
+	*/
+	protected Vector<Entity> listRed = new Vector<Entity>();
+	/**
+	* A list of all potentially movable tokens belonging to the blue player.
+	* This list contais only stones and towers (blocked and not blocked), but not the base.
+	*/
+	protected Vector<Entity> listBlue = new Vector<Entity>();
+	/**
+	* The representation of the board as a 2-dimensional array of Entities.
+	*/
+	protected Entity[][] board;
+	/**
+	* The position of the red base.
+	*/
+	protected Position redBase;
+	/**
+	* The position of the blue base.
+	*/
+	protected Position blueBase;
+	/**
+	*
+	*/ 
+	protected Debug debug;
+	/**
+	* A list of {@link Haxagon} objects representing all possible directions on the board.
+	*/
+	private final Hexagon[] directions = { new Hexagon(1, 0), new Hexagon(0, 1), new Hexagon(-1, 1),
+			new Hexagon(-1, 0), new Hexagon(0, -1), new Hexagon(1, -1), };
+	/**
+	* Stores the information on the win type if the game is finished. This variable has value null as long as the game is not finished.
+	*/
+	private WinType winType = null;
+
 
         /**
-        * Initialises a new object of the Board class.
-        * @param n - size of the new board.
+        * Initialises a new object of the class SimpleBoard.
+        * @param n size of the new board.
         */
         public SimpleBoard (int n) {
                 board = new Entity[n+1][n+1];
-				size = n;
+		size = n;
                 initialiseBoard();
+		this.debug = Debug.getInstance();
         }
+ 	/**
+        * Initialises a new object of the class SimpleBoard with the specified parameters.
+        * @param size size of the new board.
+        * @param turn current turn.
+        * @param lRed list of all red entities except the red base.
+        * @param lBlue list of all blue entities except the blue base.
+        * @param board representation of the board as a 2-dimensional array of entities.
+        * @param redB position of the red base.
+        * @param blueB position of the blue base.
+        */
 	public SimpleBoard(int size, PlayerColor turn, Vector<Entity> lRed, Vector<Entity> lBlue, Entity[][] board, Position redB, Position blueB) {
 		this.size = size;
 		this.turn = turn;
@@ -37,67 +107,88 @@ public class SimpleBoard implements Viewable {
 		this.listBlue = lBlue;
 		this.board = board;
 		this.redBase = redB;
-		this.blueBase = blueB; 
-	}
-
-	public Entity[][] getBoard(){
-		return board;
-	}
-        private void initialiseBoard() {
-                redBase = new Position(1, 1);
-                board[1][1] = new Entity (redBase, RED, size, true);
-                blueBase = new Position(size, size);
-                board[size][size] = new Entity (blueBase, BLUE, size, true);
-		int d = size/2;
-		initialiseEntities(redBase, d, RED, listRed);
-		initialiseEntities(blueBase, d, BLUE,listBlue);
-	}
-	private void initialiseEntities(Position base, int dist, PlayerColor col, Vector<Entity> list) {
-		for(int i = 1; i <= dist; ++i) {
-			Vector<Position> positions = findPositionsInRange(base, i);
-			for(Position pos: positions) {
- 				Entity ent = new Entity(pos, col, size);
-                        	board[pos.getLetter()][pos.getNumber()] = ent;
-				findStoneMoves(ent);
-                       		list.add(ent);
-			}
-		}
-	}
-	/**
-	* Returns a viewer for this board.
-	* @return
-	*	a viewer for this board.
-	*/
-	public BViewer viewer() {
-		return new BViewer(this, board, size);
+		this.blueBase = blueB;
+		this.debug = Debug.getInstance();
 	}
 	/**
 	* Returns the size of the board.
-	* @return
-	*	the size of the board.
+	* @return the size of the board.
 	*/
 	public int getSize() {
 		return size;
 	}
 	/**
 	* Returns the current turn.
-	* @return
-	*	the curren turn.
+	* @return the curren turn.
 	*/
 	public PlayerColor getTurn() {
 		return turn;
 	}
 	/**
 	* Returns the status of the board.
-	* @return
-	*	the status of the board.
+	* @return the status of the board.
 	*/
 	public Status getStatus() {
 		return status;
 	}
-	
+	/**
+	* Returns the WinType or null if the game is not finished.
+	* @return the WinType or null if the game is not finished.
+	*/
 	public WinType getWinType() {
 		return winType;
+	}
+	/**
+	* Returns a viewer for this board.
+	* @return a viewer for this board.
+	*/
+	public BViewer viewer() {
+		return new BViewer(this, size);
+	}
+	/**
+	* Returns the list of movable tokens of the specified color.
+	* @param col the color of the tokens in question.
+	* @return the list of movable tokens of the specified color.
+	*/
+	protected Vector<Entity> getEntityList(PlayerColor col) {
+		return (col == RED? listRed: listBlue);
+	}
+	/**
+	* Initialises the board before the first move:
+	* 	1. creates and sets all necessary entities on their start positions;
+	*	2. adds all entities except the bases to the corresponding red and blue lists of entities (lists of movable tokens).
+	*/
+        private void initialiseBoard() {
+                redBase = new Position(1, 1);
+                setElement(new Entity (redBase, RED, size, true), redBase);
+                blueBase = new Position(size, size);
+                setElement(new Entity (blueBase, BLUE, size, true), blueBase);
+		int d = size/2;
+		initialiseEntities(redBase, d, RED, listRed);
+		initialiseEntities(blueBase, d, BLUE,listBlue);
+	}
+	/**
+	* Initialises all entities of the specified color before the first move. 
+	* For all positions on the board whose distance to the specified base position is not greater than the specified distance:
+	*	1. creates new entity of the specified color, 
+	*	2. sets this entity on the position,
+	*	3. determines the entity's possible moves,
+	*	4. adds the new entity to the corresponding entity list.
+	* @param base position of the base which determines positions of the new entities.
+	* @param dist the maximal allowed distance to the base.
+	* @param col the color of the player whose entities have to be created and set on the board.
+	* @list the list where all newly created entities have to be stored.
+	*/
+	private void initialiseEntities(Position base, int dist, PlayerColor col, Vector<Entity> list) {
+		for(int i = 1; i <= dist; ++i) {
+			Vector<Position> positions = findPositionsInRange(base, i);
+			for(Position pos: positions) {
+ 				Entity ent = new Entity(pos, col, size);
+                        	setElement(ent, pos);
+				findStoneMoves(ent);
+                       		list.add(ent);
+			}
+		}
 	}
 	
 	/**
@@ -114,81 +205,64 @@ public class SimpleBoard implements Viewable {
 	}
 
 	/**
-	* Finds all positions on the board which have the specified distance to the position cent.
-	* @param cent the position for which the distant positions have to be calculated.
-	* @param range the distance between cent and the positions in question.
-	* @return a vector of all positions on the board with the distance range to the position cent. 
+	* Returns all positions on the board which lay on the ring with the specified center and the specified radius.
+	* @param center position of the ring's center.
+	* @param radius the ring's radius.
+	* @return all positions on the board which lay on the ring with the specified center and the specified radius.
 	*/
-	public Vector<Position> findPositionsInRange(Position cent, int range) {
-		Vector<Position> res = new Vector<Position>();
-		int entX = cent.getLetter();
-		int entY = cent.getNumber();
-		int firstX = entX; 		//most left x in the row
-		int lastX = entX + range;	//the most riht left x in the row
-		int y = entY - range;		//current row
-		for(int x = firstX; x <= lastX && y >= 1; ++x) {
-			addPositionToResult(x, y, res);
+	private Vector<Position> findPositionsInRange (Position center, int radius) {
+		Vector<Position> result = new Vector<Position>(radius*6);
+    			Hexagon curHex = new Hexagon(center);
+			Hexagon direction = new Hexagon(directions[4]);
+			direction.scale(radius);
+			curHex.add(direction);
+    		for (int i = 0; i < 6; ++i) {
+        		for(int j = 0; j < radius; ++j) {
+				if(isOnBoard(curHex.getX(), curHex.getY())) {
+            				result.add(new Position(curHex.getX(), curHex.getY()));
+				}
+            			curHex.add(directions[i]);
+			}
 		}
-		--firstX; 
-		++y;
-		for (; y <= entY; ++y, --firstX) {
-			addPositionToResult(firstX, y, res);
-			addPositionToResult(lastX, y, res);
-		}
-		++firstX;
-		--lastX;
-		for (int d = 1; d < range; ++d, ++y, --lastX) {
-			addPositionToResult(firstX, y, res);
-			addPositionToResult(lastX, y, res);
-		}
-		for(int x = firstX; x <= lastX && y <= size; ++x) {
-			addPositionToResult(x, y, res);
-		}
-		return res;
+    		return result;
 	}
 	/**
-	* Proves if the coordinates x and y in the argument lay on the board. If so, 
-	* a new Position object with these coordinates will be added to the specified vector of positions. 
-	* @param x x-coordinate in question.
-	* @y y-coordinate in question.
-	* @res vector of positions to which the new position has to be added if it is located on the board.
-	*/	
-	private void addPositionToResult(int x, int y, Vector<Position> res) {
-		if (x < 1 || y < 1 || x > size || y > size)
-			return;
-		Position pos = new Position(x, y);
-		res.add(pos);
+	* Returns true if the position with the specified coordinates lays on the board. 
+	* @param x x-coordinate of the position in question.
+	* @param y y-coordinate of the position in question.
+	* @return true if the position (x, y) lays on the board.
+	*/
+	private boolean isOnBoard(int x, int y) {
+			return 	x >= 1 && y >= 1 && x <= size && y <= size;
 	}
 	
 	/**
-	* Returns true, if the player of the specified color can make the specified move.
-	* @param move move in question
-	* @param col color of the player in question
-	* @return true, if the player of the color col can make the specified move.
+	* Returns true if the player of the specified color can make the specified move.
+	* @param move the move in question.
+	* @param col the color of the player in question.
+	* @return true if the player of the color col can make the specified move.
 	*/
 	public boolean moveAllowed(Move move, PlayerColor col) {
 		if(move == null) return true;
-		Position start = move.getStart();
-		Position end = move.getEnd();
-		Entity ent = getElement(start);
-		int dist = distance(start, end);
-		if (ent == null || ent.getColor() != col || !ent.hasMove(end, dist)) {
+		Entity ent = getElement(move.getStart());
+		int dist = distance(move.getStart(), move.getEnd());
+		if (ent == null || ent.getColor() != col || !ent.hasMove(move.getEnd(), dist)) {
 			return false;
 		}
 		return true;
 	}
 	/**
-	* Checks if the specified move is possible and if so, updates the board: executes the move.
-	* Illegal moves will not be executed.
-	* Changes the board status accordingly and returns it.
-	* @param move - new move to be executed.
-	* @return
-	*	a status of the board after checking or checking and executing the move.
+	* Executes the specified move if this move is legal. Changes the board status and the turn accordingly.
+	* If the move is illegal, the turn will not be changed.
+	* Returns the current status of the board.
+	* @param move new move to be executed.
+	* @return actualised status of the board.
 	*/
 	public Status makeMove(Move move) {
 		if (move == null) {
 			winType = SURRENDER;
-			return status = turn == RED ? BLUE_WIN : RED_WIN;
+			status = (turn == RED ? BLUE_WIN : RED_WIN);
+			return status;
 		}
 		Position start = move.getStart();
 		Position end = move.getEnd();
@@ -196,11 +270,14 @@ public class SimpleBoard implements Viewable {
 		if(!moveAllowed(move, turn)) {
 			status = ILLEGAL;
 			if(ent == null) {
+				debug.send(LEVEL_7, BOARD, "Entity is not on the board " + move.toString());
 				throw new IllegalArgumentException("Board: Entity not on the board " + move);
 			}
 			if(ent.getColor() != turn) {
+				debug.send(LEVEL_7, BOARD, "Wrong color: entity color = " + ent.getColor() + ", move = " + move.toString());
 				throw new IllegalArgumentException("Board: false color " + move + " entity color: "+ ent.getColor());
 			}
+			debug.send(LEVEL_7, BOARD, "Move does not exist: turn = " + turn + ", move = " + move.toString());
 			throw new IllegalArgumentException("Board: move does not ex. " + move);
 			//return status;
 		}
@@ -211,16 +288,16 @@ public class SimpleBoard implements Viewable {
 		return status;
 	}
 	/**
-	* Conducts changes caused by the current move, which is specified for the figure ent, in respect to its start position.
-	* If the moving figure is a tower;
-	*	1) its height will be decreased;
-	*	2) the step range of all neighbouring stones with the same color will be decreased as well;
-	*	3) a new Entity, representing the stone taken from the top of the tower, will be created and returned.
-	* If the moving figure is a stone:
-	*	1) the position will be marked as an empty one;
-	*	2) all neighbouring towers of the other color will get a new move to this newly emppty position;
-	*	3) the same stone will be returned.
-	* @param ent the figure which has to be moved (if it is a simple stone) or dismantled (if it is a tower).
+	* Conducts changes caused by the current move, which is specified for the token ent, in respect to its start position.
+	* If the moving token is a tower;
+	*	1. its height will be decreased;
+	*	2. the step range of all neighbouring stones of the same color will be decreased as well;
+	*	3. a new Entity, representing the stone taken from the top of the tower, will be created and returned.
+	* If the moving token is a stone:
+	*	1. the position will be marked as an empty one;
+	*	2. all neighbouring towers of the other color will get a new move to this newly empty position;
+	*	3. the same token will be returned.
+	* @param ent the token which has to be moved (if it is a simple stone) or dismantled (if it is a tower).
 	* @return the stone which is to be placed on the end position of the current move.
 	*/
 	private Entity changeStart(Entity ent, Position start) {
@@ -232,37 +309,36 @@ public class SimpleBoard implements Viewable {
 		}
 		setElement(null, start);
 		Vector<Position> neighbours = findPositionsInRange(start, 1);
-		ListIterator<Position> it = neighbours.listIterator();
-		while(it.hasNext()) {
-			actualiseTowerNeighbourIsEmpty(start, it.next(), ent.getColor());
+		for(Position neighbour : neighbours) {
+			actualiseTowerNeighbourIsEmpty(start, neighbour, ent.getColor());
 		}
 		return ent;
 	}
 	/**
-	* Conducts changes caused by the current move, which is specified for the figure ent, in respect to its end position.
+	* Conducts changes caused by the current move, which is specified for the token ent, in respect to its end position.
 	* Case 1: the end position is empty:
-	*	1) the figure in question will be placed on this position on the board;
-	*	2) all corresponding changes will be commited;
+	*	1. the token in question will be placed on this position on the board;
+	*	2. all corresponding changes will be commited.
 	* Case 2: the end position is the opponent's base:
-	*	1) the figure in question will replace the base on the desk;
-	*	3) no other changes will be commited.
-	* Case 3: there is the opponent's figure (stone or tower) on the end position:
-	*	1.1) if the opponent's figure is a tower,
-	*		it will be replaced or blocked by the moving stone, depending on the art of the move;
-	*	1.2) if the opponent's figure is a simple stone,
+	*	1. the token in question will replace the base on the board;
+	*	2. no other changes will be commited.
+	* Case 3: there is the opponent's token (stone or tower) on the end position:
+	*	1.1. if the opponent's token is a tower,
+	*		it will be replaced or blocked by the moving stone, depending on the art of the move (close or remote one);
+	*	1.2. if the opponent's token is a simple stone,
 	*		it will be replaced by the moving stone;
-	*	2) all corresponding changes will be commited.
-	* Case 4: there is a figure of the same color on the end position:
-	* 	1.1) if the other figure is a stone:
+	*	2. all corresponding changes will be commited.
+	* Case 4: there is a token of the same color on the end position:
+	* 	1.1. if the other token is a stone:
 	*		a new tower with the height 1 will be builded;
-	*	1.2) if the other figure is a tower which is not blocked (and has not reached the maximal height),
+	*	1.2. if the other token is a tower which is not blocked (and has not reached the maximal height),
 	*		the height of the tower will be inncreased;
-	*	1.3) if the other figure is a blocked tower,
-	*		this  tower will be unblocked:
-	*	2) the moving stone will be removed from the list of movable figures;
-	*	3) all other corresponding channges will be commited.		
-	* @param ent the figure in question which has to be moved to the specified end position.
-	* @param end the position to which the figure in question has to be moved. 
+	*	1.3. if the other token is a blocked tower,
+	*		this  tower will be unblocked;
+	*	2. the moving stone will be removed from the list of movable tokens;
+	*	3. all other corresponding changes will be commited.		
+	* @param ent the token in question which has to be moved to the specified end position.
+	* @param end the position to which the token in question has to be moved. 
 	*/
 	private void changeEnd(Entity ent, Position start, Position end) {
 		setPosition(ent, end);
@@ -271,6 +347,7 @@ public class SimpleBoard implements Viewable {
 			setElement(ent, end);
 			if(opponent == null) {
 				findStoneMoves(ent);
+				positionClosedAndOpenedForTowers(end, ent.getColor() == RED? BLUE : RED, false); 
 			}
 			return;
 		}
@@ -281,11 +358,12 @@ public class SimpleBoard implements Viewable {
 					blockTower(opponent, ent);
 				}
 				else {
-					removeTower(opponent, ent);
+					actualiseTowerRemoved(opponent);
+					removeToken(opponent, ent);
 				}
 			}
 			else {
-				removeFigure(opponent, ent);
+				removeToken(opponent, ent);
 			}
 			return;
 		}
@@ -293,69 +371,73 @@ public class SimpleBoard implements Viewable {
 			unblockTower(opponent, ent);
 		}
 		else {
-			buildTower(opponent, ent);
+			removeFromList(ent);
+			actualiseTowerAddStone(opponent);
 		}
 	}
 	/**
-	* Blocks the specified tower and commits all the necessary changes. 
+	* Blocks the specified tower and commits all the necessary changes:
+	* 	1. the range of neighbouring stones of the same color will be decreased;
+	*	2. if the tower in question was of the maximal height,
+	*		towers and stones of the same color which can reach the tower's position will get a new possible move to this position.
+	*	3. the blocking stone will be removed from the list of movable tokens.
+	*	4. for all opponent's stones which have a remote move to the tower's position: 
+	*			this move will be removed from their lists of possible moves.
 	* @param tower the tower to be blocked.
 	* @param blockingStone the stone which is going to block the tower.
 	*/
 	private void blockTower(Entity tower, Entity blockingStone) {
-		block(tower);
-		actualiseOwnTowerBlockedOrDecreased(tower, tower.getHeight());
+		setBlocked(tower, true);
+		actualiseOwnTowerBlockedRemovedOrDecreased(tower, tower.getHeight());
+		removeAllMoves(tower);
+		if(tower.isMaxHeight()) {
+			positionOpened(tower.getPosition(), tower.getColor());
+		}
 		removeFromList(blockingStone);
 		positionClosed(tower.getPosition(), blockingStone.getColor(), false);
 	}
 	/**
-	* Removes the specified tower from the board replacing it with the stone removingStone.
-	* Commits all the necessary changes. 
-	* @param tower the tower to be removed.
-	* @param removingStone the stone which is going to beat the tower and take its place. 
-	*/
-	private void removeTower(Entity tower, Entity removingStone) {
-		actualiseTowerRemoved(tower);
-		removeFigure(tower, removingStone);
-	}
-	/**
-	* Removes the specified figure from the board replacing it with the stone removingStone.
-	* Commits all the necessary changes. 
-	* @param ent the figure to be removed.
-	* @param removingStone the stone which is going to beat the specified figure and take its place. 
-	*/
-	private void removeFigure(Entity ent, Entity removingStone) {
-		setElement(removingStone, ent.getPosition());
-		removeFromList(ent);
-		findStoneMoves(removingStone);
-	}
-	/**
-	* Unblocks the specified tower and commits all the necessary changes. 
+	* Unblocks the specified tower, removes the and commits all the necessary changes. 
+	* 	1. the range of neighbouring stones of the same color will be inreased;
+	*	2. the unblocking stone will be removed from the list of movable tokens.
+	*	3. if the unblocked tower is of the maximal height,
+	*		for all tokens of the same color which have a possible move to the tower's position: 
+	*		this move will be removed from their lists of possible moves.
+	*	4. for all opponent's stones which could reach the tower's position with a remote move: 
+	*		this move will be added to their lists of possible moves.
 	* @param tower the tower to be unblocked.
 	* @param unblockingStone the stone which is going to unblock the tower.
 	*/
 	private void unblockTower(Entity tower, Entity unblockingStone) {
-			unblock(tower);
+			setBlocked(tower, false);
 			removeFromList(unblockingStone);
 			findTowerMoves(tower);
 			actualiseOwnTowerUnblockedOrIncreased(tower, tower.getHeight());
 			positionOpenedStonesOnly(tower.getPosition(), (tower.getColor() == RED? BLUE : RED));
 	}
+	
 	/**
-	* Puts the stone newStone on the top of the other stone or tower of the same color specified by the parameter tower.
-	* Commits all the necessary changes. 
-	* @param tower the figure (a tower or a stone) whose height has to be increased as a result of the current move.
-	* @param newStone the stone which is going to be put on the top of the figure in question. 
+	* Removes the specified token ent from the board replacing it with the stone removingStone.
+	* Commits some corresponding changes:
+	* 	1. the position in question will be closed for all neighbouring towers of the same color as the token ent.
+	* 	2. the position in question will be opened for all neighbouring towers of the same color as the token removingStone.
+	*	3. the list of all possible moves of the token removingStone will be actualised with respect to its new position.
+	* @param ent the token to be removed.
+	* @param removingStone the stone which is going to beat the specified opponent's token and take its place on the board. 
 	*/
-	private void buildTower(Entity tower, Entity newStone) {
-			removeFromList(newStone);
-			actualiseTowerAddStone(tower);
+	private void removeToken(Entity ent, Entity removingStone) {
+		setElement(removingStone, ent.getPosition());
+		removeFromList(ent);
+		findStoneMoves(removingStone);
+		positionClosedAndOpenedForTowers(ent.getPosition(), ent.getColor(), true);
 	}
+	
 	/**
-	* Proves if there is a tower on the position pos which is not blocked and has color different from the col.
+	* Proves if there is a tower on the position pos which is not blocked and has color different from col.
 	* If so, adds a new move - to the position emptyPos - to the tower's possible moves.
 	* @param emptyPos the newly empty position.
 	* @param pos some other position on the board neigbouring to emptyPos.
-	* @col the color of the player whose figure has just left the position emptyPos.
+	* @col the color of the player whose token has just left the position emptyPos.
 	*/
 	private void actualiseTowerNeighbourIsEmpty(Position emptyPos, Position pos, PlayerColor col) {
 		Entity ent = getElement(pos);
@@ -364,40 +446,30 @@ public class SimpleBoard implements Viewable {
 		}
 	}
 	/**
-	* Removes the specified position from the list of possible moves for every figure of the specified color,
-	* if this figure can reach the position. The parameter onlyRemote indicates if the position in question
-	* has to be closed for all figures of the specified color or only for those which can reach the position with a remote move.
+	* Removes the specified position from the list of possible moves for every token of the specified color
+	* if this token can reach the position and satisfies the specified requirement (if available).
+	* The parameter forAll indicates if the position in question has to be closed for all tokens 
+	* of the specified color or only for those which can reach the position with a remote move.
 	* @param closedPos the position in question.
-	* @param col the of the figures for which the position in question has to be closed.
-	* @param forAll indicates if the position in question has to be closed for all figures
+	* @param col the color of the tokens which are no more allowed to go to the position closedPos.
+	* @param forAll indicates if the position in question has to be closed for all tokens
 	*	of the specified color (forAll == true) or only for those which can reach the position with a remote move (forAll == false).
 	*/
 	private void positionClosed(Position closedPos, PlayerColor col, boolean forAll) {
-		/*ListIterator<Entity> it = (col == RED? listRed.listIterator(): listBlue.listIterator());
-		while(it.hasNext()) {
-			Entity ent = it.next();
-			int dist = distance(closedPos, ent.getPosition());
-			if (!forAll && dist == 1) 
-				continue;
-			if(ent.hasMove(closedPos, dist)) {
-				removeMove(ent, closedPos, dist);
-			}
-		}*/
-		Vector<Entity> list = (col == RED? listRed: listBlue);
+		Vector<Entity> list = getEntityList(col);
 		for(Entity ent: list) {
 			int dist = distance(closedPos, ent.getPosition());
-			if (!forAll && dist == 1) 
+			if (!forAll && dist == 1) {
 				continue;
-			if(ent.hasMove(closedPos, dist)) {
-				removeMove(ent, closedPos, dist);
 			}
+			removeMove(ent, closedPos, dist);
 		}
 	}
 	/**
-	* Adds the specified position to the list of possible moves for every figure of the specified color,
-	* if this figure can reach the position.
+	* Adds the specified position to the list of possible moves for every token of the specified color
+	* if this token can reach the position.
 	* @param openedPos the position in question.
-	* @param col the of the figures for which the position in question has to be opened.
+	* @param col the color of the tokens which are now allowed to go to the position openedPos if they can reach it.
 	*/
 	private void positionOpened(Position openedPos, PlayerColor col) {
 		Vector<Entity> list = (col == RED? listRed: listBlue);
@@ -411,10 +483,10 @@ public class SimpleBoard implements Viewable {
 		}
 	}
 	/**
-	* Adds the specified position to the list of possible moves for every stone (and for the towers),
+	* Adds the specified position to the list of possible moves for every stone (and not for the towers)
 	* if this stone can reach the position.
 	* @param openedPos the position in question.
-	* @param col the of the stone for which the position in question has to be opened.
+	* @param col the color of the stones which are now allowed to go to the position openedPos if they can reach it.
 	*/
 	private void positionOpenedStonesOnly(Position openedPos, PlayerColor col) {
 		Vector<Entity> list = (col == RED? listRed: listBlue);
@@ -429,50 +501,37 @@ public class SimpleBoard implements Viewable {
 	}
 	
 	/**
-	* Commits changes caused by blocking or dismantling of a tower in respect to its neighbours of the same color.
-	* 1) For each neighbouring stone of the same color: its step width will be decreased and all corresponding
-	*	remote moves will be removed from the list of possible moves.
-	* 2) For each neigbouring tower of the same color: no changes are needed.
-	* 3) If the tower in question had the maximum height, a move to its position will be added 
-	* to the lists of possible moves for all figures (stones and towers) of the same color if they can reach this position.
+	* Commits changes caused by blocking, removing or dismantling of a tower in respect to its neighbours of the same color.
+	* 	1. For all neighbouring stones of the same color: their step ranges will be decreased and all corresponding
+	*		remote moves will be removed from their lists of possible moves.
+	* 	2. For all neigbouring towers of the same color: no changes are needed.
 	* @param tower the tower in question.
-	* @change the number of steps that the neighbouring stones of the same color
-	*	lose as a result of blocking or dismantling of the tower in question.
+	* @change the necessary change in the step range: will be subtracted from the current range values of the neighbouring stones.
 	*/
-	private void actualiseOwnTowerBlockedOrDecreased(Entity tower, int change) {
+	private void actualiseOwnTowerBlockedRemovedOrDecreased(Entity tower, int change) {
 		HashSet<Move> moves = tower.getMoves().get(1);
-		if (tower.isBlocked()) {
-			removeAllMoves(tower);
-		}
-		Position pos;
 		for(Move move: moves) {
-			pos = move.getEnd();
-			Entity ent = getElement(pos);
+			Entity ent = getElement(move.getEnd());
 			if(ent != null && !ent.isTower()) {
 				removeRanges(ent, change);
 			}
 		}
-		if(tower.isMaxHeight()) {
-			positionOpened(tower.getPosition(), tower.getColor());
-		}
 	}
 	/**
 	* Commits changes caused by creating, increasing or unblocking of a tower in respect to its neighbours of the same color.
-	* 1) For each neighbouring stone of the same color: its step width will be increased and all newly available
-	*	remote moves will be added to its list of possible moves.
-	* 2) For each neigbouring tower of the same color: no changes are needed if the height of the increased/unblocked one is not maximum.
-	* 3) If the tower in question has the maximum height, all moves to its position will be removed 
-	* from the lists of possible moves for all figures (stones and towers) of the same color in case they had such moves.
-	* @param tower the tower whose height has ben increased.
-	* @change the number of steps that the neighbouring stones of the same color
-	*	gain as a result of creating, increasing or unblocking of the tower in question.
+	* 	1. For all neighbouring stones of the same color: their step ranges will be increased and all newly available
+	*		remote moves will be added to their lists of possible moves.
+	* 	2. For all neigbouring towers of the same color: 
+	*		no changes are needed if the height of the increased/unblocked tower is not maximum.
+	* 	3. If the tower in question has reached the maximum height, all moves to its position will be removed 
+	* 		from the lists of possible moves for all tokens (stones and towers) of the same color in case they had such moves.
+	* @param tower the tower whose height has been increased.
+	* @change the necessary change in the step range: will be added to the current range values of the neighbouring stones.
 	*/
 	private void actualiseOwnTowerUnblockedOrIncreased(Entity tower, int change) {
 		HashSet<Move> moves = tower.getMoves().get(1);
-		Position pos;
 		for(Move move: moves) {
-			pos = move.getEnd();
-			Entity ent = getElement(pos);
+			Entity ent = getElement(move.getEnd());
 			if(ent != null && !ent.isTower()) { 
 				addRanges(ent, change);
 			}
@@ -482,22 +541,58 @@ public class SimpleBoard implements Viewable {
 		}
 	}
 	/**
-	* Conducts all necessary changes caused by removing a tower.
+	* Commits some necessary changes caused by removing a tower.
+	* Case 1: the removed tower was blocked:
+	*	its position will be opened for all opponent's tokens (stones and towers);
+	* Case 2: the removed tower was not blocked:
+	*	1. the step ranges of the neighbouring stones of the same color will be decreased
+	*		and the corresponding remote moves will be removed from their lists of possible moves
+	*	2. If the tower had the maximal height, its position will be opened for all stones of the same color.
 	* @param tower the tower that has been removed.
 	*/
 	private void actualiseTowerRemoved(Entity tower) {
 		removeFromList(tower);
-		if(!tower.isBlocked()) {
-			actualiseOwnTowerBlockedOrDecreased(tower, tower.getHeight());
+		if(tower.isBlocked()) {
+			positionOpened(tower.getPosition(), (tower.getColor() == RED? BLUE: RED));
+			return;
 		}
-		positionOpened(tower.getPosition(), (tower.getColor() == RED? BLUE: RED));
+		actualiseOwnTowerBlockedRemovedOrDecreased(tower, tower.getHeight());
 		if(tower.isMaxHeight()) {
 			positionOpenedStonesOnly(tower.getPosition(), tower.getColor());
 		}
 	}
 	/**
-	* Conducts all necessary changes caused by putting a stone on a top of a tower.
-	* @param tower the tower whose height has been increased with a new stone.
+	* Removes the specified position from the list of possible moves for all neighbouring towers of the specified color.
+	* If the parameter openForOpponent has value true, the same position will be added to the possible moves
+	* list of the neighbouring towers of the other color.
+	* @param pos the position in question.
+	* @param col the color of the towers which are no more allowed to be dismantled on the position closedPos.
+	* @openForOpponent this parameter defines, if the same position has to be added to the list of possible moves 
+	*	for the towers of th other color (if so, openForOpponent == true).
+	*/
+	private void positionClosedAndOpenedForTowers(Position pos, PlayerColor col, boolean openForOpponent) {
+		Vector<Position> neighbours = findPositionsInRange(pos, 1);
+		for(Position neighbour : neighbours) {
+			Entity ent = getElement(neighbour);
+			if(ent != null && ent.isTower() && !ent.isBlocked()) {
+				if (ent.getColor() == col) {
+					removeMove(ent, pos, 1); 
+				}
+				else if(openForOpponent) {
+					addMove(ent, pos, 1);
+				}			
+			} 
+		}
+	}
+	/**
+	* Commits all necessary changes caused by putting a stone on the top of the specified token (stone or tower):
+	*	1. The token's height will be increased.
+	*	2. The tower moves will be found if originally the token was not a tower.
+	*	3. For all neighbouring stones of the same color: their step ranges will be increased respectively and all newly available
+	*		remote moves will be added to their lists of possible moves.
+	*	4. If the increased tower has reached the maximum height, all moves to its position will be removed 
+	* 		from the lists of possible moves for all tokens (stones and towers) of the same color in case they had such moves. 
+	* @param tower the token whose height has been increased by a new stone.
 	*/
 	private void actualiseTowerAddStone(Entity tower) {
 		incHeight(tower);
@@ -507,11 +602,17 @@ public class SimpleBoard implements Viewable {
 		actualiseOwnTowerUnblockedOrIncreased(tower, 1);
 	}
 	/**
-	* Conducts all necessary changes caused by removing a stone from a tower.
-	* @param tower the tower whose top stone has been removed.
+	* Commits all necessary changes caused by removing a stone from the top of the specified tower:
+	*	1. The tower's height will be decreased.
+	* 	2. For all neighbouring stones of the same color: their step ranges will be decreased respectively and all corresponding
+	*		remote moves will be removed from their lists of possible moves.
+	*	3. If the tower had the maximal height, its position will be opened for all tokens (stones and towers) of the same color.
+	*	4. If there is only a simple stone left from the tower, 
+	*		its possible moves will be calculated and added to its list of possible moves.
+	* @param tower the tower whose top stone has to be removed.
 	*/
 	private void actualiseTowerRemoveStone(Entity tower) {
-		actualiseOwnTowerBlockedOrDecreased(tower, 1);
+		actualiseOwnTowerBlockedRemovedOrDecreased(tower, 1);
 		if(tower.isMaxHeight()) {
 			positionOpened(tower.getPosition(), tower.getColor());
 		}
@@ -548,12 +649,12 @@ public class SimpleBoard implements Viewable {
 		return false;
 	}
 	/**
-	* Finds all possible moves for the specified stone and conducts changes relevant for its close neighbours.
+	* Finds all possible moves for the specified stone.
 	* @param stone the stone whose possible moves have to be found.
 	*/
 	private void findStoneMoves(Entity stone) {
 		removeAllMoves(stone);
-		int addRanges = 0;	//additional steps
+		int addRanges = 0;	//additional step range
 		Vector<Position> closeNeighbours = findPositionsInRange(stone.getPosition(), 1);
 		ListIterator<Position> it = closeNeighbours.listIterator();
 		while(it.hasNext()) {
@@ -565,11 +666,7 @@ public class SimpleBoard implements Viewable {
 			if(neighbour != null && neighbour.isTower() && !neighbour.isBlocked()) {
 				if(neighbour.getColor() == stone.getColor()) {
 					addRanges += neighbour.getHeight();
-					addMove(neighbour, stone.getPosition(), 1);
 				} 
-				else {
-					removeMove(neighbour, stone.getPosition(), 1);
-				}
 			}
 		}
 		addRanges(stone, addRanges);
@@ -578,10 +675,11 @@ public class SimpleBoard implements Viewable {
 	* Returns true if a stone of the color col can go to the position pos taking into account the art of the move in question (close or remote one). 
 	* @param pos the position in question.
 	* @param col the color of the stone in question.
-	* @param dist distance from the stone position to the position in question. If dist == 1, it is a close move, else - a remote one.
+	* @param dist distance from the current stone position to the position in question.
+	*		If dist == 1, the potential move is a close one, else - a remote one.
 	* @return true if the stone in question can go to the specified position.  
 	*/
-	protected boolean checkMoveForStone(Position pos, PlayerColor col, int dist) { // 	boolean checkMoveForStone(opponentPos, PlayerColor col)) { checkOpponent
+	protected boolean checkMoveForStone(Position pos, PlayerColor col, int dist) {
 		Entity opponent = getElement(pos);
 		if(opponent == null
 			|| (opponent.getColor() != col && (opponent.isBase() || !opponent.isBlocked() || dist == 1) )
@@ -591,60 +689,77 @@ public class SimpleBoard implements Viewable {
 		return false;
 	}
 	/**
-	* Proves if the last move to the position lastMove was a winning one.
+	* Proves if the last move to the position lastMove was a winning one and returns the corresponding status.
 	* @param lastMove end position of the last move.
-	* @return 
-	*	RED_WIN if the red player has won;
+	* @return RED_WIN if the red player has won;
 	*	BLUE_WIN if the blue player has won;
-	*	OK the move was not winning.
+	*	OK if the move was not winning.
 	*/
 	private Status checkWin(Position lastMove) {
 		if (lastMove.equals((turn == RED? blueBase: redBase))) {
 			winType = BASE_DESTROYED;
 			return (turn == RED? RED_WIN: BLUE_WIN);
 		}
-		if (!hasMoves ((turn == RED? listBlue: listRed))) {
+		if (!hasMoves ((turn == RED? BLUE: RED))) {
 			winType = NO_POSSIBLE_MOVES;
 			return (turn == RED? RED_WIN: BLUE_WIN);
 		}
 		return OK;
 	}
 	/**
-	* Puts the specified figure on the specified position on the board.
-	* @param ent the figure in question.
-	* @param pos position for the speciifiied figure to be placed on.
+	* Puts the specified token on the specified position on the board.
+	* @param ent the token in question.
+	* @param pos position for the specified token to be placed on.
 	*/
 	protected void setElement(Entity ent, Position pos) {
 		board[pos.getLetter()][pos.getNumber()] = ent;
 	}
 	/**
-	* Returns an element located on the specified position on the board.
+	* Returns the element located on the specified position on the board.
 	* @param pos the position of the element that has to be returned.
-	* @return an element located on the specified position on the board.
+	* @return the element located on the specified position on the board.
 	*/
 	protected Entity getElement(Position pos) {
 		return board[pos.getLetter()][pos.getNumber()];
 	}
-	protected void block(Entity tower) {
-		tower.setBlocked(true);
+	/**
+	* Blocks or unblocks the specified tower.
+	* @param tower the tower which has to be blocked.
+	* @param block specifies if the tower in question has to be blocked or unblocked (if block == true, the tower has to be blocked).
+	*/
+	protected void setBlocked(Entity tower, boolean block) {
+		tower.setBlocked(block);
 	}
-	protected void unblock(Entity tower) {
-		tower.setBlocked(false);
-	}
+	/**
+	* Adds a move to the specified end position to the list of all possible moves of the specified token.
+	* @param ent the token which has to have a move to the specified position.
+	* @param pos the end position of the move which has to be possible for the specified token.
+	* @param range distance to the position pos from the token's current position.
+	*/
 	protected void addMove(Entity ent, Position pos, int range) {
 		ent.addMove(pos, range);
 	}
+	/**
+	* Removes the move to the specified end position from the list of all possible moves of the specified token.
+	* @param ent the token whose move to the specified position has to be removed from its list of possible moves.
+	* @param pos the end position of the move which has to be removed from the token's possible moves list.
+	* @param range distance to the position pos from the token's current position.
+	*/
 	protected void removeMove(Entity ent, Position pos, int range) {
 		ent.removeMove(pos, range);
 	}
+	/**
+	* Removes all moves of the specified token.
+	* @param entthe token whose moves have to be removed.
+	*/
 	protected void removeAllMoves(Entity ent) {
 		ent.removeAllMoves();
 	}
 	/**
-	* Increases the step width of the specified figure (stone) by n and adds 
+	* Increases the step range of the specified token (stone) by n and adds 
 	* newly available positions in the new range to its list of possible moves.
-	* @param stone the figure (stone) whose step width has to be increased.
-	* @param n amount of steps that has to be added.
+	* @param stone the token (stone) whose step range has to be increased.
+	* @param n the required change of the step range.
 	*/
 	protected void addRanges(Entity stone, int n) {
 		for(int i = 0; i < n; ++i) {
@@ -658,63 +773,78 @@ public class SimpleBoard implements Viewable {
 		}
 	}
 	/**
-	* Removes the specified number of steps together with all corresponding moves
-	* from the specified figure's list of possible moves.
-	* @param ent the figure in question.
-	* @param n number of steps to be removed. 
+	* Decreases the step range of the specified token and removes all corresponding moves
+	* from the specified token's list of possible moves.
+	* @param ent the token in question.
+	* @param n the required change of the step range. 
 	*/
 	private void removeRanges(Entity ent, int n) {
 		for(int i = 0; i < n; ++i) {
 			decRange(ent);
 		}
 	}
+	/**
+	* Increases the step range of the specified token (stone) by one without
+	* adding any new moves to its list of possible moves.
+	* @param ent the token whose step range has to be increased.
+	*/
 	protected void incRange(Entity ent) {
 		ent.incRange();
 	}
+	/**
+	* Decreases the step range of the specified token (stone) by one.
+	* All moves which are no more possible will be removed from the token's list of possible moves.
+	* @param ent the token whose step range has to be decreased.
+	*/
 	protected void decRange(Entity ent) {
 		ent.decRange();
 	}
+	/**
+	* Increases the height of the specified token.
+	* @param tower the token whose height has to be increased.
+	*/
 	protected void incHeight(Entity tower) {
 		tower.incHeight();
 	}
+	/**
+	* Decreases the height of the specified token.
+	* @param tower the token whose height has to be decreased.
+	*/
 	protected void decHeight(Entity tower) {
 		tower.decHeight();
 	}
+	/**
+	* Sets a new position for the specified token.
+	* @param ent the token whose position has to be changed.
+	* @param pos the new position.
+	*/
 	protected void setPosition(Entity ent, Position pos) {
 		ent.setPosition(pos);
 	}
 	/**
-	* Adds the specified figure to the list of movable figures of the corresponding color.
-	* @param ent the figure in question.
+	* Adds the specified token to the list of movable tokens of the corresponding color.
+	* @param ent the token in question.
 	*/
 	protected void addToList(Entity ent) {
 		Vector<Entity> list = (ent.getColor() == RED? listRed: listBlue);
 		list.add(ent);
 	}
 	/**
-	* Removes the specified figure from the the list of movable figures of the corresponding color.
-	* @param ent the figure in question.
+	* Removes the specified token from the the list of movable tokens of the corresponding color.
+	* @param ent the token in question.
 	*/
 	protected void removeFromList(Entity ent) {
 		Vector<Entity> list = (ent.getColor() == RED? listRed: listBlue);
-		/*if(!list.contains(ent) ) {
-			System.out.println("Entity ist nicht in List");
-		}*/
 		list.remove(ent);
 
 	}
-	/*public void printList(Vector<Entity> list) {
-		for(Entity ent: list) {
-			System.out.print(ent.getPosition() + " ");
-		}
-		System.out.println();
-	}*/
 	/**
-	* Returns true if at least one of the entities returned by the iterator in the argument can be moved.
-	* @param list iterator over a list of Entities (listRed or listBlue) for which the move possibility has to be proved.
-	* @return true if at least one of the entities returned by the iterator it can be moved.
+	* Returns true if the player of the color col has at least one move. 
+	* @param col the color of the player in question.
+	* @return true if the player of the color col has at least one move.
 	*/
-	private boolean hasMoves (Vector<Entity> list) {
+	private boolean hasMoves (PlayerColor col) {
+		Vector<Entity> list = getEntityList(col);
 		for(Entity ent: list) {
 			if(ent.movable()) {
 				return true;
@@ -722,9 +852,82 @@ public class SimpleBoard implements Viewable {
 		}
 		return false;
 	}
+
+	/*public void printList(Vector<Entity> list) {
+		for(Entity ent: list) {
+			System.out.print(ent.getPosition() + " ");
+		}
+		System.out.println();
+	}*/
+
+	/**
+	* Proves if the coordinates x and y in the argument lay on the board. If so, 
+	* a new Position object with these coordinates will be added to the specified vector of positions. 
+	* @param x x-coordinate in question.
+	* @y y-coordinate in question.
+	* @res vector of positions to which the new position has to be added if it is located on the board.
+	*/	
+	/*private void addPositionToResult(int x, int y, Vector<Position> res) {
+		if (x < 1 || y < 1 || x > size || y > size)
+			return;
+		Position pos = new Position(x, y);
+		res.add(pos);
+	}*/
 	
-	protected Vector<Entity> getEntityList(PlayerColor col) {
-		return (col == RED? listRed: listBlue);
-	}
-	
+	/**
+	* Finds all positions on the board which have the specified distance to the position cent.
+	* @param cent the position for which the distant positions have to be calculated.
+	* @param range the distance between cent and the positions in question.
+	* @return a vector of all positions on the board with the distance range to the position cent. 
+	*/
+	/*public Vector<Position> findPositionsInRange(Position cent, int range) {
+		Vector<Position> res = new Vector<Position>();
+		int entX = cent.getLetter();
+		int entY = cent.getNumber();
+		int firstX = entX; 		//most left x in the row
+		int lastX = entX + range;	//the most riht left x in the row
+		int y = entY - range;		//current row
+		for(int x = firstX; x <= lastX && y >= 1; ++x) {
+			addPositionToResult(x, y, res);
+		}
+		--firstX; 
+		++y;
+		for (; y <= entY; ++y, --firstX) {
+			addPositionToResult(firstX, y, res);
+			addPositionToResult(lastX, y, res);
+		}
+		++firstX;
+		--lastX;
+		for (int d = 1; d < range; ++d, ++y, --lastX) {
+			addPositionToResult(firstX, y, res);
+			addPositionToResult(lastX, y, res);
+		}
+		for(int x = firstX; x <= lastX && y <= size; ++x) {
+			addPositionToResult(x, y, res);
+		}
+		return res;
+	}*/
+	/**
+	* Removes the specified tower from the board replacing it with the stone removingStone.
+	* Commits all the necessary changes. 
+	* @param tower the tower to be removed.
+	* @param removingStone the stone which is going to beat the tower and take its place. 
+	*/
+	/*private void removeTower(Entity tower, Entity removingStone) {
+		actualiseTowerRemoved(tower);
+		removeToken(tower, removingStone);
+	}*/
+
+	/**
+	* Increases the height of the token (stone or tower) specified by the parameter tower, removes the stone newStone 
+	* from the list of movable tokens. Commits all the necessary changes. 
+	* @param tower the token (stone or tower) whose height has to be increased as a result of the current move.
+	* @param newStone the stone which has to be put on the top of the token tower creating a new tower or increasing the existing tower's height. 
+	*/
+	/*private void buildTower(Entity tower, Entity newStone) {
+			removeFromList(newStone);
+			actualiseTowerAddStone(tower);
+	}*/
+
+
 }
