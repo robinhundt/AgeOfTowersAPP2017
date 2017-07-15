@@ -193,7 +193,7 @@ public class Entity {
 
 	public Vector<Move> getMovesAsVector() {
 		Vector<Move> moves = new Vector<Move>();
-		if(movable()) {
+		if(!blocked) {
 			for(int i = 1; i <= range; ++i) {
 				moves.addAll(rangeMoves.get(i));
 			}

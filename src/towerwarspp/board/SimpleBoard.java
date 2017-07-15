@@ -66,7 +66,7 @@ public class SimpleBoard implements Viewable {
 	*/
 	protected Position blueBase;
 	/**
-	*
+	* Instance of the class {@link Debug}.
 	*/ 
 	protected Debug debug;
 	/**
@@ -143,7 +143,7 @@ public class SimpleBoard implements Viewable {
 	* @return a viewer for this board.
 	*/
 	public BViewer viewer() {
-		return new BViewer(this, size);
+		return new BViewer(this);
 	}
 	/**
 	* Returns the list of movable tokens of the specified color.
@@ -152,6 +152,138 @@ public class SimpleBoard implements Viewable {
 	*/
 	protected Vector<Entity> getEntityList(PlayerColor col) {
 		return (col == RED? listRed: listBlue);
+	}
+	/**
+	* Puts the specified token on the specified position on the board.
+	* @param ent the token in question.
+	* @param pos position for the specified token to be placed on.
+	*/
+	protected void setElement(Entity ent, Position pos) {
+		board[pos.getLetter()][pos.getNumber()] = ent;
+	}
+	/**
+	* Returns the token located on the specified position on the board.
+	* @param pos the position of the token that has to be returned.
+	* @return the token located on the specified position on the board.
+	*/
+	protected Entity getElement(Position pos) {
+		return board[pos.getLetter()][pos.getNumber()];
+	}
+	/**
+	* Blocks or unblocks the specified tower.
+	* @param tower the tower which has to be blocked.
+	* @param block specifies if the tower in question has to be blocked or unblocked (if block == true, the tower has to be blocked).
+	*/
+	protected void setBlocked(Entity tower, boolean block) {
+		tower.setBlocked(block);
+	}
+	/**
+	* Adds a move to the specified end position to the list of all possible moves of the specified token.
+	* @param ent the token which has to have a move to the specified position.
+	* @param pos the end position of the move which has to be possible for the specified token.
+	* @param range distance to the position pos from the token's current position.
+	*/
+	protected void addMove(Entity ent, Position pos, int range) {
+		ent.addMove(pos, range);
+	}
+	/**
+	* Removes the move to the specified end position from the list of all possible moves of the specified token.
+	* @param ent the token whose move to the specified position has to be removed from its list of possible moves.
+	* @param pos the end position of the move which has to be removed from the token's possible moves list.
+	* @param range distance to the position pos from the token's current position.
+	*/
+	protected void removeMove(Entity ent, Position pos, int range) {
+		ent.removeMove(pos, range);
+	}
+	/**
+	* Removes all moves of the specified token.
+	* @param entthe token whose moves have to be removed.
+	*/
+	protected void removeAllMoves(Entity ent) {
+		ent.removeAllMoves();
+	}
+	/**
+	* Increases the step range of the specified token (stone) by n and adds 
+	* newly available positions in the new range to its list of possible moves.
+	* @param stone the token (stone) whose step range has to be increased.
+	* @param n the required change of the step range.
+	*/
+	protected void addRanges(Entity stone, int n) {
+		for(int i = 0; i < n; ++i) {
+			incRange(stone);
+			Vector<Position> opponents = findPositionsInRange(stone.getPosition(), stone.getRange());
+			for(Position opponentPos: opponents){
+				if(checkMoveForStone(opponentPos, stone.getColor(), stone.getRange())) {
+					addMove(stone, opponentPos, stone.getRange());
+				}
+			}
+		}
+	}
+	/**
+	* Decreases the step range of the specified token and removes all corresponding moves
+	* from the specified token's list of possible moves.
+	* @param ent the token in question.
+	* @param n the required change of the step range. 
+	*/
+	private void removeRanges(Entity ent, int n) {
+		for(int i = 0; i < n; ++i) {
+			decRange(ent);
+		}
+	}
+	/**
+	* Increases the step range of the specified token (stone) by one without
+	* adding any new moves to its list of possible moves.
+	* @param ent the token whose step range has to be increased.
+	*/
+	protected void incRange(Entity ent) {
+		ent.incRange();
+	}
+	/**
+	* Decreases the step range of the specified token (stone) by one.
+	* All moves which are no more possible will be removed from the token's list of possible moves.
+	* @param ent the token whose step range has to be decreased.
+	*/
+	protected void decRange(Entity ent) {
+		ent.decRange();
+	}
+	/**
+	* Increases the height of the specified token.
+	* @param tower the token whose height has to be increased.
+	*/
+	protected void incHeight(Entity tower) {
+		tower.incHeight();
+	}
+	/**
+	* Decreases the height of the specified token.
+	* @param tower the token whose height has to be decreased.
+	*/
+	protected void decHeight(Entity tower) {
+		tower.decHeight();
+	}
+	/**
+	* Sets a new position for the specified token.
+	* @param ent the token whose position has to be changed.
+	* @param pos the new position.
+	*/
+	protected void setPosition(Entity ent, Position pos) {
+		ent.setPosition(pos);
+	}
+	/**
+	* Adds the specified token to the list of movable tokens of the corresponding color.
+	* @param ent the token in question.
+	*/
+	protected void addToList(Entity ent) {
+		Vector<Entity> list = (ent.getColor() == RED? listRed: listBlue);
+		list.add(ent);
+	}
+	/**
+	* Removes the specified token from the the list of movable tokens of the corresponding color.
+	* @param ent the token in question.
+	*/
+	protected void removeFromList(Entity ent) {
+		Vector<Entity> list = (ent.getColor() == RED? listRed: listBlue);
+		list.remove(ent);
+
 	}
 	/**
 	* Initialises the board before the first move:
@@ -705,138 +837,6 @@ public class SimpleBoard implements Viewable {
 			return (turn == RED? RED_WIN: BLUE_WIN);
 		}
 		return OK;
-	}
-	/**
-	* Puts the specified token on the specified position on the board.
-	* @param ent the token in question.
-	* @param pos position for the specified token to be placed on.
-	*/
-	protected void setElement(Entity ent, Position pos) {
-		board[pos.getLetter()][pos.getNumber()] = ent;
-	}
-	/**
-	* Returns the element located on the specified position on the board.
-	* @param pos the position of the element that has to be returned.
-	* @return the element located on the specified position on the board.
-	*/
-	protected Entity getElement(Position pos) {
-		return board[pos.getLetter()][pos.getNumber()];
-	}
-	/**
-	* Blocks or unblocks the specified tower.
-	* @param tower the tower which has to be blocked.
-	* @param block specifies if the tower in question has to be blocked or unblocked (if block == true, the tower has to be blocked).
-	*/
-	protected void setBlocked(Entity tower, boolean block) {
-		tower.setBlocked(block);
-	}
-	/**
-	* Adds a move to the specified end position to the list of all possible moves of the specified token.
-	* @param ent the token which has to have a move to the specified position.
-	* @param pos the end position of the move which has to be possible for the specified token.
-	* @param range distance to the position pos from the token's current position.
-	*/
-	protected void addMove(Entity ent, Position pos, int range) {
-		ent.addMove(pos, range);
-	}
-	/**
-	* Removes the move to the specified end position from the list of all possible moves of the specified token.
-	* @param ent the token whose move to the specified position has to be removed from its list of possible moves.
-	* @param pos the end position of the move which has to be removed from the token's possible moves list.
-	* @param range distance to the position pos from the token's current position.
-	*/
-	protected void removeMove(Entity ent, Position pos, int range) {
-		ent.removeMove(pos, range);
-	}
-	/**
-	* Removes all moves of the specified token.
-	* @param entthe token whose moves have to be removed.
-	*/
-	protected void removeAllMoves(Entity ent) {
-		ent.removeAllMoves();
-	}
-	/**
-	* Increases the step range of the specified token (stone) by n and adds 
-	* newly available positions in the new range to its list of possible moves.
-	* @param stone the token (stone) whose step range has to be increased.
-	* @param n the required change of the step range.
-	*/
-	protected void addRanges(Entity stone, int n) {
-		for(int i = 0; i < n; ++i) {
-			incRange(stone);
-			Vector<Position> opponents = findPositionsInRange(stone.getPosition(), stone.getRange());
-			for(Position opponentPos: opponents){
-				if(checkMoveForStone(opponentPos, stone.getColor(), stone.getRange())) {
-					addMove(stone, opponentPos, stone.getRange());
-				}
-			}
-		}
-	}
-	/**
-	* Decreases the step range of the specified token and removes all corresponding moves
-	* from the specified token's list of possible moves.
-	* @param ent the token in question.
-	* @param n the required change of the step range. 
-	*/
-	private void removeRanges(Entity ent, int n) {
-		for(int i = 0; i < n; ++i) {
-			decRange(ent);
-		}
-	}
-	/**
-	* Increases the step range of the specified token (stone) by one without
-	* adding any new moves to its list of possible moves.
-	* @param ent the token whose step range has to be increased.
-	*/
-	protected void incRange(Entity ent) {
-		ent.incRange();
-	}
-	/**
-	* Decreases the step range of the specified token (stone) by one.
-	* All moves which are no more possible will be removed from the token's list of possible moves.
-	* @param ent the token whose step range has to be decreased.
-	*/
-	protected void decRange(Entity ent) {
-		ent.decRange();
-	}
-	/**
-	* Increases the height of the specified token.
-	* @param tower the token whose height has to be increased.
-	*/
-	protected void incHeight(Entity tower) {
-		tower.incHeight();
-	}
-	/**
-	* Decreases the height of the specified token.
-	* @param tower the token whose height has to be decreased.
-	*/
-	protected void decHeight(Entity tower) {
-		tower.decHeight();
-	}
-	/**
-	* Sets a new position for the specified token.
-	* @param ent the token whose position has to be changed.
-	* @param pos the new position.
-	*/
-	protected void setPosition(Entity ent, Position pos) {
-		ent.setPosition(pos);
-	}
-	/**
-	* Adds the specified token to the list of movable tokens of the corresponding color.
-	* @param ent the token in question.
-	*/
-	protected void addToList(Entity ent) {
-		Vector<Entity> list = (ent.getColor() == RED? listRed: listBlue);
-		list.add(ent);
-	}
-	/**
-	* Removes the specified token from the the list of movable tokens of the corresponding color.
-	* @param ent the token in question.
-	*/
-	protected void removeFromList(Entity ent) {
-		Vector<Entity> list = (ent.getColor() == RED? listRed: listBlue);
-		list.remove(ent);
-
 	}
 	/**
 	* Returns true if the player of the color col has at least one move. 
