@@ -6,7 +6,18 @@ import towerwarspp.board.Entity;
 
 import java.util.Vector;
 
-
+/**
+* This is an interface for a board viewer. It has to observe an object which represents a board and deliver
+* the following information to the caller: 
+*	the board's size, 
+*	the board's current status, 
+*	the current turn,
+*	the clone of a token located on some particular field of the board if this field is not empty.
+*
+* @author Kai Kuhlmann
+* @author Anastasiia Kysliak
+* @version 15-07-17
+*/
 public interface Viewer {
 	/**
 	* Returns the size the observed board.

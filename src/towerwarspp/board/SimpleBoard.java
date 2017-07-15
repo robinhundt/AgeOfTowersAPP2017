@@ -286,88 +286,17 @@ public class SimpleBoard implements Viewable {
 
 	}
 	/**
-	* Initialises the board before the first move:
-	* 	1. creates and sets all necessary entities on their start positions;
-	*	2. adds all entities except the bases to the corresponding red and blue lists of entities (lists of movable tokens).
-	*/
-        private void initialiseBoard() {
-                redBase = new Position(1, 1);
-                setElement(new Entity (redBase, RED, size, true), redBase);
-                blueBase = new Position(size, size);
-                setElement(new Entity (blueBase, BLUE, size, true), blueBase);
-		int d = size/2;
-		initialiseEntities(redBase, d, RED, listRed);
-		initialiseEntities(blueBase, d, BLUE,listBlue);
-	}
-	/**
-	* Initialises all entities of the specified color before the first move. 
-	* For all positions on the board whose distance to the specified base position is not greater than the specified distance:
-	*	1. creates new entity of the specified color, 
-	*	2. sets this entity on the position,
-	*	3. determines the entity's possible moves,
-	*	4. adds the new entity to the corresponding entity list.
-	* @param base position of the base which determines positions of the new entities.
-	* @param dist the maximal allowed distance to the base.
-	* @param col the color of the player whose entities have to be created and set on the board.
-	* @list the list where all newly created entities have to be stored.
-	*/
-	private void initialiseEntities(Position base, int dist, PlayerColor col, Vector<Entity> list) {
-		for(int i = 1; i <= dist; ++i) {
-			Vector<Position> positions = findPositionsInRange(base, i);
-			for(Position pos: positions) {
- 				Entity ent = new Entity(pos, col, size);
-                        	setElement(ent, pos);
-				findStoneMoves(ent);
-                       		list.add(ent);
-			}
-		}
-	}
-	
-	/**
 	* Calculates the distance between two positions on the board.
 	* @param a the first position.
 	* @param b the second position.
 	* @return the distance between the positions a and b.
 	*/
-	protected int distance (Position a, Position b) {
+	public static int distance (Position a, Position b) {
 		int x = a.getLetter() - b.getLetter();
 		int y = a.getNumber() - b.getNumber();
 		int z = x + y;
 		return (Math.abs(x) + Math.abs(y) + Math.abs(z))/2;
 	}
-
-	/**
-	* Returns all positions on the board which lay on the ring with the specified center and the specified radius.
-	* @param center position of the ring's center.
-	* @param radius the ring's radius.
-	* @return all positions on the board which lay on the ring with the specified center and the specified radius.
-	*/
-	private Vector<Position> findPositionsInRange (Position center, int radius) {
-		Vector<Position> result = new Vector<Position>(radius*6);
-    			Hexagon curHex = new Hexagon(center);
-			Hexagon direction = new Hexagon(directions[4]);
-			direction.scale(radius);
-			curHex.add(direction);
-    		for (int i = 0; i < 6; ++i) {
-        		for(int j = 0; j < radius; ++j) {
-				if(isOnBoard(curHex.getX(), curHex.getY())) {
-            				result.add(new Position(curHex.getX(), curHex.getY()));
-				}
-            			curHex.add(directions[i]);
-			}
-		}
-    		return result;
-	}
-	/**
-	* Returns true if the position with the specified coordinates lays on the board. 
-	* @param x x-coordinate of the position in question.
-	* @param y y-coordinate of the position in question.
-	* @return true if the position (x, y) lays on the board.
-	*/
-	private boolean isOnBoard(int x, int y) {
-			return 	x >= 1 && y >= 1 && x <= size && y <= size;
-	}
-	
 	/**
 	* Returns true if the player of the specified color can make the specified move.
 	* @param move the move in question.
@@ -420,6 +349,70 @@ public class SimpleBoard implements Viewable {
 		return status;
 	}
 	/**
+	* Proves if the last move to the position lastMove was a winning one and returns the corresponding status.
+	* @param lastMove end position of the last move.
+	* @return RED_WIN if the red player has won;
+	*	BLUE_WIN if the blue player has won;
+	*	OK if the move was not winning.
+	*/
+	private Status checkWin(Position lastMove) {
+		if (lastMove.equals((turn == RED? blueBase: redBase))) {
+			winType = BASE_DESTROYED;
+			return (turn == RED? RED_WIN: BLUE_WIN);
+		}
+		if (!hasMoves ((turn == RED? BLUE: RED))) {
+			winType = NO_POSSIBLE_MOVES;
+			return (turn == RED? RED_WIN: BLUE_WIN);
+		}
+		return OK;
+	}
+	/**
+	* Returns true if the player of the color col has at least one move. 
+	* @param col the color of the player in question.
+	* @return true if the player of the color col has at least one move.
+	*/
+	private boolean hasMoves (PlayerColor col) {
+		Vector<Entity> list = getEntityList(col);
+		for(Entity ent: list) {
+			if(ent.isMovable()) {
+				return true;
+			}
+		}
+		return false;
+	}
+	/**
+	* Returns all positions on the board which lay on the ring with the specified center and the specified radius.
+	* @param center position of the ring's center.
+	* @param radius the ring's radius.
+	* @return all positions on the board which lay on the ring with the specified center and the specified radius.
+	*/
+	private Vector<Position> findPositionsInRange (Position center, int radius) {
+		Vector<Position> result = new Vector<Position>(radius*6);
+    			Hexagon curHex = new Hexagon(center);
+			Hexagon direction = new Hexagon(directions[4]);
+			direction.scale(radius);
+			curHex.add(direction);
+    		for (int i = 0; i < 6; ++i) {
+        		for(int j = 0; j < radius; ++j) {
+				if(isOnBoard(curHex.getX(), curHex.getY())) {
+            				result.add(new Position(curHex.getX(), curHex.getY()));
+				}
+            			curHex.add(directions[i]);
+			}
+		}
+    		return result;
+	}
+	/**
+	* Returns true if the position with the specified coordinates lays on the board. 
+	* @param x x-coordinate of the position in question.
+	* @param y y-coordinate of the position in question.
+	* @return true if the position (x, y) lays on the board.
+	*/
+	private boolean isOnBoard(int x, int y) {
+			return 	x >= 1 && y >= 1 && x <= size && y <= size;
+	}
+	
+	/**
 	* Conducts changes caused by the current move, which is specified for the token ent, in respect to its start position.
 	* If the moving token is a tower;
 	*	1. its height will be decreased;
@@ -445,6 +438,37 @@ public class SimpleBoard implements Viewable {
 			actualiseTowerNeighbourIsEmpty(start, neighbour, ent.getColor());
 		}
 		return ent;
+	}
+	/**
+	* Returns true if a tower of the color col neighbouring to the position pos can be dismantled on this position. 
+	* @param pos the position in question.
+	* @param col the color of the tower in question.
+	* @return true if a tower of the color col neighbouring to the position pos can be dismantled on this position.  
+	*/
+	private boolean checkMoveForTower(Position pos, PlayerColor col) {
+		Entity opponent = getElement(pos);
+		if(opponent == null || (!opponent.isBase() && opponent.getColor() == col && 
+				(!opponent.isMaxHeight() || opponent.isBlocked() ) ) ){
+				return true;
+		}
+		return false;
+	}
+	/**
+	* Returns true if a stone of the color col can go to the position pos taking into account the art of the move in question (close or remote one). 
+	* @param pos the position in question.
+	* @param col the color of the stone in question.
+	* @param dist distance from the current stone position to the position in question.
+	*		If dist == 1, the potential move is a close one, else - a remote one.
+	* @return true if the stone in question can go to the specified position.  
+	*/
+	private boolean checkMoveForStone(Position pos, PlayerColor col, int dist) {
+		Entity opponent = getElement(pos);
+		if(opponent == null
+			|| (opponent.getColor() != col && (opponent.isBase() || !opponent.isBlocked() || dist == 1) )
+			|| (opponent.getColor() == col && !opponent.isBase() && (!opponent.isMaxHeight() || opponent.isBlocked() ) ) ) {
+			return true;
+		}
+		return false;
 	}
 	/**
 	* Conducts changes caused by the current move, which is specified for the token ent, in respect to its end position.
@@ -520,7 +544,7 @@ public class SimpleBoard implements Viewable {
 	*/
 	private void blockTower(Entity tower, Entity blockingStone) {
 		setBlocked(tower, true);
-		actualiseOwnTowerBlockedRemovedOrDecreased(tower, tower.getHeight());
+		actualiseTowerNeighboursRemoveRanges(tower, tower.getHeight());
 		removeAllMoves(tower);
 		if(tower.isMaxHeight()) {
 			positionOpened(tower.getPosition(), tower.getColor());
@@ -631,7 +655,6 @@ public class SimpleBoard implements Viewable {
 			}
 		}
 	}
-	
 	/**
 	* Commits changes caused by blocking, removing or dismantling of a tower in respect to its neighbours of the same color.
 	* 	1. For all neighbouring stones of the same color: their step ranges will be decreased and all corresponding
@@ -640,7 +663,7 @@ public class SimpleBoard implements Viewable {
 	* @param tower the tower in question.
 	* @change the necessary change in the step range: will be subtracted from the current range values of the neighbouring stones.
 	*/
-	private void actualiseOwnTowerBlockedRemovedOrDecreased(Entity tower, int change) {
+	private void actualiseTowerNeighboursRemoveRanges(Entity tower, int change) {
 		HashSet<Move> moves = tower.getMoves().get(1);
 		for(Move move: moves) {
 			Entity ent = getElement(move.getEnd());
@@ -688,7 +711,7 @@ public class SimpleBoard implements Viewable {
 			positionOpened(tower.getPosition(), (tower.getColor() == RED? BLUE: RED));
 			return;
 		}
-		actualiseOwnTowerBlockedRemovedOrDecreased(tower, tower.getHeight());
+		actualiseTowerNeighboursRemoveRanges(tower, tower.getHeight());
 		if(tower.isMaxHeight()) {
 			positionOpenedStonesOnly(tower.getPosition(), tower.getColor());
 		}
@@ -744,7 +767,7 @@ public class SimpleBoard implements Viewable {
 	* @param tower the tower whose top stone has to be removed.
 	*/
 	private void actualiseTowerRemoveStone(Entity tower) {
-		actualiseOwnTowerBlockedRemovedOrDecreased(tower, 1);
+		actualiseTowerNeighboursRemoveRanges(tower, 1);
 		if(tower.isMaxHeight()) {
 			positionOpened(tower.getPosition(), tower.getColor());
 		}
@@ -765,20 +788,6 @@ public class SimpleBoard implements Viewable {
 				addMove(tower, endPos, 1);
 			}
 		}
-	}
-	/**
-	* Returns true if a tower of the color col neighbouring to the position pos can be dismantled on this position. 
-	* @param pos the position in question.
-	* @param col the color of the tower in question.
-	* @return true if a tower of the color col neighbouring to the position pos can be dismantled on this position.  
-	*/
-	private boolean checkMoveForTower(Position pos, PlayerColor col) {
-		Entity opponent = getElement(pos);
-		if(opponent == null || (!opponent.isBase() && opponent.getColor() == col && 
-				(!opponent.isMaxHeight() || opponent.isBlocked() ) ) ){
-				return true;
-		}
-		return false;
 	}
 	/**
 	* Finds all possible moves for the specified stone.
@@ -804,53 +813,41 @@ public class SimpleBoard implements Viewable {
 		addRanges(stone, addRanges);
 	}
 	/**
-	* Returns true if a stone of the color col can go to the position pos taking into account the art of the move in question (close or remote one). 
-	* @param pos the position in question.
-	* @param col the color of the stone in question.
-	* @param dist distance from the current stone position to the position in question.
-	*		If dist == 1, the potential move is a close one, else - a remote one.
-	* @return true if the stone in question can go to the specified position.  
+	* Initialises the board before the first move:
+	* 	1. creates and sets all necessary entities on their start positions;
+	*	2. adds all entities except the bases to the corresponding red and blue lists of entities (lists of movable tokens).
 	*/
-	protected boolean checkMoveForStone(Position pos, PlayerColor col, int dist) {
-		Entity opponent = getElement(pos);
-		if(opponent == null
-			|| (opponent.getColor() != col && (opponent.isBase() || !opponent.isBlocked() || dist == 1) )
-			|| (opponent.getColor() == col && !opponent.isBase() && (!opponent.isMaxHeight() || opponent.isBlocked() ) ) ) {
-			return true;
-		}
-		return false;
+        private void initialiseBoard() {
+                redBase = new Position(1, 1);
+                setElement(new Entity (redBase, RED, size, true), redBase);
+                blueBase = new Position(size, size);
+                setElement(new Entity (blueBase, BLUE, size, true), blueBase);
+		int d = size/2;
+		initialiseEntities(redBase, d, RED, listRed);
+		initialiseEntities(blueBase, d, BLUE,listBlue);
 	}
 	/**
-	* Proves if the last move to the position lastMove was a winning one and returns the corresponding status.
-	* @param lastMove end position of the last move.
-	* @return RED_WIN if the red player has won;
-	*	BLUE_WIN if the blue player has won;
-	*	OK if the move was not winning.
+	* Initialises all entities of the specified color before the first move. 
+	* For all positions on the board whose distance to the specified base position is not greater than the specified distance:
+	*	1. creates new entity of the specified color, 
+	*	2. sets this entity on the position,
+	*	3. determines the entity's possible moves,
+	*	4. adds the new entity to the corresponding entity list.
+	* @param base position of the base which determines positions of the new entities.
+	* @param dist the maximal allowed distance to the base.
+	* @param col the color of the player whose entities have to be created and set on the board.
+	* @list the list where all newly created entities have to be stored.
 	*/
-	private Status checkWin(Position lastMove) {
-		if (lastMove.equals((turn == RED? blueBase: redBase))) {
-			winType = BASE_DESTROYED;
-			return (turn == RED? RED_WIN: BLUE_WIN);
-		}
-		if (!hasMoves ((turn == RED? BLUE: RED))) {
-			winType = NO_POSSIBLE_MOVES;
-			return (turn == RED? RED_WIN: BLUE_WIN);
-		}
-		return OK;
-	}
-	/**
-	* Returns true if the player of the color col has at least one move. 
-	* @param col the color of the player in question.
-	* @return true if the player of the color col has at least one move.
-	*/
-	private boolean hasMoves (PlayerColor col) {
-		Vector<Entity> list = getEntityList(col);
-		for(Entity ent: list) {
-			if(ent.movable()) {
-				return true;
+	private void initialiseEntities(Position base, int dist, PlayerColor col, Vector<Entity> list) {
+		for(int i = 1; i <= dist; ++i) {
+			Vector<Position> positions = findPositionsInRange(base, i);
+			for(Position pos: positions) {
+ 				Entity ent = new Entity(pos, col, size);
+                        	setElement(ent, pos);
+				findStoneMoves(ent);
+                       		list.add(ent);
 			}
 		}
-		return false;
 	}
 
 	/*public void printList(Vector<Entity> list) {

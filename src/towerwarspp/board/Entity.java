@@ -330,10 +330,12 @@ public class Entity {
 	public boolean movable() {
 		return !(blocked || moveCounter == 0);
 	}
-	private boolean hasPossibleMove() {
-		for(int i = 1; i <= range; ++i) {
-			if(!rangeMoves.get(range).isEmpty()) {
-				return true;
+	public boolean isMovable() {
+		if(!blocked) {
+			for(int i = 1; i <= range; ++i) {
+				if(!rangeMoves.get(range).isEmpty()) {
+					return true;
+				}
 			}
 		}
 		return false;
