@@ -12,18 +12,19 @@ import towerwarspp.preset.Move;
 import towerwarspp.preset.PlayerColor;
 import towerwarspp.preset.Position;
 /**
- * This Class provides several Functions, used for TowerwarsPP. It's instances are the Stones and
- * Towers of the Game
+ * This Class represents the tokens in the TowerWars game. Every {@link Entity} object contains information about
+ * its current position, height, possible moves, if it is blocked and if it is a base. Each object representing a simple stone
+ * can become a tower, but if the object represents a base, this property can not be changed.
  *
- * @author Alexander Wähling - 28.07.2017
- * @version 0.2.2.8
+ * @author Anastasiia Kysliak
+ * @version 15-07-2017
  */
 public class Entity {
 
 	/**
 	 * The Position of the Entity on the board.
 	 */
-	private Position pos;
+	private Position position;
 
 	/**
 	 * The color of the Entity.
@@ -43,7 +44,7 @@ public class Entity {
 	/**
 	 * Shows whether the Entity is blocked or not.
 	 */
-	private boolean blocked = false;
+	private boolean isBlocked = false;
 
 	/**
 	 * Represents the current step range of the Entity.
@@ -51,19 +52,20 @@ public class Entity {
 	private int range = 1;
 
 	/**
-	 * this array of vectors shows, which moves are available for every range
+	 * Contains all posiible moves of this entity sorted according to the step range needed for reaching the end position.
+	 * This means: the position n in the Vector contains a reference to the HashSet where all possible moves of the range n are stored.
 	 */
-	private Vector<HashSet<Move>> rangeMoves;
+	private Vector<HashSet<Move>> allMoves;
 
 	/**
-	 * size of the gamefield
+	 * The size of the board.
 	 */
 	private int size;
 
 	/**
-	 * shows, weather this entity is the base or not
+	 * Indicates if this entity is a base or not: if true, this entity is a base.
 	 */
-	private boolean base = false;
+	private boolean isBase = false;
 
 	/**
 	 * counts, how many moves this entity has
@@ -71,18 +73,23 @@ public class Entity {
 	private int moveCounter = 0;
 
 	/**
-	 * The maximum range, which is possible with this boardsize
+	* Instance of the class {@link Debug}.
+	*/ 
+	private Debug debug;
+
+	/**
+	 * The maximum step range which a token on the board of the given size can have.
 	 */
 	private final int maxRange;
 
 	/**
-	 * Constructor for the Entity-Object
-	 * @param pos startposition of the object
-	 * @param color color of the stone
-	 * @param size size of the field (size*size)
+	 * Constructor for the {@link Entity} object. creates a new Entity which represents a stone: has the height 0 and the range 1.
+	 * @param pos the current position of this token.
+	 * @param color the color of this token.
+	 * @param size the size of the board on which this token will be used for the TowerWars game.
 	 */
 	public Entity (Position pos, PlayerColor color, int size) {
-		this.pos = pos;
+		this.position = pos;
 		this.color = color;
 		this.size = size;
 		maxHeight = size/3;
@@ -90,290 +97,277 @@ public class Entity {
 		initialiseMoves();
 	}
 	/**
-	 * Constructor for Bases
-	 * @param pos startposition of the object
-	 * @param color color of the stone
-	 * @param size size of the field (size*size)
-	 * @param base bool for showing if base or not
+	 * Constructor for for the {@link Entity} object which has to be used in order to create a base: 
+	 * it allowes to set the variable isBase on true. 
+	 * @param pos the current position of this token.
+	 * @param the color of this token.
+	 * @param size the size of the board on which this token will be used for the TowerWars game.
+	 * @param isBase defines if the new token has to be a base or a normal stone.
 	 */
-	public Entity (Position pos, PlayerColor color, int size, boolean base) {
+	public Entity (Position pos, PlayerColor color, int size, boolean isBase) {
 		this(pos, color, size);
-		this.base = base;
+		this.isBase = isBase;
 	}
-	
 	/**
-	 * Copy-Constructor
-	 * @param original Entity to be copied
+	 * Copy-Constructor: creates a new {@link Entity} object which is a copy of the given {@link Entity} object original.
+	 * @param original {@link Entity} object which has to be copied.
 	 */
 	public Entity(Entity original) {
-		this.pos = original.pos;
+		this.position = original.position;
 		this.color = original.color;
 		this.height = original.height;
 		this.size = original.size;
 		this.range = original.range;
-		this.blocked = original.blocked;
-		this.base = original.base;
+		this.isBlocked = original.isBlocked;
+		this.isBase = original.isBase;
 		this.moveCounter = original.moveCounter;
 		this.maxHeight = original.maxHeight;
 		this.maxRange = original.maxRange;
-		this.rangeMoves = original.copyRangeMoves();
+		this.allMoves = original.copyAllMoves();
 	}
-
-
-
 	/**
-	 * Returns all Moves, which are possible for a specific range
+	 * Returns all moves which correlate with the specified step range: their end positions have the distance range to this token's current position.
+	 * @param range the step range which allows reaching the moves in question.
 	 * @return the Vector of positions
 	 */
 	public HashSet<Move> getRangeMoves(int range) {
-		return rangeMoves.elementAt(range);
-	}
-
-	/**
-	 * returns the  boardsize for copy-constructor
-	 */
-	public int getSize() {
-		return size;
+		return allMoves.get(range);
 	}
 	/**
-	 * returns a clone of the rangeMoves
-	 */
-	synchronized private Vector<HashSet<Move>> copyRangeMoves() {
-		Vector<HashSet<Move>> out = new Vector<HashSet<Move>>();
-		for(HashSet<Move> vector : rangeMoves) {
-			out.add(new HashSet<Move>(vector));
-		}
-
-		return out;
-	}
-
-	/**
-	 * Returns the Position.
-	 * @return the Position.
+	 * Returns the current position of this entity.
+	 * @return the current position of this entity.
 	 */
 	public Position getPosition() {
-		return pos;
+		return position;
 	}
-
 	/**
-	 * returns the player-Color, of the Entity
-	 * @return the color
+	 * Changes the current position of this entity.
+	 * @param pos the new position.
+	 */
+	public void setPosition (Position pos) {
+		this.position = pos;
+	}
+	/**
+	 * Returns the color of this entity.
+	 * @return the color of this entity.
 	 */
 	public PlayerColor getColor(){
 		return color;
 	}
-
 	/**
-	 * returns the height of the entity
+	 * Returns the height of this entity.
+	 * @return the height of this entity.
 	 */
 	public int getHeight() {
 		return height;
 	}
-
 	/**
-	 * checks, if the entity is blocked or not
-	 */
-	public boolean isBlocked() {
-		return blocked;
-	}
-
-	/**
-	 * returns the move-range of the entity
+	 * Returns the current step range of this entity.
+	 * @return the current step range of this entity.
 	 */
 	public int getRange() {
 		return range;
 	}
-
 	/**
-	 * returns the Vector of Vector of the possible Moves
+	 * Returns a reference to the collection of all possible moves stored in this {@link Entity} object (does not copy or restore the moves).
+	 * @return a reference to the collection of all possible moves stored in this {@link Entity} object.
 	 */
 	public Vector<HashSet<Move>> getMoves() {
-		return rangeMoves;
+		return allMoves;
 	}
-
+	/**
+	 * Returns all possible moves of this Entity stored in a vector.
+	 * @return all possible moves of this Entity stored in a vector.
+	 */
 	public Vector<Move> getMovesAsVector() {
 		Vector<Move> moves = new Vector<Move>();
-		if(!blocked) {
+		if(!isBlocked) {
 			for(int i = 1; i <= range; ++i) {
-				moves.addAll(rangeMoves.get(i));
+				moves.addAll(allMoves.get(i));
 			}
 		}
 		return moves;
 	}
 	/**
-	 * checks if this entity is a base or not
-	 * @return true if base, false if not
+	 * Returns true if this entity is blocked.
+	 * @return true if this entity is blocked.
+	 */
+	public boolean isBlocked() {
+		return isBlocked;
+	}
+	/**
+	 * Sets the Variable isBlocked to the specified value. If this entity gets blocked, all its current possible moves will be removed. 
+	 * @param blocked defines if this entity representing a tower has to be blocked or unblocked.
+	 */
+	public void setBlocked(boolean blocked) {
+		this.isBlocked = blocked;
+		if(isBlocked) {
+			removeAllMoves();
+		}
+	}
+	/**
+	 * Returns true if this entity is a base.
+	 * @return true if this entity is a base.
 	 */
 	public boolean isBase () {
-		return base;
+		return isBase;
 	}
-
 	/**
-	 * returns the Movecounter
-	 * @return moveCounter
+	 * Returns the moveCounter.
+	 * @return moveCounter.
 	 */
 	public int getMoveCounter() {
 		return moveCounter;
 	}
-
 	/**
-	 * checks if the entity is a Tower
-	 * @return true if height != 0, false if height == 0
+	 * Returns true if this entity is a tower.
+	 * @return true if this entity is a tower (its height > 0).
 	 */
 	public boolean isTower() {
-		return height != 0;
+		return height > 0;
 	}
-
 	/**
-	 * checks if the tower has maxheight
-	 * @return true if maxHeight
+	 * Returns true if this entity is a tower of the maximum height.
+	 * @return true if this entity is a tower of the maximum height.
 	 */
 	public boolean isMaxHeight() {
 		return height == maxHeight;
 	}
-
 	/**
-	 * sets the Variable blocked
-	 * @param blocked the new status of blocked
-	 */
-	public void setBlocked(boolean blocked) {
-		this.blocked = blocked;
-	}
-
-	/**
-	 * sets the position of entity, when it moves
-	 * @param pos the new position
-	 */
-	public void setPosition (Position pos) {
-		this.pos = pos;
-	}
-
-	/**
-	 * increases the height by one
-	 */
-	public void incHeight() {
-		height++;
-	}
-
-	/**
-	 * decreases the height by one
-	 */
-	public void decHeight() {
-		height--;
-	}
-
-	/**
-	 * This method decreases the possible range and removes all moves, which aren't
-	 * posssible anymore
-	 */
-	synchronized public void decRange() {
-		moveCounter-= rangeMoves.elementAt(range).size();
-		rangeMoves.set(range, new HashSet<Move>());
-		range--;
-	}
-
-	/**
-	 * This Method increases the range. The now possible moves have to be added by
-	 * the board
-	 */
-	public void incRange() {
-		range++;
-	}
-
-	/**
-	 * same as incRange but uses given vector and int-array
-	 * @param rangeVector movevector for specific range
-	 */
-	synchronized public void incRange(HashSet<Move> rangeVector) {
-		range++;
-		rangeMoves.set(range, rangeVector);
-		moveCounter += rangeVector.size();
-	}
-
-	/**
-	 * This Method adds a possible move to the Entity.
-	 * It is added in rangeMoves and rangeMoves
-	 * @param end endposition of the move
-	 * @param range distance of the endposition
-	 */
-	synchronized public void addMove(Position end, int range) {
-		if(rangeMoves.get(range).add(new Move(pos, end))) {
-			++moveCounter;
-		}
-	}
-
-	/**
-	 * This Method removes a move from the Entity.
-	 * It is removed in and rangeMoves
-	 * @param end endposition of the move
-	 * @param range distance of the endposition
-	 */
-	synchronized public void removeMove(Position end, int range) {
-		if(rangeMoves.get(range).remove(new Move(pos, end))) {
-			--moveCounter;
-		}
-	}
-
-	/**
-	 * Checks, if a move is possible or not
-	 * @param end the Move to be checked
-	 * @param range the range of the move
+	 * Returns true if this entity a move to the specified position.
+	 * @param end position of the move in question.
+	 * @param range distance to the move's end position from the current position of this entity.
 	 */
 	synchronized public boolean hasMove(Position end, int range) {
-		return rangeMoves.get(range).contains(new Move(pos, end));
+		return allMoves.get(range).contains(new Move(position, end));
 	}
-
 	/**
-	 * checks, if the Entity is movable
-	 * @return true, if movable, false if not
+	 * Returns true if this entity can be moved. This means: this entity is not a base, not blocked and has at least one possible move. 
+	 * @return true if this entity can be moved.
 	 */
-	public boolean movable() {
-		return !(blocked || moveCounter == 0);
-	}
 	public boolean isMovable() {
-		if(!blocked) {
-			for(int i = 1; i <= range; ++i) {
-				if(!rangeMoves.get(range).isEmpty()) {
+		if(!isBase && !isBlocked && moveCounter > 0) {
+			/*for(int i = 1; i <= range; ++i) {
+				if(!allMoves.get(i).isEmpty()) {
 					return true;
 				}
-			}
+			}*/
 		}
 		return false;
 	}
 	/**
-	 * intitalises the rangeMoves-Vector
-	 */
-	synchronized private void initialiseMoves() {
-		rangeMoves = new Vector<HashSet<Move>>(maxRange);
-		for(int i = 0; i < maxRange; ++i) {
-			rangeMoves.add(i, new HashSet<Move>(i * 6 + 1));
-		}
-	}
-	/**
-	 * removes all moves of the entity and sets the range to 1
-	 */
-	public void removeAllMoves() {
-		initialiseMoves();
-		moveCounter = 0;
-		range = 1;
-	}
-
-	/**
-	 * This method gives an Entity all moves
-	 * @param rangeMoves the moves in the vector of vectors
-	 */
-	public void setAllMoves(Vector<HashSet<Move>> rangeMoves, int range, int moveCounter) {
-		this.rangeMoves = rangeMoves;
-		this.range = range;
-		this.moveCounter = moveCounter;
-	}
-
-	/**
-	 * This method clones this instance of the entity with the copy-constructor
-	 * @return the clones entityt
+	 * Clones this {@link Entity} instance with the copy-constructor.
+	 * @return the clone of this entity.
 	 */
 	@Override
 	synchronized public Entity clone() {
 		return new Entity(this);
+	}
+	/**
+	 * Increases the height of this entity by one.
+	 */
+	public void incHeight() {
+		++height;
+		if(height > maxHeight) {
+			debug.send(LEVEL_7, BOARD, "Tower has height > maxHeight");
+		}
+	}
+	/**
+	 * Decreases the height of this entity by one.
+	 */
+	public void decHeight() {
+		--height;
+		if(height < 0) {
+			debug.send(LEVEL_7, BOARD, "Entity has height < 0");
+		}
+	}
+	/**
+	 * Decreases the step range of this entity by one and removes all moves
+	 * which are not possible anymore
+	 */
+	synchronized public void decRange() {
+		moveCounter -= allMoves.get(range).size();
+		allMoves.set(range, new HashSet<Move>());
+		--range;
+		if(range < 0) {
+			debug.send(LEVEL_7, BOARD, "range < 0");
+		}
+	}
+	/**
+	 * Increases the step range of this entity by one. The newly possible moves have to be added extra.
+	 */
+	public void incRange() {
+		++range;
+		if(range > maxRange) {
+			debug.send(LEVEL_7, BOARD, "range > maxRange");
+		}
+	}
+	/**
+	 * Increases the step range of this entity by one. All newly possible moves are taken from the argument.
+	 * @param newMoves the newly possible moves which have to be added to this entity's possible moves.
+	 */
+	synchronized public void incRange(HashSet<Move> newMoves) {
+		++range;
+		allMoves.set(range, newMoves);
+		moveCounter += newMoves.size();
+	}
+	/**
+	 * Creates a new move to the position end add adds it to all possible moves of this entity if there was no such move.
+	 * @param end end position of the move in question.
+	 * @param range distance to the move's end position from the current position of this entity.
+	 */
+	synchronized public void addMove(Position end, int range) {
+		if(allMoves.get(range).add(new Move(position, end))) {
+			++moveCounter;
+		}
+	}
+	/**
+	 * Removes the move to the specified position from the collection of all posiible moves if this entity had such move.
+	 * @param end end position of the move in question.
+	 * @param range distance to the move's end position from the current position of this entity.
+	 */
+	synchronized public void removeMove(Position end, int range) {
+		if(allMoves.get(range).remove(new Move(position, end))) {
+			--moveCounter;
+		}
+	}
+	/**
+	 * Removes all moves from the collection of all possible moves and sets the range to 1.
+	 */
+	public void removeAllMoves() {
+		initialiseMoves();
+	}
+	/**
+	 * Replaces the current collection of all possible moves with the specified collection of moves and changes the range value respectively.
+	 * @param allMoves new collection of all possible moves.
+	 * @param range the new step range.
+	 * @param moveConter the number of moves in the new move collection.
+	 */
+	public void setAllMoves(Vector<HashSet<Move>> allMoves, int range, int moveConter) {
+		this.allMoves = allMoves;
+		this.range = range;
+		this.moveCounter = moveCounter;
+	}
+	/**
+	 * Returns collection of clones of all possible moves.
+	 * @return collection of clones of all possible moves.
+	 */
+	synchronized private Vector<HashSet<Move>> copyAllMoves() {
+		Vector<HashSet<Move>> clone = new Vector<HashSet<Move>>();
+		for(HashSet<Move> set : allMoves) {
+			clone.add(new HashSet<Move>(set));
+		}
+		return clone;
+	}
+	/**
+	 * Intitalises the collection of all possible moves.
+	 */
+	synchronized private void initialiseMoves() {
+		allMoves = new Vector<HashSet<Move>>(maxRange);
+		for(int i = 0; i < maxRange; ++i) {
+			allMoves.add(i, new HashSet<Move>(i * 6 + 1));
+		}
+		moveCounter = 0;
+		range = 1;
 	}
 }
