@@ -48,11 +48,15 @@ public class ParameterInput {
     JButton done = new JButton("Done");
 
     ParameterInput() {
+        String[] debugOutput = {"IO", "Board", "Main", "Network", "Player"};
+        String[] debugLevel = {"1", "2", "3", "4", "5", "6", "7"};
+        JComboBox outputBox = new JComboBox(debugOutput);
+        JComboBox levelBox = new JComboBox(debugLevel);
         frame = new JFrame("Parameter Input");
         JPanel panel = new JPanel();
         panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
         frame.add(panel);
-        panel.setPreferredSize(new Dimension(400, 650));
+        panel.setPreferredSize(new Dimension(400, 850));
 
         thinkTime = new JLabel("Thinking time:");
         thinkTime.setVisible(false);
@@ -62,6 +66,8 @@ public class ParameterInput {
         JLabel gamesNo = new JLabel("Number of games:");
         JLabel red = new JLabel("Red's playertype");
         JLabel blue = new JLabel("Blue's playertype");
+        JLabel debugOutputLevelLabel = new JLabel("Debug Level:");
+        JLabel debugOutputLabel = new JLabel("Debug Output:");
         text = new JRadioButton("text");
         graphic = new JRadioButton("graphic");
         graphic.setSelected(true);
@@ -101,6 +107,10 @@ public class ParameterInput {
         redThinkTime.setVisible(false);
         blueThinkTime = new JTextField();
         blueThinkTime.setVisible(false);
+        debugOutputLabel.setVisible(false);
+        outputBox.setVisible(false);
+        debugOutputLevelLabel.setVisible(false);
+        levelBox.setVisible(false);
         panel.add(output);
         panel.add(text);
         panel.add(graphic);
@@ -136,10 +146,33 @@ public class ParameterInput {
         panel.add(delayTime);
         panel.add(delayInput);
         panel.add(debug);
+        panel.add(debugOutputLabel);
+        panel.add(outputBox);
+        panel.add(debugOutputLevelLabel);
+        panel.add(levelBox);
         panel.add(statistic);
         panel.add(done);
         setBluePlayerActionListener();
         setRedPlayerActionListener();
+
+        debug.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                if(debug.isSelected()) {
+                    debugOutputLabel.setVisible(true);
+                    outputBox.setVisible(true);
+                    debugOutputLevelLabel.setVisible(true);
+                    levelBox.setVisible(true);
+                } else {
+                    debugOutputLabel.setVisible(false);
+                    outputBox.setVisible(false);
+                    debugOutputLevelLabel.setVisible(false);
+                    levelBox.setVisible(false);
+                }
+                frame.repaint();
+                frame.pack();
+            }
+        });
 
         games.addActionListener(new ActionListener() {
             @Override
@@ -152,6 +185,7 @@ public class ParameterInput {
                     gamesInput.setVisible(false);
                 }
                 frame.repaint();
+                frame.pack();
             }
         });
 
@@ -166,15 +200,7 @@ public class ParameterInput {
                     delayInput.setVisible(false);
                 }
                 frame.repaint();
-            }
-        });
-
-        debug.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent actionEvent) {
-                if(debug.isSelected()) {
-
-                }
+                frame.pack();
             }
         });
 
@@ -237,7 +263,26 @@ public class ParameterInput {
                     args.append("-thinktime ").append(blueThinkTime.getText()).append(" ");
                 }
 
+                if(games.isSelected()) {
+                    if(!gamesInput.getText().equals("")) {
+                        args.append("-games ").append(gamesInput.getText()).append(" ");
+                    } else {
+                        error.append("No number for Games inserted.");
+                    }
+                }
 
+                if(delay.isSelected()) {
+                    if(!delayInput.getText().equals("")) {
+                        args.append("-delay ").append(delayInput.getText()).append(" ");
+                    } else {
+                        error.append("No Delaytime definied.");
+                    }
+                }
+
+                if(debug.isSelected()) {
+                    args.append("-dsource ").append(debugOutput[outputBox.getSelectedIndex()]).append(" ");
+                    args.append("-dlevel ").append(debugLevel[levelBox.getSelectedIndex()]).append(" ");
+                }
 
                 System.out.println(args);
                 String argsString = args.toString();
@@ -274,6 +319,7 @@ public class ParameterInput {
                             redThinkTime.setVisible(true);
                             thinkTime.setVisible(true);
                             frame.repaint();
+                            frame.pack();
                         }
                     }
                 });
@@ -285,6 +331,7 @@ public class ParameterInput {
                             redThinkTime.setVisible(false);
                             thinkTime.setVisible(false);
                             frame.repaint();
+                            frame.pack();
                         }
                     }
                 });
@@ -301,6 +348,7 @@ public class ParameterInput {
                             blueThinkTime.setVisible(true);
                             thinkTime.setVisible(true);
                             frame.repaint();
+                            frame.pack();
                         }
                     }
                 });
@@ -312,6 +360,7 @@ public class ParameterInput {
                             blueThinkTime.setVisible(false);
                             thinkTime.setVisible(false);
                             frame.repaint();
+                            frame.pack();
                         }
                     }
                 });
