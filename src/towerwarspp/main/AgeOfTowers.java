@@ -82,11 +82,9 @@ public class AgeOfTowers {
      */
     private AgeOfTowers(String[] args) {
         try {
-            /*
-            try {
+            /*try {
                 args = initArguments();
-            } catch (Exception e) {}
-            */
+            } catch (Exception e) {}*/
             /*create new ArgumentParser to get access to settings and flags*/
             ap = new ArgumentParser(args);
 

@@ -126,6 +126,14 @@ public class GraphicIO extends JFrame implements IO {
     public boolean getSave() {
         return this.save;
     }
+
+    /**
+     * Set for save
+     * should be true when saveButton is clicked
+     */
+    private void setSave() {
+        this.save = true;
+    }
     /**
      * Get the Name of the SaveGame
      * @return name of the savegame
@@ -219,14 +227,7 @@ public class GraphicIO extends JFrame implements IO {
         JButton surrenderButton = getSurrenderButton();
         surrenderButton.setSize(135,100);
         buttonPanel.add(surrenderButton);
-        JButton save = new JButton("Save and Exit");
-        save.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent actionEvent) {
-                debugInstance.send(DebugLevel.LEVEL_4, DebugSource.IO, "Savebutton clicked.");
-                showSaveDialog();
-            }
-        });
+        JButton save = getSaveButton();
         save.setSize(135,100);
         buttonPanel.add(save);
         debugInstance.send(DebugLevel.LEVEL_5, DebugSource.IO, "ButtonPanel initialized.");
@@ -257,6 +258,18 @@ public class GraphicIO extends JFrame implements IO {
      * Creates the SaveDialog where the humanPlayer can choose the savename
      * @return returns the savedialog
      */
+    private JButton getSaveButton() {
+        JButton save = new JButton("Save and Exit");
+        save.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent actionEvent) {
+                debugInstance.send(DebugLevel.LEVEL_4, DebugSource.IO, "Savebutton clicked.");
+                setSave();
+                showSaveDialog();
+            }
+        });
+        return save;
+    }
     private JDialog getSaveDialog() {
         JDialog saveDialog = new JDialog();
         JPanel savePanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
@@ -267,8 +280,7 @@ public class GraphicIO extends JFrame implements IO {
         saveButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent actionEvent) {
-                if(saveFileName.getText().equals("")) {
-                    save = true;
+                if(!saveFileName.getText().equals("")) {
                     saveGameName = saveFileName.getText();
                     debugInstance.send(DebugLevel.LEVEL_4, DebugSource.IO, "Save is true. saveFileName String is set.");
                 }

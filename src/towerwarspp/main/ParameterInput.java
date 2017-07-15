@@ -37,6 +37,8 @@ public class ParameterInput {
     JRadioButton blueAdvanced3;
     JRadioButton redRemote;
     JRadioButton blueRemote;
+    ButtonGroup redPlayer;
+    ButtonGroup bluePlayer;
 
     JButton done = new JButton("Done");
 
@@ -58,6 +60,8 @@ public class ParameterInput {
         graphic = new JRadioButton("graphic");
         graphic.setSelected(true);
         none = new JRadioButton("none");
+        redPlayer = new ButtonGroup();
+        bluePlayer = new ButtonGroup();
         redHuman = new JRadioButton("human");
         blueHuman = new JRadioButton("human");
         redRandom = new JRadioButton("random");
@@ -86,21 +90,23 @@ public class ParameterInput {
         panel.add(size);
         panel.add(sizeInput);
         panel.add(red);
-        panel.add(redHuman);
-        panel.add(redRandom);
-        panel.add(redSimple);
-        panel.add(redAdvanced1);
-        panel.add(redAdvanced2);
-        panel.add(redAdvanced3);
-        panel.add(redRemote);
+        redPlayer.add(redHuman);
+        redPlayer.add(redRandom);
+        redPlayer.add(redSimple);
+        redPlayer.add(redAdvanced1);
+        redPlayer.add(redAdvanced2);
+        redPlayer.add(redAdvanced3);
+        redPlayer.add(redRemote);
+        //panel.add(redPlayer);
         panel.add(blue);
-        panel.add(blueHuman);
-        panel.add(blueRandom);
-        panel.add(blueSimple);
-        panel.add(blueAdvanced1);
-        panel.add(blueAdvanced2);
-        panel.add(blueAdvanced3);
-        panel.add(blueRemote);
+        bluePlayer.add(blueHuman);
+        bluePlayer.add(blueRandom);
+        bluePlayer.add(blueSimple);
+        bluePlayer.add(blueAdvanced1);
+        bluePlayer.add(blueAdvanced2);
+        bluePlayer.add(blueAdvanced3);
+        bluePlayer.add(blueRemote);
+        //panel.add(bluePlayer);
         panel.add(games);
         panel.add(gamesNo);
         panel.add(gamesInput);
