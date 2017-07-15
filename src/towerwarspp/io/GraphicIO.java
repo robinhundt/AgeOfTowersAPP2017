@@ -129,10 +129,11 @@ public class GraphicIO extends JFrame implements IO {
 
     /**
      * Set for save
-     * should be true when saveButton is clicked
+     * should be true when saveButton is clicked.
+     * @param save true if button clicked false when dialog hidden.
      */
-    private void setSave() {
-        this.save = true;
+    private void setSave(boolean save) {
+        this.save = save;
     }
     /**
      * Get the Name of the SaveGame
@@ -266,7 +267,7 @@ public class GraphicIO extends JFrame implements IO {
             @Override
             public void actionPerformed(ActionEvent actionEvent) {
                 debugInstance.send(DebugLevel.LEVEL_4, DebugSource.IO, "Savebutton clicked.");
-                setSave();
+                setSave(true);
                 showSaveDialog();
             }
         });
@@ -286,14 +287,21 @@ public class GraphicIO extends JFrame implements IO {
                     saveGameName = saveFileName.getText();
                     debugInstance.send(DebugLevel.LEVEL_4, DebugSource.IO, "Save is true. saveFileName String is set.");
                     wakeUp();
-                    saveDialog.dispose();
+                    saveDialog.setVisible(false);
                 }
             }
         });
+        saveDialog.setDefaultCloseOperation(HIDE_ON_CLOSE);
         saveDialog.setTitle("Save Game");
         savePanel.add(saveText);
         savePanel.add(saveFileName);
         savePanel.add(saveButton);
+        saveDialog.addComponentListener(new ComponentAdapter() {
+            @Override
+            public void componentHidden(ComponentEvent componentEvent) {
+                setSave(false);
+            }
+        });
         saveDialog.add(savePanel);
         saveDialog.setSize(200, 150);
         saveDialog.setResizable(false);
@@ -335,7 +343,7 @@ public class GraphicIO extends JFrame implements IO {
      *
      */
     private void setPolygonSize() {
-        double frameWidth = this.jFrame.getWidth() - 150;
+        double frameWidth = this.jFrame.getWidth();
         double frameHeight = this.jFrame.getHeight();
         double gridX = (frameWidth / (viewer.getSize() + ((1.0 / 2.0) * (viewer.getSize() - 1)))) / 2.0;
         double gridY = frameHeight / (viewer.getSize() * 2.0);
@@ -385,7 +393,7 @@ public class GraphicIO extends JFrame implements IO {
                         /*-- not Empty & right player & not endofgame --*/
                         if (entity != null && viewer.getTurn() == entity.getColor() && viewer.getStatus() == Status.OK) {
                             debugInstance.send(DebugLevel.LEVEL_5, DebugSource.IO, "Clicked on token.");
-                            possibleMoves = viewer.getPossibleMoves(entity);
+                            possibleMoves = entity.getMovesAsVector();
                             clicked = true;
                             jPanel.repaint();
                         } else {
@@ -419,7 +427,7 @@ public class GraphicIO extends JFrame implements IO {
                         /*-- not Empty & right player & not endofgame --*/
                         if (entity != null && viewer.getStatus() == Status.OK) {
                             debugInstance.send(DebugLevel.LEVEL_5, DebugSource.IO, "Mouse on token.");
-                            possibleMoves = viewer.getPossibleMoves(entity);
+                            possibleMoves = entity.getMovesAsVector();
                             jPanel.repaint();
                         } else {
                             possibleMoves = null;
@@ -452,7 +460,7 @@ public class GraphicIO extends JFrame implements IO {
 
                     g.setColor(Color.BLACK);
                     g.setFont(letterFont);
-                    g.setStroke(new BasicStroke(5));
+                    g.setStroke(new BasicStroke(3));
 
                     drawLetters(g, distance);
                     drawPossibleMoves(g);

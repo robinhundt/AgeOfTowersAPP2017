@@ -89,19 +89,19 @@ public class HexagonGrid {
             switch (i) {
                 case 0:
                     xMarkedPolygon[i] = corners[i].getX() - 4;
-                    yMarkedPolygon[i] = corners[i].getY() - 4;
+                    yMarkedPolygon[i] = corners[i].getY();
                     break;
                 case 1:
                     xMarkedPolygon[i] = corners[i].getX();
                     yMarkedPolygon[i] = corners[i].getY() - 4;
                     break;
                 case 2:
-                    xMarkedPolygon[i] = corners[i].getX() + 4;
-                    yMarkedPolygon[i] = corners[i].getY() - 4;
+                    xMarkedPolygon[i] = corners[i].getX() + 3;
+                    yMarkedPolygon[i] = corners[i].getY() - 2;
                     break;
                 case 3:
-                    xMarkedPolygon[i] = corners[i].getX() + 4;
-                    yMarkedPolygon[i] = corners[i].getY() + 4;
+                    xMarkedPolygon[i] = corners[i].getX() + 3;
+                    yMarkedPolygon[i] = corners[i].getY() + 2;
                     break;
                 case 4:
                     xMarkedPolygon[i] = corners[i].getX();
@@ -109,7 +109,7 @@ public class HexagonGrid {
                     break;
                 case 5:
                     xMarkedPolygon[i] = corners[i].getX() - 4;
-                    yMarkedPolygon[i] = corners[i].getY() + 4;
+                    yMarkedPolygon[i] = corners[i].getY();
                     break;
             }
         }
