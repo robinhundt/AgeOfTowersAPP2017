@@ -209,6 +209,8 @@ public class Game {
             /*get a move from current player*/
             currentMove = currentPlayer.request();
 
+            checkSave();            
+
             /*make move on board*/
             board.makeMove(currentMove);
             
@@ -218,9 +220,7 @@ public class Game {
                 view.display(currentColor + "'move :" + currentMove);
                 view.display("Status: " + board.getStatus());
             }
-            if(currentMove == null && view.getSave() == true) {
-                saveGame.export(view.getSaveGameName());
-            }
+            
             saveGame.add(currentMove);
             /*check if boardstatus of player is equal to own boardstatus*/
             currentPlayer.confirm(board.getStatus());
@@ -287,5 +287,20 @@ public class Game {
      */
     public PlayerColor turn () {
         return board.getTurn();
+    }
+
+    /**
+     * checks if save is true in view.
+     */
+    private void checkSave() {
+        if(view.getSave() == true) {
+           try {
+               saveGame.export(view.getSaveGameName());
+           } catch (Exception e) {
+               System.out.println("saving failed");
+           }               
+           System.exit(0);
+        }
+        return;
     }
 }

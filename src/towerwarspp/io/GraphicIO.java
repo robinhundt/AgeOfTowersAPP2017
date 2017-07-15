@@ -295,7 +295,7 @@ public class GraphicIO extends JFrame implements IO {
         savePanel.add(saveFileName);
         savePanel.add(saveButton);
         saveDialog.add(savePanel);
-        saveDialog.setSize(200, 100);
+        saveDialog.setSize(200, 150);
         saveDialog.setResizable(false);
         debugInstance.send(DebugLevel.LEVEL_6, DebugSource.IO, "SaveDialog initialized.");
         return saveDialog;
