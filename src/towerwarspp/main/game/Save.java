@@ -166,17 +166,8 @@ public class Save implements Iterable<Move> {
      * @param file the name of the file to be loaded
      * @return the parsed Save-Object
      */
-    public Save load(String file) throws LoadParserException, IOException {
-
-        try(BufferedReader br = new BufferedReader(new FileReader(savePath + file))){
-            Save a = new Save(Integer.parseInt(br.readLine()));
-            String line = br.readLine();
-            while(line != null) {
-                a.add(parseLoad(line));    
-                line = br.readLine();            
-            }
-            return a;
-        } 
+    public Save loadn(String file) throws LoadParserException, IOException {
+        return load(file);
     }
     
     /**
@@ -192,6 +183,23 @@ public class Save implements Iterable<Move> {
             return Move.parseMove(m.group(0));
         } catch (Exception e){
             throw new LoadParserException("illegal Savefile!");
+
+        } 
+    }
+
+    /**
+     * Static method to be called when loading.
+     * @param file the filename
+     */
+    public static Save load(String file) throws LoadParserException, IOException {
+        try(BufferedReader br = new BufferedReader(new FileReader(savePath + file))){
+            Save a = new Save(Integer.parseInt(br.readLine()));
+            String line = br.readLine();
+            while(line != null) {
+                a.add(parseLoad(line));    
+                line = br.readLine();            
+            }
+            return a;
         } 
     }
 }

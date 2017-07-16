@@ -88,7 +88,7 @@ public class TSave extends Save {
      * parseTournament
      */
     @Override
-    public  TSave load(String file) throws LoadParserException, IOException {
+    public TSave loadn(String file) throws LoadParserException, IOException {
          try(BufferedReader br = new BufferedReader(new FileReader(super.getSavePath() + file))){
             TSave a = new TSave(Integer.parseInt(br.readLine()));
             String line = br.readLine();

@@ -120,7 +120,8 @@ public class Game {
      */
     public Game (Player redPlayer, Player bluePlayer, View view, boolean debug, int delayTime, Save saveGame) throws Exception{
         this(redPlayer, bluePlayer, saveGame.getSize(), view, debug, delayTime);
-        replay(saveGame);
+        this.saveGame = saveGame;
+        replay(this.saveGame);
         ((BasePlayer)redPlayer).setBoard(board.clone());
         ((BasePlayer)bluePlayer).setBoard(board.clone());
     }
@@ -240,6 +241,7 @@ public class Game {
      */
     private void replay(Save save) {
         for(Move i : saveGame) {
+            System.out.println("zug gemacht");
             Status stat = board.makeMove(i);
         }
     }
@@ -259,10 +261,11 @@ public class Game {
         if(view.getSave()) {
             try {
                 saveGame.export(view.getSaveGameName());
+                System.exit(0);
             } catch (Exception e) {
                 System.out.println("saving failed");
             }
-            System.exit(0);
+            
         }
     }
 }
