@@ -26,15 +26,15 @@ public class Remote {
     /**
      * Registry to either offer a player on or get a remote player from.
      */
-    Registry registry;
+    private Registry registry;
     /**
      * ip-address or resolvable name of Registry to connect with
      */
-    String host;
+    private String host;
     /**
      * Either player is offered on local RMI with this port, or a player is looked for on remote RMI on this port.
      */
-    int port;
+    private int port;
 
     /**
      * Setup local RMI with specified port. If there is already a RMI instance on that port running, it's used instead
