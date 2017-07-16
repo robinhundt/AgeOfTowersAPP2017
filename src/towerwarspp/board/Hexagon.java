@@ -2,7 +2,7 @@ package towerwarspp.board;
 
 import towerwarspp.preset.Position;
 /**
-* This class represents a hexagon on a hexagon board.
+* This class represents a hexagon field on a hexagon board.
 * It helps to calculate the coordinates of the hexagon's neighbours as well as to find positions located
 * on some particular distance in a given direction from the current hexagon. 
 *
@@ -14,7 +14,6 @@ public class Hexagon {
 		* The current coordinates.
 		*/
 		private int x, y;
-		
 		/**
 		* Creates a new instance of {@link Hexagon} class with the given x- and y-coordinates.
 		* @param x the x-coordinate.
@@ -53,7 +52,7 @@ public class Hexagon {
 			return y;
 		}
 		/**
-		* Adds the coordinates the other haxagon to the x- and y-coordinates stored in this object.
+		* Adds the coordinates of the other haxagon to the x- and y-coordinates stored in this object.
 		* @param other the other {@link Hexagon} object whose coordinates have to be added to the actual object's coordinates.
 		*/
 		public void add(Hexagon other) {

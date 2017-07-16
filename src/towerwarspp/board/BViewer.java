@@ -11,6 +11,7 @@ import towerwarspp.preset.Viewer;
 * {@link BViewer} provides the following information: the board's size, its current status, current turn, and 
 * what token, if any, is located on some particular field. The token in question must be an instance of the {@link Entity} class.
 * This {@link BViewer} clones the token located on the field in question if this field is not empty and delivers this clone to the caller.
+* If the field is empty, null will be returned.
 *
 * @author Anastasiia Kysliak
 * @version 15-07-17

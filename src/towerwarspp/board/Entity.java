@@ -26,6 +26,7 @@ public class Entity {
 	 * The color of the Entity.
 	 */
 	private final PlayerColor color;
+
 	/**
 	 * The maximum allowed height.
 	 */
