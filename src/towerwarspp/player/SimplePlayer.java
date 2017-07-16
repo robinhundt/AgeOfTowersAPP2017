@@ -20,7 +20,7 @@ import towerwarspp.preset.PlayerColor;
  * The simple AI randomly chooses one of the moves with the highest score. A move that leads to victory is always choosen
  * before the others. Moves that lead to a position in wich the opponent could win in one move will only be executed
  * if no other moves are available.
- * @author Robin Hundt
+ * @author Alexander Wähling
  * @version 08-07-17
  */
 public class SimplePlayer extends BasePlayer {

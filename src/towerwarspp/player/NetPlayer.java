@@ -15,7 +15,7 @@ import java.rmi.server.UnicastRemoteObject;
  * {@link #confirm(Status)}, {@link #update(Move, Status)} and {@link #init(int, PlayerColor)} methods on a NetPlayer will
  * call the equivalent methods on the NetPlayers {@link #player} instance.
  * As with sub classes of {@link BasePlayer} request() - confirm() and makeMove() must be called in the correct order.
- * @author Robin Hundt
+ * @author Alexander Wähling
  * @version 08-07-17
  */
 public class NetPlayer extends UnicastRemoteObject implements Player {

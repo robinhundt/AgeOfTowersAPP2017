@@ -16,7 +16,7 @@ import static towerwarspp.preset.PlayerColor.*;
  * instance on which they place their own and their opponent moves. If the State of the board is ILLEGAL or does'nt match
  * with the passed States in confirm() and makeMove() an exception is thrown.
  *
- * @author Robin Hundt
+ * @author Alexander Wähling
  * @version 07-07-17
  */
 public abstract class BasePlayer implements Player {

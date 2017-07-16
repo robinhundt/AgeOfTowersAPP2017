@@ -6,7 +6,7 @@ import towerwarspp.preset.Move;
 /**
  * Class that implements a Random Player. Is a subclass of {@link BasePlayer}. The only difference is the implementation of
  * deliverMove(), which picks a random move from all possible moves that are available for the players {@link #color}.
- * @author Robin Hundt
+ * @author Alexander Wähling
  * @version 08-07-17
  */
 public class RndPlayer extends BasePlayer {

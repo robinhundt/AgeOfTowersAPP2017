@@ -8,7 +8,7 @@ import towerwarspp.preset.Requestable;
  * Class that implements a Human Player. Is a subclass of BasePlayer. The only difference is the implementation of
  * deliverMove(), which uses a Requestable object passed at Object construction to get user input in the form of move
  * objects. If the move is not allowed on the players board, requestable.deliver() will be called again.
- * @author Robin Hundt
+ * @author Alexander Wähling
  * @version 08-07-17
  */
 
