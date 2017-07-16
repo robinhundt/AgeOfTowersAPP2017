@@ -8,8 +8,6 @@ import java.util.HashSet;
 import java.util.PriorityQueue;
 import java.util.Vector;
 
-import towerwarspp.main.debug.*;
-import towerwarspp.main.Debug;
 import towerwarspp.preset.Move;
 import towerwarspp.preset.PlayerColor;
 import towerwarspp.preset.Position;
@@ -81,6 +79,14 @@ public class Board extends SimpleBoard {
 		return allMoves;
 	}
 
+	/**
+	 * Computes an alternative score for the passed move representing an aggressive play strategy with some focus on
+	 * defending the base by assigning a very low score to moves that cause an entity to leave an area around the base
+	 * dependant on the board size.
+	 * @param move move to evaluate
+	 * @param playerColor player making that move
+	 * @return score for this move
+	 */
 	public int altScore(Move move, PlayerColor playerColor) {
 		Position ownBase = playerColor == RED ? redBase : blueBase;
         Position opponentBase = playerColor == RED ? blueBase : redBase;
@@ -228,7 +234,7 @@ public class Board extends SimpleBoard {
 	 * This function helps to prove if a player has enough tokens and possible moves so that the opponent cannot leave him/her 	
 	 * without any moves by only one move. It returns true if at least two tokens in the list ownEntities have 2 or more moves
 	 * or there is at least one stone and one other token with 2 or more possible moves in this list.
-	 * @param ownEntity the list of the tokens belonging to the player whose lose resistance has to be proved.
+	 * @param ownEntities the list of the tokens belonging to the player whose lose resistance has to be proved.
 	 * @return true if the player in question has enough moves and tokens not to lose as a result of the opponnt's move
 	 *		because of the absence of possible moves.
 	 */
