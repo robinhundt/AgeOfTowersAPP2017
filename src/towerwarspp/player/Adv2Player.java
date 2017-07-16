@@ -69,7 +69,7 @@ public class Adv2Player extends BasePlayer {
     }
 
     /**
-     * Calls {@link super#update(Move, Status)} and then {@link Mcts#feedEnemyMove(Move)} to update the state of the search
+     * Calls {@link BasePlayer#update(Move, Status)} and then {@link Mcts#feedEnemyMove(Move)} to update the state of the search
      * tree.
      * @param opponentMove opponent move to place on own board
      * @param boardStatus opponent board status after move
@@ -83,7 +83,7 @@ public class Adv2Player extends BasePlayer {
     }
 
     /**
-     * Initializes this Player by first calling {@link super#init(int, PlayerColor)} then {@link Mcts#setInit(Board)} to
+     * Initializes this Player by first calling {@link BasePlayer#init(int, PlayerColor)} then {@link Mcts#setInit(Board)} to
      * notify Mcts algorithm about new game state.
      * If the Thread {@link #ai} is not alive, it's started.
      * @param boardSize size to initialize {@link BasePlayer}'s board with.
