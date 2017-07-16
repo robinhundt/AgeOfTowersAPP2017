@@ -247,11 +247,18 @@ public class Entity {
 	 */
 	public boolean isMovable() {
 		if(!isBase && !isBlocked) {
+			int cnt = 0;
 			for(int i = 1; i <= range; ++i) {
 				if(!allMoves.get(i).isEmpty()) {
-					return true;
+					//return true;
+					cnt += allMoves.get(i).size();
 				}
 			}
+			if(cnt != moveCounter) {
+				System.out.println("cnt != moveCounter");
+			}
+			System.out.println("cnt = " + cnt + ", moveCounter = " + moveCounter);
+			return cnt > 0;
 		}
 		return false;
 	}

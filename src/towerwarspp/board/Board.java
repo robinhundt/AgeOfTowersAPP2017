@@ -135,6 +135,9 @@ public class Board extends SimpleBoard {
 		Vector<Entity> opponentEntityList = getEntityList(opponentColor);
 		Position ownBase = (ownColor == RED? redBase: blueBase);
 		boolean opponentCanDestroyBase = canBeDestroyed(ownBase, opponentEntityList);
+		/*if(opponentCanDestroyBase) {
+			System.out.println("Opponnet can destroy base. My col " + ownColor + ", his color: " + opponentColor);
+		}*/
 		Vector<Move> bestMoves = new Vector<Move>();
 		PriorityQueue<MoveScore> scoredMoves = new PriorityQueue<MoveScore>();
 		for(Entity ent : ownEntityList) {
@@ -145,6 +148,14 @@ public class Board extends SimpleBoard {
 				}
 			}		
 		}
+		/*if(opponentCanDestroyBase) {
+			System.out.println("My moves " + scoredMoves.size());
+			System.out.println(scoredMoves.peek().getResult() + " " + scoredMoves.peek().getScore());
+			for(MoveScore sc : scoredMoves) {
+				System.out.print(sc.getResult() + " " + sc.getScore() + ", ");
+			}
+			System.out.println();
+		}*/
 		if(!scoredMoves.isEmpty()) {
 			/*System.out.println("All scores");
 			PriorityQueue test = new PriorityQueue<MoveScore>();
@@ -194,6 +205,7 @@ public class Board extends SimpleBoard {
 		}
 		// prove if the opponet can reach my base in his turn after this move: if so, return score with result IS_LOSE
 		if(ownBaseCanBeDestroyed && canBeDestroyed(ownBase, copy.getEntityList(opponentColor))) {
+			//System.out.println("I see");
 			return new MoveScore(move, score, CAN_LOSE);
 		}
 		// prove if the opponent can make a move so that I do not have possible moves after it (short varient). If so, return score with result = CAN_LOSE

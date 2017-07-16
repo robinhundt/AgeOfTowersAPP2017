@@ -29,8 +29,8 @@ public class BViewer implements Viewer {
 		this.board = board;
 	}
 	/**
-	* Returns the size the observed board.
-	* @return the size the observed board. 
+	* Returns the size of the observed board.
+	* @return the size of the observed board. 
 	*/
 	public int getSize() {
 		return board.getSize();
