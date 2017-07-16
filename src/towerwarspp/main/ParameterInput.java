@@ -9,7 +9,7 @@ import java.util.ArrayList;
 /**
  * Class Parameter Input to provide a graphical option to select settings and flags for the game
  *
- * @author Niklas Mueller
+ * @author Niklas Mueller, Kai Kuhlmann
  * @version 0.1 July 12th 2017
  */
 public class ParameterInput {
@@ -35,9 +35,18 @@ public class ParameterInput {
     JRadioButton blueAdvanced3;
     JRadioButton redRemote;
     JRadioButton blueRemote;
-    JLabel thinkTime;
+    JLabel redThinkTimeLabel;
+    JLabel blueThinkTimeLabel;
+    JLabel redHostLabel;
+    JLabel redPortLabel;
+    JLabel blueHostLabel;
+    JLabel bluePortLabel;
     JTextField redThinkTime;
     JTextField blueThinkTime;
+    JTextField redHostInput;
+    JTextField redPortInput;
+    JTextField blueHostInput;
+    JTextField bluePortInput;
     ButtonGroup redPlayer;
     ButtonGroup bluePlayer;
     ButtonGroup outputGroup;
@@ -48,23 +57,29 @@ public class ParameterInput {
     JButton done = new JButton("Done");
 
     ParameterInput() {
-        String[] debugOutput = {"IO", "Board", "Main", "Network", "Player"};
-        String[] debugLevel = {"1", "2", "3", "4", "5", "6", "7"};
+        String[] debugOutput = {"", "IO", "Board", "Main", "Network", "Player"};
+        String[] debugLevel = {"", "1", "2", "3", "4", "5", "6", "7"};
         JComboBox outputBox = new JComboBox(debugOutput);
         JComboBox levelBox = new JComboBox(debugLevel);
         frame = new JFrame("Parameter Input");
         JPanel panel = new JPanel();
         panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
         frame.add(panel);
-        panel.setPreferredSize(new Dimension(400, 850));
+        panel.setPreferredSize(new Dimension(400, 870));
 
-        thinkTime = new JLabel("Thinking time:");
-        thinkTime.setVisible(false);
+        redThinkTimeLabel = new JLabel("Thinking time:");
+        redThinkTimeLabel.setVisible(false);
+        blueThinkTimeLabel = new JLabel("Thinking time:");
+        blueThinkTimeLabel.setVisible(false);
         JLabel output = new JLabel("Output type:");
         JLabel size = new JLabel("Size:");
         JLabel delayTime = new JLabel("Delaytime:");
         JLabel gamesNo = new JLabel("Number of games:");
         JLabel red = new JLabel("Red's playertype");
+        redHostLabel = new JLabel("Host:");
+        redPortLabel = new JLabel("Port:");
+        blueHostLabel = new JLabel("Host:");
+        bluePortLabel = new JLabel("Port:");
         JLabel blue = new JLabel("Blue's playertype");
         JLabel debugOutputLevelLabel = new JLabel("Debug Level:");
         JLabel debugOutputLabel = new JLabel("Debug Output:");
@@ -103,6 +118,18 @@ public class ParameterInput {
         JTextField sizeInput = new JTextField();
         JTextField gamesInput = new JTextField();
         JTextField delayInput = new JTextField();
+        redHostInput = new JTextField();
+        redPortInput = new JTextField();
+        blueHostInput = new JTextField();
+        bluePortInput = new JTextField();
+        redHostInput.setVisible(false);
+        redHostLabel.setVisible(false);
+        redPortInput.setVisible(false);
+        redPortLabel.setVisible(false);
+        blueHostInput.setVisible(false);
+        blueHostLabel.setVisible(false);
+        bluePortInput.setVisible(false);
+        bluePortLabel.setVisible(false);
         redThinkTime = new JTextField();
         redThinkTime.setVisible(false);
         blueThinkTime = new JTextField();
@@ -122,8 +149,13 @@ public class ParameterInput {
             redPlayer.add(radioButton);
             panel.add(radioButton);
             if(radioButton.getActionCommand().equals("adv2")) {
-                panel.add(thinkTime);
+                panel.add(redThinkTimeLabel);
                 panel.add(redThinkTime);
+            } else if(radioButton.getActionCommand().equals("remote")) {
+                panel.add(redHostLabel);
+                panel.add(redHostInput);
+                panel.add(redPortLabel);
+                panel.add(redPortInput);
             }
         }
         panel.add(blue);
@@ -131,8 +163,13 @@ public class ParameterInput {
             bluePlayer.add(radioButton);
             panel.add(radioButton);
             if(radioButton.getActionCommand().equals("adv2")) {
-                panel.add(thinkTime);
+                panel.add(blueThinkTimeLabel);
                 panel.add(blueThinkTime);
+            } else if(radioButton.getActionCommand().equals("remote")) {
+                panel.add(blueHostLabel);
+                panel.add(blueHostInput);
+                panel.add(bluePortLabel);
+                panel.add(bluePortInput);
             }
         }
         gamesNo.setVisible(false);
@@ -241,6 +278,12 @@ public class ParameterInput {
                     args.append("-red adv3").append(" ");
                 } else if(redRemote.isSelected()) {
                     args.append("-red remote").append(" ");
+                    if(!redHostInput.getText().equals("")) {
+                        args.append("-host ").append(redHostInput.getText()).append(" ");
+                    }
+                    if(!redPortInput.getText().equals("")) {
+                        args.append("-port ").append(redPortInput.getText()).append(" ");
+                    }
                 }
 
                 if(blueHuman.isSelected()) {
@@ -255,8 +298,14 @@ public class ParameterInput {
                     args.append("-blue adv2").append(" ");
                 } else if (blueAdvanced3.isSelected()) {
                     args.append("-blue adv3").append(" ");
-                } else if(redRemote.isSelected()) {
+                } else if(blueRemote.isSelected()) {
                     args.append("-blue remote").append(" ");
+                    if(!blueHostInput.getText().equals("")) {
+                        args.append("-host ").append(blueHostInput.getText()).append(" ");
+                    }
+                    if(!bluePortInput.getText().equals("")) {
+                        args.append("-port ").append(bluePortInput.getText()).append(" ");
+                    }
                 }
 
                 if((blueAdvanced2.isSelected() || redAdvanced2.isSelected()) && (!blueThinkTime.getText().equals("") || !redThinkTime.getText().equals(""))) {
@@ -280,8 +329,15 @@ public class ParameterInput {
                 }
 
                 if(debug.isSelected()) {
-                    args.append("-dsource ").append(debugOutput[outputBox.getSelectedIndex()]).append(" ");
+                    args.append("--debug").append(" ");
+                    if(!debugOutput[outputBox.getSelectedIndex()].equals("")) {
+                        args.append("-dsource ").append(debugOutput[outputBox.getSelectedIndex()].toLowerCase()).append(" ");
+                    }
                     args.append("-dlevel ").append(debugLevel[levelBox.getSelectedIndex()]).append(" ");
+                }
+
+                if(statistic.isSelected()) {
+                    args.append("--statistic").append(" ");
                 }
 
                 System.out.println(args);
@@ -317,7 +373,21 @@ public class ParameterInput {
                     public void actionPerformed(ActionEvent actionEvent) {
                         if(!redThinkTime.isVisible()) {
                             redThinkTime.setVisible(true);
-                            thinkTime.setVisible(true);
+                            redThinkTimeLabel.setVisible(true);
+                            frame.repaint();
+                            frame.pack();
+                        }
+                    }
+                });
+            } else if(radioButton.getActionCommand().equals("remote")) {
+                radioButton.addActionListener(new ActionListener() {
+                    @Override
+                    public void actionPerformed(ActionEvent actionEvent) {
+                        if(!redHostInput.isVisible()) {
+                            redHostInput.setVisible(true);
+                            redHostLabel.setVisible(true);
+                            redPortInput.setVisible(true);
+                            redPortLabel.setVisible(true);
                             frame.repaint();
                             frame.pack();
                         }
@@ -329,7 +399,11 @@ public class ParameterInput {
                     public void actionPerformed(ActionEvent actionEvent) {
                         if(redThinkTime.isVisible()) {
                             redThinkTime.setVisible(false);
-                            thinkTime.setVisible(false);
+                            redThinkTimeLabel.setVisible(false);
+                            redHostInput.setVisible(false);
+                            redHostLabel.setVisible(false);
+                            redPortInput.setVisible(false);
+                            redPortLabel.setVisible(false);
                             frame.repaint();
                             frame.pack();
                         }
@@ -346,7 +420,21 @@ public class ParameterInput {
                     public void actionPerformed(ActionEvent actionEvent) {
                         if(!blueThinkTime.isVisible()) {
                             blueThinkTime.setVisible(true);
-                            thinkTime.setVisible(true);
+                            blueThinkTimeLabel.setVisible(true);
+                            frame.repaint();
+                            frame.pack();
+                        }
+                    }
+                });
+            } else if(radioButton.getActionCommand().equals("remote")) {
+                radioButton.addActionListener(new ActionListener() {
+                    @Override
+                    public void actionPerformed(ActionEvent actionEvent) {
+                        if(!blueHostInput.isVisible()) {
+                            blueHostInput.setVisible(true);
+                            blueHostLabel.setVisible(true);
+                            bluePortInput.setVisible(true);
+                            bluePortLabel.setVisible(true);
                             frame.repaint();
                             frame.pack();
                         }
@@ -358,7 +446,11 @@ public class ParameterInput {
                     public void actionPerformed(ActionEvent actionEvent) {
                         if(blueThinkTime.isVisible()) {
                             blueThinkTime.setVisible(false);
-                            thinkTime.setVisible(false);
+                            blueThinkTimeLabel.setVisible(false);
+                            blueHostInput.setVisible(false);
+                            blueHostLabel.setVisible(false);
+                            bluePortInput.setVisible(false);
+                            bluePortLabel.setVisible(false);
                             frame.repaint();
                             frame.pack();
                         }
