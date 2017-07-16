@@ -268,7 +268,10 @@ public class Game {
     private void checkSave() {
         if(view.getSave()) {
             try {
-                saveGame.export(view.getSaveGameName());
+                do{
+                     saveGame.export(view.getSaveGameName());
+                } while(view.getSaveGameName() == null);
+               
             } catch (Exception e) {
                 System.out.println("saving failed");
             }
