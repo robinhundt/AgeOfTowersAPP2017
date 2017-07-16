@@ -1,6 +1,7 @@
 package towerwarspp.player.mcts;
 
 import towerwarspp.board.Board;
+import towerwarspp.player.Adv2Player;
 import towerwarspp.player.PlayStrategy;
 import towerwarspp.preset.Move;
 import towerwarspp.preset.PlayerColor;
@@ -253,7 +254,10 @@ public class Mcts implements Runnable{
      */
     public void feedEnemyMove(Move move) {
         if(fairPlay) {
-            timePerMove = System.currentTimeMillis() - endTime;
+            if(endTime != 0)
+                timePerMove = System.currentTimeMillis() - endTime;
+            else
+                timePerMove = Adv2Player.DEF_TIME_PER_MOVE;
         }
         enemyMove = move;
         addTask(MOVE_RECEIVED);
@@ -283,8 +287,6 @@ public class Mcts implements Runnable{
         while (true) {
 
             if (!tasks.isEmpty()) {
-//                for(Task task : tasks)
-//                    System.out.println(task + Thread.currentThread().toString());
                 Task task = peekTask();
                 switch (task) {
                     case INIT:
