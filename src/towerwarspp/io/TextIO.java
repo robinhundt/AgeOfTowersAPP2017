@@ -22,37 +22,33 @@ import towerwarspp.preset.Move;
  */
 public class TextIO implements IO {
     /**
-     * Black Background Command Line
-     */
-    private static final String ANSI_WHITE_BGD = "\u001b[47m";
-    /**
      * Normal Command Line Color
      */
-    private static final String ANSI_RESET = ANSI_WHITE_BGD + "\u001B[0m";
+    private static final String ANSI_RESET = "\u001B[0m";
     /**
      * Command Line Color = Red
      */
-    private static final String ANSI_RED = ANSI_WHITE_BGD + "\u001B[31m";
+    private static final String ANSI_RED = "\u001B[31m";
     /**
      * Command Line Color = Blue
      */
-    private static final String ANSI_BLUE = ANSI_WHITE_BGD + "\u001B[34m";
+    private static final String ANSI_BLUE = "\u001B[34m";
     /**
      * Command Line Color = Purple
      */
-    private static final String ANSI_PURPLE = ANSI_WHITE_BGD + "\u001B[35m";
+    private static final String ANSI_PURPLE = "\u001B[35m";
     /**
      * Command Line Color = Yellow
      */
-    private static final String ANSI_YELLOW = ANSI_WHITE_BGD + "\u001B[33m";
+    private static final String ANSI_YELLOW = "\u001B[33m";
     /**
      * Command Line Color = Cyan
      */
-    private static final String ANSI_CYAN = ANSI_WHITE_BGD + "\u001B[36m";
+    private static final String ANSI_CYAN = "\u001B[36m";
     /**
      * Command Line Color = White
      */
-    private static final String ANSI_WHITE = ANSI_WHITE_BGD + "\u001B[37m";
+    private static final String ANSI_WHITE = "\u001B[37m";
     /**
      * Viewer-Object
      */
@@ -103,39 +99,39 @@ public class TextIO implements IO {
         StringBuilder output = new StringBuilder();
         int size = this.viewer.getSize();
         char headChar = 'A';
-        StringBuilder tap = new StringBuilder(ANSI_WHITE_BGD + "  ");
+        StringBuilder tap = new StringBuilder("  ");
         /*own StringBuilder for the letters to be displayed above and beneath the board*/
         StringBuilder letters = new StringBuilder();
-        letters.append(ANSI_WHITE_BGD +"    ");
+        letters.append("    ");
         /*fill StringBuilder with letters*/
         for (int j=1; j<=size; j++) {
-            letters.append(ANSI_WHITE_BGD + headChar++).append(ANSI_WHITE_BGD + "  ");
+            letters.append(headChar++).append("  ");
         }
         /*output representation of board*/
         for (int i=0; i<=size+1; i++) {
             /*first line, only letters*/
             if (i==0) {
-                output.append(ANSI_WHITE_BGD + letters).append(ANSI_WHITE_BGD + "\n");
+                output.append(letters).append("\n");
             }
             /*last line, only letters*/
             else if (i == size+1) {
-                output.append(ANSI_WHITE_BGD + tap);
-                output.append(ANSI_WHITE_BGD + letters).append(ANSI_WHITE_BGD + "\n");
+                output.append(tap);
+                output.append(letters).append("\n");
             }
             /*every other line, number, board and number*/
             else if (i<=size) {
-                output.append(ANSI_WHITE_BGD + tap);
-                output.append(ANSI_WHITE_BGD + i);
+                output.append(tap);
+                output.append(i);
                 output.append(i>=10 ? " " : "  ");
                 for (int j=1; j<=size; j++) {
-                    output.append(ANSI_WHITE_BGD + positionToString(new Position(j, i)));
+                    output.append(positionToString(new Position(j, i)));
                 }
-                output.append(ANSI_WHITE_BGD + "  ");
-                output.append(ANSI_WHITE_BGD + i).append(ANSI_WHITE_BGD + "\n");
-                tap.append(ANSI_WHITE_BGD + "  ");
+                output.append("  ");
+                output.append(i).append("\n");
+                tap.append("  ");
             }
         }
-        System.out.println(ANSI_WHITE_BGD + output);
+        System.out.println(output);
     }
     /**
      * Overriden method display to get possibility for other classes to inform user.
@@ -193,10 +189,10 @@ public class TextIO implements IO {
                 s = col + (height != 0 ? " T" + height : " S ") + ANSI_RESET;
             }
             /*return representation*/
-            return ANSI_WHITE_BGD + s;
+            return s;
         }
         /*if position is empty*/
-        return ANSI_WHITE_BGD + " o ";
+        return " o ";
     }
     /**
      * Overridden method deliver() parsing a textual input from the standard-input into a {@link Move}.
