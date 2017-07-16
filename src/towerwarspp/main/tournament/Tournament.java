@@ -94,7 +94,7 @@ public class Tournament {
             }
 
             /*create game with given settings*/
-            Game game = new Game(players[red], players[blue], boardSize, view, debug, delayTime);            
+            Game game = new Game(players[red], players[blue], boardSize, view, delayTime);
             this.save.setMoveHistory(game.getSaveGame().getMoveHistory());
 
             /*start game, output result of this game and include result in the statistic about this tournament*/
