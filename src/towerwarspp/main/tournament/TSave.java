@@ -96,6 +96,7 @@ public class TSave extends Save {
                 a.add(super.parseLoad(line));    
                 line = br.readLine();            
             }
+            a.setResult(parseTournament(br));
             return a;
         } 
     }
