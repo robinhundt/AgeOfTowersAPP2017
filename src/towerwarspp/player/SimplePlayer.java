@@ -1,12 +1,11 @@
 package towerwarspp.player;
 
-import java.util.Random;
-import java.util.Vector;
-
 import towerwarspp.board.Board;
-
 import towerwarspp.preset.Move;
 import towerwarspp.preset.PlayerColor;
+
+import java.util.Random;
+import java.util.Vector;
 
 
 /**
@@ -20,6 +19,7 @@ import towerwarspp.preset.PlayerColor;
  * The simple AI randomly chooses one of the moves with the highest score. A move that leads to victory is always choosen
  * before the others. Moves that lead to a position in wich the opponent could win in one move will only be executed
  * if no other moves are available.
+ *
  * @author Alexander Wähling
  * @version 08-07-17
  */
@@ -42,11 +42,12 @@ public class SimplePlayer extends BasePlayer {
      * Uses the {@link Board#scoreMove(Move, PlayerColor)} method to evaluate all possible moves for this players {@link #color}
      * and randomly chooses one of the highest rated moves. If the score of a Move is equal to {@link Board#WIN} (leads to
      * instant victory), that move is automatically returned.
+     *
      * @return random highest scored move
      */
     @Override
     Move deliverMove() {
-		Vector<Move> bestMoves = board.getBestMoves(color);
-		return bestMoves.get(rnd.nextInt(bestMoves.size()));
+        Vector<Move> bestMoves = board.getBestMoves(color);
+        return bestMoves.get(rnd.nextInt(bestMoves.size()));
     }
 }

@@ -3,9 +3,10 @@ package towerwarspp.player.mcts;
 /**
  * Simple Data container class that contains pairs of Nodes and their score. Implements {@link Comparable}
  * to impose a total ordering. Scored Nodes are order by the natural ordering of their scores.
+ *
  * @author Robin Hundt
  */
-class ScoredNode implements Comparable<ScoredNode>{
+class ScoredNode implements Comparable<ScoredNode> {
     /**
      * Contained Node in pair.
      */
@@ -17,7 +18,8 @@ class ScoredNode implements Comparable<ScoredNode>{
 
     /**
      * Construct a new pair that holds a reference to the passed Node and it's  score.
-     * @param node Node stored in ScoredNode
+     *
+     * @param node     Node stored in ScoredNode
      * @param ucbScore score to store with Node
      */
     ScoredNode(Node node, double ucbScore) {
@@ -27,15 +29,16 @@ class ScoredNode implements Comparable<ScoredNode>{
 
     /**
      * Imposes a total ordering on scored Nodes equivalent to the ordering of their double scores.
+     *
      * @param scoredNode ScoredNode to compare this instance with
      * @return negative value if passed ScoredNode is greater, positive value if passed ScoredNode greater and 0 if they
      * have an equal score
      */
     @Override
     public int compareTo(ScoredNode scoredNode) {
-        if(ucbScore < scoredNode.ucbScore)
+        if (ucbScore < scoredNode.ucbScore)
             return -1;
-        else if(ucbScore > scoredNode.ucbScore)
+        else if (ucbScore > scoredNode.ucbScore)
             return 1;
         else
             return 0;

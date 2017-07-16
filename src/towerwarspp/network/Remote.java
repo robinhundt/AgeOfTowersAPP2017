@@ -16,18 +16,13 @@ import java.util.Scanner;
  * find can be used to either offer a Player object on a local RMI or get a reference to a remote Player from a RMI
  * at host:port .
  * Default port is 1099 per RMI specifications.
- * @author Alexander Wähling
+ * @author Alexander Waehling
  */
 public class Remote {
     /**
      * Default port to offer and look for players on. Conforms to the standard RMI port.
      */
     public static final int DEFAULT_PORT = 1099;
-
-    /**
-     * Registry to either offer a player on or get a remote player from.
-     */
-    private Registry registry;
     /**
      * ip-address or resolvable name of Registry to connect with
      */
@@ -36,10 +31,15 @@ public class Remote {
      * Either player is offered on local RMI with this port, or a player is looked for on remote RMI on this port.
      */
     private final int port;
+    /**
+     * Registry to either offer a player on or get a remote player from.
+     */
+    private Registry registry;
 
     /**
      * Setup local RMI with specified port. If there is already a RMI instance on that port running, it's used instead
      * of creating a new RMI registry.
+     *
      * @param port Port to look on
      */
     public Remote(int port) {
@@ -73,6 +73,7 @@ public class Remote {
 
     /**
      * Get a reference to a remote RMI on the specified host and port.
+     *
      * @param host host to look for an RMI at
      * @param port port to look on
      */
@@ -89,6 +90,7 @@ public class Remote {
 
     /**
      * Get a reference to a remote RMI on the specified host and and {@link #DEFAULT_PORT} 1099.
+     *
      * @param host host to look for an RMI at
      */
     public Remote(String host) {
@@ -97,8 +99,9 @@ public class Remote {
 
     /**
      * Offer a Remote Player object with the passed name on {@link #registry} obtained on object construction
+     *
      * @param netPlayer Player object to offer
-     * @param name name to offer netplayer under
+     * @param name      name to offer netplayer under
      */
     public void offer(Player netPlayer, String name) {
         try {
@@ -114,6 +117,7 @@ public class Remote {
 
     /**
      * Look for a remote Player with the specified name on the {@link #registry} obtained at object construction.
+     *
      * @param name name to look for
      * @return remote reference to a Player object
      */
@@ -134,6 +138,7 @@ public class Remote {
      * and a Player reference to this object returned.
      * If more than one Remote object is bound to the Registry, all bound Objects are listed and the player is interactively
      * asked via commandline which player he wishes to play against.
+     *
      * @return a reference to a remote Player object
      */
     public Player find() {
@@ -148,10 +153,10 @@ public class Remote {
             System.exit(1);
         }
 
-        if(names.length > 1) {
+        if (names.length > 1) {
             // if there is more than one Player available, list the names of all
             System.out.println("Available players on " + host + ":" + port + "  :");
-            for(String name : names) {
+            for (String name : names) {
                 System.out.println(name);
             }
             try {
@@ -162,9 +167,9 @@ public class Remote {
                 System.out.println(e);
                 System.exit(1);
             }
-        } else if(names.length == 1) {
+        } else if (names.length == 1) {
             // in case only one Remote object is bound to the registry, try to get a remote reference to it
-            System.out.println("Found player " + names[0] + " on " + host + ":" + port );
+            System.out.println("Found player " + names[0] + " on " + host + ":" + port);
             try {
                 player = (Player) registry.lookup(names[0]);
             } catch (RemoteException | NotBoundException e) {
@@ -183,6 +188,7 @@ public class Remote {
      * Helper method that uses a Scanner to interactively ask the user for a name contained in the passed List of names.
      * If the entered name is not present in the List, the user will be notified and prompted to enter the name again, until
      * a correct name is entered.
+     *
      * @param names list of names of possible Remote Players
      * @return name that matches the name of one of the players passed in the List names
      */

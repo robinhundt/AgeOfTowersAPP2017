@@ -55,17 +55,15 @@ import static towerwarspp.util.debug.DebugSource.PLAYER;
  * Likewise if a move is decided on, the root of the tree is set to it's child Node representing this move.
  * Through this concurrency and reuse of viable subtree the algorithm achieves better result than by building up a new
  * search tree for each move request.
+ *
+ * @author Robin Hundt
  * @version 13-07-17
  */
-public class Mcts implements Runnable{
+public class Mcts implements Runnable {
     /**
      * Default Bias that is used as a constant in the calculation of the UCB1 in formulae during {@link Node#bestUCBChild()}.
      */
     public static final double DEF_BIAS = 2;
-    /**
-     * Bias that is used as a constant in the calculation of the UCB1 in formulae during {@link Node#bestUCBChild()}.
-     */
-    private double bias = DEF_BIAS;
     /**
      * The default score that is backpropagated through the tree at the end of a simulation or when a terminal node is
      * reached.
@@ -80,6 +78,11 @@ public class Mcts implements Runnable{
      * loop of the algorithm. Is used to run instance of the Runnable {@link UpdateTree}.
      */
     private final ExecutorService updatePool;
+    private final ArrayDeque<Task> tasks;
+    /**
+     * Bias that is used as a constant in the calculation of the UCB1 in formulae during {@link Node#bestUCBChild()}.
+     */
+    private double bias = DEF_BIAS;
     /**
      * Array of Futures that is used to store the Futures returned by the {@link ExecutorService#submit(Runnable)} method.
      */
@@ -94,7 +97,6 @@ public class Mcts implements Runnable{
     private Node root;
     /**
      * The current board that is always at the state represented by the root of the tree.
-     *
      */
     private Board board;
     /**
@@ -142,13 +144,12 @@ public class Mcts implements Runnable{
      */
     private TreeSelectionStrategy treeSelectionStrategy = TreeSelectionStrategy.MAX;
 
-    private final ArrayDeque<Task> tasks;
-
 
     /**
      * Construct a new Mcts object that approximately takes the specified time per move in milliseconds to decide on a move after
      * one has been requested.
-     * @param timePerMove time in milliseconds that the algorithm will spend on deciding which move to make after the request.
+     *
+     * @param timePerMove           time in milliseconds that the algorithm will spend on deciding which move to make after the request.
      * @param parallelizationFactor Specifies the number of Threads that is at most used to concurrently execute {@link UpdateTree} instances.
      */
     public Mcts(long timePerMove, int parallelizationFactor) {
@@ -163,14 +164,15 @@ public class Mcts implements Runnable{
 
     /**
      * Constructs a new Mcts object with the specified time per move, {@link PlayStrategy} and {@link TreeSelectionStrategy}
-     * @param timePerMove time to decide on a move after a request
+     *
+     * @param timePerMove           time to decide on a move after a request
      * @param parallelizationFactor Specifies the number of Threads that is at most used to concurrently execute {@link UpdateTree} instances.
-     * @param playStrategy {@link PlayStrategy} to use in the simulation phase of the algorithm.
+     * @param playStrategy          {@link PlayStrategy} to use in the simulation phase of the algorithm.
      * @param treeSelectionStrategy {@link TreeSelectionStrategy} to decide on the child representing a move when a move
      *                              is requested.
-     * @param fairPlay if set to true, the algorithm will spend approximately as much time deciding on it's next move,
-     *                 as the enemy took for his last move, the passed timPerMove will only be considered at his first move
-     *                 if the player is red.
+     * @param fairPlay              if set to true, the algorithm will spend approximately as much time deciding on it's next move,
+     *                              as the enemy took for his last move, the passed timPerMove will only be considered at his first move
+     *                              if the player is red.
      */
     public Mcts(long timePerMove, int parallelizationFactor, PlayStrategy playStrategy, TreeSelectionStrategy treeSelectionStrategy,
                 boolean fairPlay, double bias) {
@@ -184,6 +186,7 @@ public class Mcts implements Runnable{
 
     /**
      * Returns the {@link PlayStrategy} used by the algorithm at the moment.
+     *
      * @return current {@link PlayStrategy}
      */
     public PlayStrategy getPlayStrategy() {
@@ -194,6 +197,7 @@ public class Mcts implements Runnable{
      * Sets the {@link PlayStrategy} to the passed one.
      * Note: The algorithm will dynamically change it's PlayStrategy to {@link PlayStrategy#LIGHT} if it's close to a
      * winning position to reduce the bias introduced by the Heavy PlayOut.
+     *
      * @param playStrategy {@link PlayStrategy} to use from now on
      */
     public void setPlayStrategy(PlayStrategy playStrategy) {
@@ -202,6 +206,7 @@ public class Mcts implements Runnable{
 
     /**
      * Return the current {@link TreeSelectionStrategy} employed by the algorithm when deciding on it's next move.
+     *
      * @return current tree selection strategy
      */
     public TreeSelectionStrategy getTreeSelectionStrategy() {
@@ -210,6 +215,7 @@ public class Mcts implements Runnable{
 
     /**
      * Sets the passed {@link TreeSelectionStrategy} to the passed one.
+     *
      * @param treeSelectionStrategy strategy to use from now on.
      */
     public void setTreeSelectionStrategy(TreeSelectionStrategy treeSelectionStrategy) {
@@ -220,6 +226,7 @@ public class Mcts implements Runnable{
      * This method is always called fro outside this Thread. It will set {@link #startTime} to the current System time.
      * Then add a {@link Task#MOVE_REQUESTED} to the queue and set the callers Thread to wait(). If the Thread is woke up, it
      * will return the Move currently store in {@link #currentBestMove}.
+     *
      * @return the {@link #currentBestMove} after the sspecified {@link #timePerMove}
      */
     public synchronized Move getMove() {
@@ -237,6 +244,7 @@ public class Mcts implements Runnable{
      * Method is called from other Thread.
      * Sets the {@link #newBoard} variable to the passed Board and add a {@link Task#INIT} to the queue to signal Thread containing
      * the {@link #run()} method that a new board is available and a new tree should be constructed.
+     *
      * @param board that will be used as new initial game state
      */
     public void setInit(Board board) {
@@ -249,17 +257,187 @@ public class Mcts implements Runnable{
      * If {@link #fairPlay} is set to true, {@link #timePerMove} is set to the time the enemy spend deciding on his move.
      * {@link #enemyMove} is set to the passed Move and a {@link Task#MOVE_RECEIVED} is added to the queue, to notify the algorithm
      * Thread that the enemy has made a move.
+     *
      * @param move that the enemy made.
      */
     public void feedEnemyMove(Move move) {
-        if(fairPlay) {
-            if(endTime != 0)
+        if (fairPlay) {
+            if (endTime != 0)
                 timePerMove = System.currentTimeMillis() - endTime;
             else
                 timePerMove = Adv2Player.DEF_TIME_PER_MOVE;
         }
         enemyMove = move;
         addTask(MOVE_RECEIVED);
+    }
+
+    /**
+     * This method is called if the Thread has used it's available timePerMove to decide on the final Move that should
+     * be played. Depending on the setting of {@link #treeSelectionStrategy} either the Move with the highest win ratio
+     * represented by the Node returned by calling {@link Node#maxChild()} on the root, is selected or the move that has been
+     * played the most often represented by the Node returned from {@link Node#robustChild()}.
+     *
+     * @return the Move of the best root child Node depending on the Tree Selection strategy
+     */
+    private Move bestMove() {
+        debug.send(LEVEL_2, PLAYER, "Mcts: Completed tree iterations, calculating best move...");
+        Node selectedChild;
+        if (treeSelectionStrategy == TreeSelectionStrategy.MAX)
+            selectedChild = root.maxChild();
+        else
+            selectedChild = root.robustChild();
+        debug.send(LEVEL_2, PLAYER, "Mcts: Returning move " + selectedChild + " of max child, with weight: "
+                + selectedChild.getWeight());
+        updateRoot(selectedChild);
+        checkPlayoutStrategy(selectedChild.getWeight());
+        return selectedChild.getMove();
+    }
+
+    /**
+     * Adds a {@link Task} the the task queue
+     *
+     * @param task task to add to end of queue
+     */
+    synchronized private void addTask(Task task) {
+        tasks.add(task);
+    }
+
+    /**
+     * Removes a {@link Task} from the task queue
+     */
+    synchronized private void removeTask() {
+        tasks.removeFirst();
+    }
+
+    /**
+     * Returns and removes a {@link Task} from the Tsk queue
+     *
+     * @return task from head of queue
+     */
+    synchronized private Task pollTask() {
+        return tasks.poll();
+    }
+
+    /**
+     * Returns but does not remove the Task at the head of the queue
+     *
+     * @return head of the {@link #tasks} queue
+     */
+    private Task peekTask() {
+        return tasks.peek();
+    }
+
+    /**
+     * Reinitialize this Mcts object by setting the board to the new Board passed via {@link #newBoard}.
+     * A new {@link #root} is constructed and {@link #rootPlayout()} is called to fully expand the root and do a
+     * playout on all the new children.
+     */
+    private void init() {
+        board = newBoard;
+        root = new Node(board, bias);
+        if (playStrategy == PlayStrategy.DYNAMIC)
+            playStrategy = PlayStrategy.HEAVY;
+        rootPlayout();
+        debug.send(LEVEL_1, PLAYER, "Mcts: Initialized adv2 player and expanded root.");
+    }
+
+    /**
+     * Wakes up the Thread that has requested a Move by calling notify().
+     */
+    private synchronized void wakeUp() {
+        notify();
+    }
+
+    /**
+     * Decides if to update the current {@link PlayStrategy} depending on the weight of the last played Move.
+     * If the weight is above 0.98 the play strategy is changed to a {@link PlayStrategy#LIGHT} playout to reduce
+     * the bias introduced by the heavy playout strategy.
+     *
+     * @param weight weight of last selected child Node
+     */
+    private void checkPlayoutStrategy(double weight) {
+        if (playStrategy == PlayStrategy.DYNAMIC) {
+            if (weight > 0.98) {
+                playStrategy = PlayStrategy.LIGHT;
+            }
+        }
+    }
+
+    /**
+     * Used to update the {@link #root} of the tree after the enemy has made a move. First the passed Move is compared
+     * against the moves of the child {@link Node}'s of the current root. If a match is found, the child is set as new root,
+     * the move is played on the {@link #board} and a {@link #rootPlayout()} is executed.
+     * Also memory is made available to be cleared up by the Garbage Collector by deleting references to the now unused
+     * subtree.
+     *
+     * @param move the enemy move.
+     */
+    private void updateRoot(Move move) {
+        for (Node node : root.getChildren()) {
+            debug.send(LEVEL_3, PLAYER, "MCTS: Root has child " + node);
+            if (node.getMove().equals(move)) {
+                root = node;
+                freeAncestorMemory(root);
+                debug.send(LEVEL_2, PLAYER, "Mcts: New root " + root);
+                board.makeMove(root.getMove());
+                if (board.getStatus() != OK)
+                    root.setTerminalTrue();
+                else
+                    rootPlayout();
+                break;
+            }
+        }
+    }
+
+    /**
+     * Used to update the root of the tree after the algorithm has decided on a move to play. First the {@link #root} is
+     * set to the passed Node, the move represented by the new root is played on the board and depending on the state of
+     * the game a {@link #rootPlayout()} is executed.
+     *
+     * @param node node to set as new root
+     */
+    private void updateRoot(Node node) {
+        root = node;
+        freeAncestorMemory(root);
+        board.makeMove(root.getMove());
+        if (board.getStatus() != OK)
+            root.setTerminalTrue();
+        else
+            rootPlayout();
+    }
+
+    /**
+     * This method should always be called after a new root has been set.
+     * First {@link Node#fullExpand(Board)} is called on the root to fully expand it and get a List containing all
+     * so far unexplored children of that Node. Then for every unexplored child a playout with the current {@link PlayStrategy}
+     * is executed and the result backpropagated up the tree.
+     */
+    private void rootPlayout() {
+        ArrayList<Node> unexploredNodes = root.fullExpand(board);
+        for (Node unexplNode : unexploredNodes) {
+            Board tempBoard = board.clone();
+            tempBoard.makeMove(unexplNode.getMove());
+            if (tempBoard.getStatus() != OK) {
+                unexplNode.setTerminalTrue();
+            } else {
+                unexplNode.backPropagateScore(DEF_SCORE, UpdateTree.playout(tempBoard, playStrategy));
+            }
+        }
+    }
+
+    /**
+     * Method to make a part of the search tree that is of no use anymore available to be cleared by the Garbage Collector
+     * by iteratively setting the parent references of all the ancestors of the passed Node to null.
+     *
+     * @param node node to start freeing memory from
+     */
+    private void freeAncestorMemory(Node node) {
+        if (node.getParent() != null) {
+            Node parent = node.getParent();
+            node.setParent(null);
+            freeAncestorMemory(parent);
+        }
+
     }
 
     /**
@@ -297,8 +475,8 @@ public class Mcts implements Runnable{
                         removeTask();
                         break;
                     case MOVE_REQUESTED:
-                        if(System.currentTimeMillis() > startTime + timePerMove) {
-                            if(root.childCount() > 0 && !root.isTerminal()) {
+                        if (System.currentTimeMillis() > startTime + timePerMove) {
+                            if (root.childCount() > 0 && !root.isTerminal()) {
                                 currentBestMove = bestMove();
                                 debug.send(LEVEL_2, PLAYER, "Decided on move " + currentBestMove + " in "
                                         + (System.currentTimeMillis() - startTime) + " ms.");
@@ -307,7 +485,7 @@ public class Mcts implements Runnable{
                                 removeTask();
                                 wakeUp();
                             }
-                        } else if(root.hasTerminalChild()) {
+                        } else if (root.hasTerminalChild()) {
                             currentBestMove = root.getTerminalChild().getMove();
                             board.makeMove(currentBestMove);
                             endTime = System.currentTimeMillis();
@@ -318,24 +496,24 @@ public class Mcts implements Runnable{
                 }
             }
 
-            if(board.getStatus() == OK) {
+            if (board.getStatus() == OK) {
                 /* ExecutorService is used to compute iterations of the selecet - expand - simulate - backpropagate
                 in parallel. It's waited until all futures returned by updatePool.submit() are done working.
                 */
-                for(int i=0; i < parallelizationFactor; i++) {
+                for (int i = 0; i < parallelizationFactor; i++) {
                     futures[i] = updatePool.submit(new UpdateTree(board.clone(), root, playStrategy, i));
                 }
                 boolean updating = true;
                 while (updating) {
                     boolean threadWorking = false;
-                    for(Future future : futures) {
-                        if(future.isDone())
+                    for (Future future : futures) {
+                        if (future.isDone())
                             updating = false;
                         else
                             threadWorking = true;
                     }
                     if (threadWorking)
-                        updating =true;
+                        updating = true;
                 }
             } else {
                 try {
@@ -345,166 +523,5 @@ public class Mcts implements Runnable{
                 }
             }
         }
-    }
-
-    /**
-     * This method is called if the Thread has used it's available timePerMove to decide on the final Move that should
-     * be played. Depending on the setting of {@link #treeSelectionStrategy} either the Move with the highest win ratio
-     * represented by the Node returned by calling {@link Node#maxChild()} on the root, is selected or the move that has been
-     * played the most often represented by the Node returned from {@link Node#robustChild()}.
-     * @return the Move of the best root child Node depending on the Tree Selection strategy
-     */
-    private Move bestMove() {
-        debug.send(LEVEL_2, PLAYER, "Mcts: Completed tree iterations, calculating best move...");
-        Node selectedChild;
-        if(treeSelectionStrategy == TreeSelectionStrategy.MAX)
-            selectedChild = root.maxChild();
-        else
-            selectedChild = root.robustChild();
-        debug.send(LEVEL_2, PLAYER, "Mcts: Returning move " + selectedChild + " of max child, with weight: "
-                + selectedChild.getWeight());
-        updateRoot(selectedChild);
-        checkPlayoutStrategy(selectedChild.getWeight());
-        return selectedChild.getMove();
-    }
-
-    /**
-     * Adds a {@link Task} the the task queue
-     * @param task task to add to end of queue
-     */
-    synchronized private void addTask(Task task) {
-        tasks.add(task);
-    }
-
-    /**
-     * Removes a {@link Task} from the task queue
-     */
-    synchronized private void removeTask() {
-        tasks.removeFirst();
-    }
-
-    /**
-     * Returns and removes a {@link Task} from the Tsk queue
-     * @return task from head of queue
-     */
-    synchronized private Task pollTask() {
-        return tasks.poll();
-    }
-
-    /**
-     * Returns but does not remove the Task at the head of the queue
-     * @return head of the {@link #tasks} queue
-     */
-    private Task peekTask() {
-        return tasks.peek();
-    }
-
-    /**
-     * Reinitialize this Mcts object by setting the board to the new Board passed via {@link #newBoard}.
-     * A new {@link #root} is constructed and {@link #rootPlayout()} is called to fully expand the root and do a
-     * playout on all the new children.
-     */
-    private void init() {
-        board = newBoard;
-        root = new Node(board, bias);
-        if(playStrategy == PlayStrategy.DYNAMIC)
-            playStrategy = PlayStrategy.HEAVY;
-        rootPlayout();
-        debug.send(LEVEL_1, PLAYER, "Mcts: Initialized adv2 player and expanded root.");
-    }
-
-    /**
-     * Wakes up the Thread that has requested a Move by calling notify().
-     */
-    private synchronized void wakeUp() {
-        notify();
-    }
-
-    /**
-     * Decides if to update the current {@link PlayStrategy} depending on the weight of the last played Move.
-     * If the weight is above 0.98 the play strategy is changed to a {@link PlayStrategy#LIGHT} playout to reduce
-     * the bias introduced by the heavy playout strategy.
-     * @param weight weight of last selected child Node
-     */
-    private void checkPlayoutStrategy(double weight) {
-        if(playStrategy == PlayStrategy.DYNAMIC) {
-            if(weight > 0.98) {
-                playStrategy = PlayStrategy.LIGHT;
-            }
-        }
-    }
-
-    /**
-     * Used to update the {@link #root} of the tree after the enemy has made a move. First the passed Move is compared
-     * against the moves of the child {@link Node}'s of the current root. If a match is found, the child is set as new root,
-     * the move is played on the {@link #board} and a {@link #rootPlayout()} is executed.
-     * Also memory is made available to be cleared up by the Garbage Collector by deleting references to the now unused
-     * subtree.
-     * @param move the enemy move.
-     */
-    private void updateRoot(Move move) {
-        for(Node node : root.getChildren()) {
-            debug.send(LEVEL_3, PLAYER, "MCTS: Root has child " + node);
-            if(node.getMove().equals(move)) {
-                root = node;
-                freeAncestorMemory(root);
-                debug.send(LEVEL_2, PLAYER, "Mcts: New root " + root);
-                board.makeMove(root.getMove());
-                if(board.getStatus() != OK)
-                    root.setTerminalTrue();
-                else
-                    rootPlayout();
-                break;
-            }
-        }
-    }
-
-    /**
-     * Used to update the root of the tree after the algorithm has decided on a move to play. First the {@link #root} is
-     * set to the passed Node, the move represented by the new root is played on the board and depending on the state of
-     * the game a {@link #rootPlayout()} is executed.
-     * @param node node to set as new root
-     */
-    private void updateRoot(Node node) {
-        root = node;
-        freeAncestorMemory(root);
-        board.makeMove(root.getMove());
-        if(board.getStatus() != OK)
-            root.setTerminalTrue();
-        else
-            rootPlayout();
-    }
-
-    /**
-     * This method should always be called after a new root has been set.
-     * First {@link Node#fullExpand(Board)} is called on the root to fully expand it and get a List containing all
-     * so far unexplored children of that Node. Then for every unexplored child a playout with the current {@link PlayStrategy}
-     * is executed and the result backpropagated up the tree.
-     */
-    private void rootPlayout() {
-        ArrayList<Node> unexploredNodes = root.fullExpand(board);
-        for(Node unexplNode : unexploredNodes) {
-            Board tempBoard = board.clone();
-            tempBoard.makeMove(unexplNode.getMove());
-            if(tempBoard.getStatus() != OK) {
-                unexplNode.setTerminalTrue();
-            } else {
-                unexplNode.backPropagateScore(DEF_SCORE, UpdateTree.playout(tempBoard, playStrategy));
-            }
-        }
-    }
-
-    /**
-     * Method to make a part of the search tree that is of no use anymore available to be cleared by the Garbage Collector
-     * by iteratively setting the parent references of all the ancestors of the passed Node to null.
-     * @param node node to start freeing memory from
-     */
-    private void freeAncestorMemory(Node node) {
-        if(node.getParent() != null) {
-            Node parent = node.getParent();
-            node.setParent(null);
-            freeAncestorMemory(parent);
-        }
-
     }
 }

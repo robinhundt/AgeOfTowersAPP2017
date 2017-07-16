@@ -1,7 +1,7 @@
 package towerwarspp.util.debug;
 
 
-import static towerwarspp.util.debug.DebugLevel.*;
+import static towerwarspp.util.debug.DebugLevel.NO_LEVEL_DEBUG;
 import static towerwarspp.util.debug.DebugSource.NO_SOURCE_DEBUG;
 
 /**
@@ -49,11 +49,12 @@ public class Debug {
      * Can only be called once via {@link #getInstance()}.
      */
     private Debug() {
-     debugMessages = new StringBuffer();
+        debugMessages = new StringBuffer();
     }
 
     /**
      * Returns the current set {@link #debugLevel}
+     *
      * @return current debug leve
      */
     public DebugLevel getDebugLevel() {
@@ -63,6 +64,7 @@ public class Debug {
     /**
      * Sets the Debug level.
      * Also sets {@link #debugging} to true.
+     *
      * @param debugLevel debug level to collect messages at
      */
     public void setDebugLevel(DebugLevel debugLevel) {
@@ -73,14 +75,17 @@ public class Debug {
 
     /**
      * Returns the current logged {@link DebugSource}.
+     *
      * @return logged source
      */
     public DebugSource getSource() {
         return debugSource;
     }
+
     /**
      * Sets the Debug level.
      * Also sets {@link #debugging} to true.
+     *
      * @param source source to collect messages at
      */
     public void setSource(DebugSource source) {
@@ -91,10 +96,11 @@ public class Debug {
     /**
      * Returns the current {@link #debug} instance. If {@link #debug} is null the {@link Debug} constructor is called.
      * This way only one instance can exist at any one time.
+     *
      * @return the single Debug instance
      */
     public synchronized static Debug getInstance() {
-        if(debug == null) {
+        if (debug == null) {
             debug = new Debug();
             return debug;
         } else {
@@ -105,12 +111,13 @@ public class Debug {
     /**
      * Returns the currently stored debug messages inside the {@link #debugMessages} StringBuffer. by calling it's toString()
      * method. The Buffer is reset by assigning a new StringBuffer to {@link #debugMessages}.
+     *
      * @return the debug messages logged so far
      */
     public String getDebugOutput() {
         String debug = "";
-        if(debugMessages.length() > 1) {
-            debug =  debugMessages.toString();
+        if (debugMessages.length() > 1) {
+            debug = debugMessages.toString();
             debugMessages = new StringBuffer();
         }
         return debug;
@@ -119,6 +126,7 @@ public class Debug {
 
     /**
      * Returns whether the Debug object is collecting.
+     *
      * @return true if {@link #debug} is collecting messages
      */
     public boolean isCollecting() {
@@ -128,20 +136,22 @@ public class Debug {
     /**
      * Can be used to send debug messages with the specified {@link DebugLevel} and {@link DebugSource} to the {@link #debugMessages} Buffer
      * to await collection by {@link #getDebugOutput()}.
-     * @param level of the debug message
+     *
+     * @param level  of the debug message
      * @param source of the debug message
-     * @param msg Message to be sent
+     * @param msg    Message to be sent
      */
     public void send(DebugLevel level, DebugSource source, String msg) {
-        if(debugging && debugSource != NO_SOURCE_DEBUG && level.compareTo(debugLevel) <= 0 && debugSource == source) {
+        if (debugging && debugSource != NO_SOURCE_DEBUG && level.compareTo(debugLevel) <= 0 && debugSource == source) {
             debugMessages.append(source).append(' ').append(level).append(' ').append(msg).append('\n');
-        } else if(debugging && debugSource == NO_SOURCE_DEBUG && level.compareTo(debugLevel) <= 0) {
+        } else if (debugging && debugSource == NO_SOURCE_DEBUG && level.compareTo(debugLevel) <= 0) {
             debugMessages.append(source).append(' ').append(level).append(' ').append(msg).append('\n');
         }
     }
 
     /**
      * Calling this method will return the currently logged debug output inside {@link #debugMessages}.
+     *
      * @return String containing all the logged debug messages
      */
     @Override

@@ -9,8 +9,6 @@ import java.util.Vector;
 
 /**
  * Class offering enums representing different play strategies and methods that implement those strategies.
- * @author Alexander Wähling, Robin Hundt
- *
  */
 public enum PlayStrategy {
     /**
@@ -35,6 +33,7 @@ public enum PlayStrategy {
      * Uses the passed {@link Board} object to get all moves available to the Player returned by {@link Board#getTurn()},
      * then randomly selects one of them and returns it.
      * The Board instance is not changed in any way.
+     *
      * @param board board to get available moves from
      * @return randomly selected move
      */
@@ -48,6 +47,7 @@ public enum PlayStrategy {
      * then assigns a score to each of them by using the {@link Board#altScore(Move, PlayerColor)} evaluation function
      * and returns a random move out of the highest scored moves.
      * The {@link Board} instance is not changed in any way
+     *
      * @param board board to get moves from
      * @return randomly selected move out of the highest scored moves
      */
@@ -58,12 +58,12 @@ public enum PlayStrategy {
         // create new Vector of moves that will always hold the Move objects that have the highest score
         Vector<Move> maxMoves = new Vector<>();
 
-        for(Move move : moves) {
+        for (Move move : moves) {
             // iterate over all possible moves and calculate their scores
             int score = board.altScore(move, board.getTurn());
-            if(score == maxScore) {
+            if (score == maxScore) {
                 maxMoves.add(move);
-            } else if(score > maxScore) {
+            } else if (score > maxScore) {
                 /*
                 * If the score of the last evaluated move is higher than the current maximum score, clear the maxMoves
                 * vector containing the prior best moves. Then add the new best move to the vector and makeMove
@@ -73,7 +73,7 @@ public enum PlayStrategy {
                 maxMoves.add(move);
                 maxScore = score;
                 // if the score indicates that this move is a winning move, break out of the loop and return it
-                if(score == Board.WIN) {
+                if (score == Board.WIN) {
                     break;
                 }
             }

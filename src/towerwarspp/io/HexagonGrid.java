@@ -1,16 +1,19 @@
 package towerwarspp.io;
-import java.awt.*;
+
+import towerwarspp.preset.Position;
 import towerwarspp.util.debug.Debug;
 import towerwarspp.util.debug.DebugLevel;
 import towerwarspp.util.debug.DebugSource;
-import towerwarspp.preset.Position;
+
+import java.awt.*;
+
 /**
  * Class {@link HexagonGrid} creates the Grid of the Hexagons.
  * It calculates the Center coordinates of each {@link Hexagon}.
  * The Class creates the Arrays of {@link Polygon} which can be drawn in the {@link GraphicIO}.
  *
- * @version 0.7 July 14th 2017
  * @author Kai Kuhlmann
+ * @version 0.7 July 14th 2017
  */
 public class HexagonGrid {
     /**
@@ -34,6 +37,7 @@ public class HexagonGrid {
      * Debug Instance of {@link Debug}
      */
     private Debug debugInstance;
+
     /**
      * The Constructor of the {@link HexagonGrid}.
      * Set the Size of each {@link Polygon} and {@link Hexagon}.
@@ -42,7 +46,7 @@ public class HexagonGrid {
      * Creates each {@link Hexagon} and saves them in the Array of {@link Hexagon}.
      *
      * @param boardSize The Size of the Board
-     * @param polySize The Size of each {@link Polygon} or {@link Hexagon}
+     * @param polySize  The Size of each {@link Polygon} or {@link Hexagon}
      */
     HexagonGrid(int boardSize, int polySize) {
         this.debugInstance = Debug.getInstance();
@@ -50,8 +54,8 @@ public class HexagonGrid {
         this.hexagons = new Hexagon[boardSize + 1][boardSize + 1];
         this.polygon = new Polygon[boardSize + 1][boardSize + 1];
         this.markedPolygon = new Polygon[boardSize + 1][boardSize + 1];
-        for(int y = 1; y <= boardSize; ++y) {
-            for(int x = 1; x <= boardSize; ++x) {
+        for (int y = 1; y <= boardSize; ++y) {
+            for (int x = 1; x <= boardSize; ++x) {
                 int[] coordinates = calculateCenterCoordinates(x, y);
                 this.hexagons[x][y] = new Hexagon(coordinates[0], coordinates[1], this.polygonSize, new Position(x, y));
                 setPolygon(x, y);
@@ -59,6 +63,25 @@ public class HexagonGrid {
         }
         this.debugInstance.send(DebugLevel.LEVEL_4, DebugSource.IO, "HexagonGrid created.");
     }
+
+    /**
+     * Getter for the Array of {@link Polygon} for drawing.
+     *
+     * @return Array of {@link Polygon}
+     */
+    Polygon[][] getPolygon() {
+        return this.polygon;
+    }
+
+    /**
+     * Getter for the Array of {@link Polygon} which are the marked Polygons on which are Tokens.
+     *
+     * @return Array of {@link Polygon}
+     */
+    Polygon[][] getMarkedPolygon() {
+        return this.markedPolygon;
+    }
+
     /**
      * Setter for {@link Polygon}
      * Creates a {@link Polygon} with six Edges based on the Corners of a {@link Hexagon}
@@ -110,25 +133,28 @@ public class HexagonGrid {
         this.polygon[x][y] = new Polygon(xPolygon, yPolygon, 6);
         this.debugInstance.send(DebugLevel.LEVEL_6, DebugSource.IO, "Polygon created. Coordinates (" + x + ", " + y + ")");
     }
+
     /**
-     * Getter for the Array of {@link Polygon} for drawing.
-     * @return Array of {@link Polygon}
+     * Calculates the Coordinates in Pixel of the {@link Hexagon.Center} based on the Coordinates on the {@link HexagonGrid}.
+     *
+     * @param x X-Coordinate of the {@link HexagonGrid}
+     * @param y Y-Coordinate of the {@link HexagonGrid}
+     * @return Array of the X and Y coordinates of the Center in Pixel
      */
-    Polygon[][] getPolygon() {
-        return this.polygon;
+    private int[] calculateCenterCoordinates(int x, int y) {
+        int[] coordinates = new int[2];
+        int distance = (int) (Math.cos(Math.toRadians(30.0)) * this.polygonSize);
+        coordinates[0] = x * (2 * distance) + (y - 1) * distance + (distance / 2);
+        coordinates[1] = y * this.polygonSize + (y - 1) * (this.polygonSize / 2) + distance;
+        this.debugInstance.send(DebugLevel.LEVEL_4, DebugSource.IO, "Center coordinate claculated. (" + x + ", " + y + ")");
+        return coordinates;
     }
-    /**
-     * Getter for the Array of {@link Polygon} which are the marked Polygons on which are Tokens.
-     * @return Array of {@link Polygon}
-     */
-    Polygon[][] getMarkedPolygon() {
-        return this.markedPolygon;
-    }
+
     void updatePolygonSize(int polySize) {
         this.polygonSize = polySize;
-        for(int y = 1; y < this.hexagons.length; ++y) {
+        for (int y = 1; y < this.hexagons.length; ++y) {
             for (int x = 1; x < this.hexagons.length; ++x) {
-                int [] coordinates = calculateCenterCoordinates(x, y);
+                int[] coordinates = calculateCenterCoordinates(x, y);
                 this.hexagons[x][y].updateHexagon(coordinates[0], coordinates[1], this.polygonSize);
                 setPolygon(x, y);
                 this.debugInstance.send(DebugLevel.LEVEL_7, DebugSource.IO, "Polygon (" + x + ", " + y + ") updated.");
@@ -136,27 +162,15 @@ public class HexagonGrid {
         }
         this.debugInstance.send(DebugLevel.LEVEL_4, DebugSource.IO, "All Polygon updated.");
     }
+
     /**
      * Get an {@link Hexagon.Center} on the specific coordinates.
+     *
      * @param x X-Coordinate of the {@link HexagonGrid}
      * @param y Y-Coordinate of the {@link HexagonGrid}
      * @return the {@link Hexagon.Center}
      */
     Hexagon.Center getCenter(int x, int y) {
         return this.hexagons[x][y].getCenter();
-    }
-    /**
-     * Calculates the Coordinates in Pixel of the {@link Hexagon.Center} based on the Coordinates on the {@link HexagonGrid}.
-     * @param x X-Coordinate of the {@link HexagonGrid}
-     * @param y Y-Coordinate of the {@link HexagonGrid}
-     * @return Array of the X and Y coordinates of the Center in Pixel
-     */
-    private int[] calculateCenterCoordinates(int x, int y) {
-        int [] coordinates = new int[2];
-        int distance = (int) (Math.cos(Math.toRadians(30.0)) * this.polygonSize);
-        coordinates[0] = x * (2 * distance) + (y - 1) * distance + (distance / 2);
-        coordinates[1] = y * this.polygonSize + (y - 1) * (this.polygonSize / 2) + distance;
-        this.debugInstance.send(DebugLevel.LEVEL_4, DebugSource.IO, "Center coordinate claculated. (" + x + ", " + y +")");
-        return coordinates;
     }
 }

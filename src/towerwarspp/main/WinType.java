@@ -19,11 +19,16 @@ public enum WinType {
     @Override
     public String toString() {
         switch (this) {
-            case BASE_DESTROYED: return "Enemy base destroyed";
-            case NO_POSSIBLE_MOVES: return "Enemy without legal moves";
-            case SURRENDER: return "Enemy surrendered";
-            case ILLEGAL_MOVE: return  "Enemy made illegal move";
-            default: return "Unknown win type";
+            case BASE_DESTROYED:
+                return "Enemy base destroyed";
+            case NO_POSSIBLE_MOVES:
+                return "Enemy without legal moves";
+            case SURRENDER:
+                return "Enemy surrendered";
+            case ILLEGAL_MOVE:
+                return "Enemy made illegal move";
+            default:
+                return "Unknown win type";
         }
     }
 }

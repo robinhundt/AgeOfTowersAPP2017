@@ -1,7 +1,7 @@
 package towerwarspp.main.tournament;
 
-import towerwarspp.main.game.Result;
 import towerwarspp.main.WinType;
+import towerwarspp.main.game.Result;
 import towerwarspp.preset.PlayerColor;
 
 import java.util.Arrays;
@@ -84,6 +84,7 @@ public class TResult {
 
     /**
      * Returns the wins.
+     *
      * @return the wins
      */
     int[] getWins() {
@@ -92,6 +93,7 @@ public class TResult {
 
     /**
      * Sets the Wins.
+     *
      * @param wins the new value of wins.
      */
     void setWins(int[] wins) {
@@ -100,6 +102,7 @@ public class TResult {
 
     /**
      * Returns the Int-Array of destroyed-base-wins.
+     *
      * @return the Int-Array of destroyed-base-wins.
      */
     int[] getBaseDestroyed() {
@@ -108,6 +111,7 @@ public class TResult {
 
     /**
      * Sets the int-array of destroyed bases
+     *
      * @param baseDestroyed the new Value of baseDestroyed
      */
     void setBaseDestroyed(int[] baseDestroyed) {
@@ -116,7 +120,8 @@ public class TResult {
 
     /**
      * Returns the noPosMoves-Array.
-     * @return the noPosMoves-Array 
+     *
+     * @return the noPosMoves-Array
      */
     int[] getNoPosMoves() {
         return Arrays.copyOf(noPosMoves, noPosMoves.length);
@@ -124,6 +129,7 @@ public class TResult {
 
     /**
      * Sets the value of noPosMoves.
+     *
      * @param noPosMoves the new value of noPosMoves
      */
     void setNoPosMoves(int[] noPosMoves) {
@@ -132,6 +138,7 @@ public class TResult {
 
     /**
      * Returns the illegalMoves-array.
+     *
      * @return illiegalMoves
      */
     int[] getIllegalMove() {
@@ -140,6 +147,7 @@ public class TResult {
 
     /**
      * Sets the value of illegalMoves
+     *
      * @param illegalMove the new value of illegal Moves
      */
     void setIllegalMove(int[] illegalMove) {
@@ -148,6 +156,7 @@ public class TResult {
 
     /**
      * Returns the Value of surrender.
+     *
      * @return the Value of surrender
      */
     public int[] getSurrender() {
@@ -156,6 +165,7 @@ public class TResult {
 
     /**
      * Sets the value of surrender.
+     *
      * @param surrender the new value of surrender
      */
     public void setSurrender(int[] surrender) {
@@ -164,6 +174,7 @@ public class TResult {
 
     /**
      * Returns the Value of avgMoves.
+     *
      * @return the Value of avgMoves
      */
     double[] getAvgMoves() {
@@ -172,6 +183,7 @@ public class TResult {
 
     /**
      * Sets the value of avgMoves.
+     *
      * @param avgMoves the new value of avgMoves
      */
     void setAvgMoves(double[] avgMoves) {
@@ -180,6 +192,7 @@ public class TResult {
 
     /**
      * Returns the Value of totalMoves.
+     *
      * @return the Value of totalMoves
      */
     int[] getTotalMoves() {
@@ -188,14 +201,16 @@ public class TResult {
 
     /**
      * Sets the value of totalMoves.
+     *
      * @param totalMoves the new value of totalMoves
      */
     public void setTotalMoves(int[] totalMoves) {
         this.totalMoves = totalMoves;
     }
-    
+
     /**
      * Returns the Value of timeoutGames.
+     *
      * @return the Value of timeoutGames
      */
     int getTimeoutGames() {
@@ -204,6 +219,7 @@ public class TResult {
 
     /**
      * Sets the value of timeoutGames.
+     *
      * @param timeoutGames the new value of timeoutGames
      */
     void setTimeoutGames(int timeoutGames) {
@@ -212,6 +228,7 @@ public class TResult {
 
     /**
      * Returns the Value of totalGames.
+     *
      * @return the Value of totalGames
      */
     int getTotalGames() {
@@ -220,10 +237,43 @@ public class TResult {
 
     /**
      * Sets the value of totalGames.
+     *
      * @param totalGames the new value of totalGames
      */
-    void setTotalGames (int totalGames) {
+    void setTotalGames(int totalGames) {
         this.totalGames = totalGames;
+    }
+
+    /**
+     * Overridden method toString returning a string with all information about this {@link TResult}
+     *
+     * @return String
+     */
+    @Override
+    public String toString() {
+
+        return "total games: " + totalGames +
+                "\nRed:\n" +
+                "-total wins:\t \t \t" + wins[RED] + "\n" +
+                "-wins per base destruction:\t \t" + baseDestroyed[RED] + "\n" +
+                "-wins per surrender of blue:\t \t" + surrender[RED] + "\n" +
+                "-wins per illegal move of blue:\t" + illegalMove[RED] + "\n" +
+                "-wins per immobility of blue:\t \t" + noPosMoves[RED] + "\n" +
+                "-total winning moves: \t \t" + totalMoves[RED] + "\n" +
+                "-average amount of moves per win:\t" + String.format("%.1f", avgMoves[RED]) + "\n" +
+
+                "\n" +
+                "Blue:\n" +
+                "-total wins:\t \t \t" + wins[BLUE] + "\n" +
+                "-wins per base destruction:\t \t" + baseDestroyed[BLUE] + "\n" +
+                "-wins per surrender of red:\t \t" + surrender[BLUE] + "\n" +
+                "-wins per illegal move of red:\t" + illegalMove[BLUE] + "\n" +
+                "-wins per immobility of red:\t \t" + noPosMoves[BLUE] + "\n" +
+                "-total winning moves: \t \t" + totalMoves[BLUE] + "\n" +
+                "-average amount of moves per win:\t" + String.format("%.1f", avgMoves[BLUE]) + "\n" +
+                "\n-games ended with timeout: \t" + timeoutGames;
+
+
     }
 
     /**
@@ -272,38 +322,5 @@ public class TResult {
         /*increment number of total played games and swap players*/
         totalGames++;
         swappedPlayers = !swappedPlayers;
-    }
-
-
-    /**
-     * Overridden method toString returning a string with all information about this {@link TResult}
-     *
-     * @return String
-     */
-    @Override
-    public String toString() {
-
-        return  "total games: " + totalGames +
-                "\nRed:\n" +
-                "-total wins:\t \t \t" + wins[RED] + "\n" +
-                "-wins per base destruction:\t \t" + baseDestroyed[RED] + "\n" +
-                "-wins per surrender of blue:\t \t" + surrender[RED] + "\n" +
-                "-wins per illegal move of blue:\t" + illegalMove[RED] + "\n" +
-                "-wins per immobility of blue:\t \t" + noPosMoves[RED] + "\n" +
-                "-total winning moves: \t \t" + totalMoves[RED] + "\n" +
-                "-average amount of moves per win:\t" + String.format("%.1f" ,avgMoves[RED]) + "\n" +
-
-                "\n" +
-                "Blue:\n" +
-                "-total wins:\t \t \t" + wins[BLUE] + "\n" +
-                "-wins per base destruction:\t \t" + baseDestroyed[BLUE] + "\n" +
-                "-wins per surrender of red:\t \t" + surrender[BLUE] + "\n" +
-                "-wins per illegal move of red:\t" + illegalMove[BLUE] + "\n" +
-                "-wins per immobility of red:\t \t" + noPosMoves[BLUE] + "\n" +
-                "-total winning moves: \t \t" + totalMoves[BLUE] + "\n" +
-                "-average amount of moves per win:\t" + String.format("%.1f" ,avgMoves[BLUE]) + "\n" +
-                "\n-games ended with timeout: \t" + timeoutGames;
-
-
     }
 }

@@ -1,7 +1,10 @@
 package towerwarspp.main.tournament;
+
 import towerwarspp.io.View;
-import towerwarspp.preset.*;
-import towerwarspp.main.game.*;
+import towerwarspp.main.game.Game;
+import towerwarspp.main.game.Result;
+import towerwarspp.preset.Player;
+import towerwarspp.preset.PlayerColor;
 
 /**
  * Class {@link Tournament} to start a given number of {@link Game}s
@@ -44,17 +47,17 @@ public class Tournament {
     /**
      * Constructor setting every parameter as given.
      *
-     * @param players array of {@link Player}s
-     * @param view {@link View} object to be able to visualize the {@link Game}
-     * @param debug boolean activating debug-mode
+     * @param players   array of {@link Player}s
+     * @param view      {@link View} object to be able to visualize the {@link Game}
+     * @param debug     boolean activating debug-mode
      * @param delayTime integer setting time to wait after every {@link Game}
      * @param boardSize integer setting board size
-     * @param games number of {@link Game}s
+     * @param games     number of {@link Game}s
      */
     public Tournament(Player[] players, View view, boolean debug,
                       int delayTime, int boardSize, int games, int timeOut) {
         this.players = players;
-        if(view != null) {
+        if (view != null) {
             this.view = view;
             hasView = true;
         }
@@ -81,13 +84,13 @@ public class Tournament {
         int red = 0, blue = 1;
 
         /*start as many games as wanted*/
-        for (int i=1; i<=games; i++) {
+        for (int i = 1; i <= games; i++) {
             /*if output is wanted, output current game number*/
-            if(hasView)
+            if (hasView)
                 view.setTitle("Game No.: " + i);
 
             /*switch players to get a fair tournament*/
-            if (i>1) {
+            if (i > 1) {
                 int tmp = red;
                 red = blue;
                 blue = tmp;
@@ -102,7 +105,7 @@ public class Tournament {
             Result result = game.play(timeOut, PlayerColor.RED);
                 /*include result in statistic*/
             tResult.addResult(result);
-            if(hasView) {
+            if (hasView) {
                     /*output result of last game*/
                 view.display(result.toString());
                     /*output current status of the statistic*/

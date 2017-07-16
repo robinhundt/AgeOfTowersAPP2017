@@ -17,9 +17,10 @@ public class Result {
 
     /**
      * Constructor.
-     * @param winner {@link PlayerColor} of winning {@link towerwarspp.preset.Player}
+     *
+     * @param winner      {@link PlayerColor} of winning {@link towerwarspp.preset.Player}
      * @param winnerMoves integer containing number of moves winner needed to win
-     * @param winType {@link WinType} of winning {@link towerwarspp.preset.Player}
+     * @param winType     {@link WinType} of winning {@link towerwarspp.preset.Player}
      */
     Result(PlayerColor winner, int winnerMoves, WinType winType) {
         this.winner = winner;
@@ -29,7 +30,8 @@ public class Result {
 
     /**
      * Alternative Constructor.
-     * @param moves move-number for win
+     *
+     * @param moves   move-number for win
      * @param winType the type of the win
      */
     Result(int moves, WinType winType) {
@@ -40,6 +42,7 @@ public class Result {
 
     /**
      * Overridden method toString providing simple output of the {@link Result}.
+     *
      * @return String containing all information of this object
      */
     @Override

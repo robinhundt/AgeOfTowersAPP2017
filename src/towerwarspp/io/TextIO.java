@@ -1,15 +1,19 @@
 package towerwarspp.io;
-import static towerwarspp.preset.PlayerColor.RED;
-import java.util.NoSuchElementException;
-import java.util.Scanner;
+
 import towerwarspp.board.Entity;
+import towerwarspp.preset.Move;
+import towerwarspp.preset.PlayerColor;
+import towerwarspp.preset.Position;
+import towerwarspp.preset.Viewer;
 import towerwarspp.util.debug.Debug;
 import towerwarspp.util.debug.DebugLevel;
 import towerwarspp.util.debug.DebugSource;
-import towerwarspp.preset.Position;
-import towerwarspp.preset.Viewer;
-import towerwarspp.preset.PlayerColor;
-import towerwarspp.preset.Move;
+
+import java.util.NoSuchElementException;
+import java.util.Scanner;
+
+import static towerwarspp.preset.PlayerColor.RED;
+
 /**
  * Class {@link TextIO} interacting with to user over the command line.
  *
@@ -17,8 +21,8 @@ import towerwarspp.preset.Move;
  * He can surrender if he writes in the cli "surrender" or nothing.
  * The move must be written like A1->A2.
  *
- * @version 1.5 July 06th 2017
  * @author Kai Kuhlmann, Niklas Mueller
+ * @version 1.5 July 06th 2017
  */
 public class TextIO implements IO {
     /**
@@ -70,6 +74,7 @@ public class TextIO implements IO {
      * Shows, if the user wants to save the game.
      */
     private boolean save = false;
+
     /**
      * Constructor to Initialize the TextIO.
      * Initialize the Scanner for textinput.
@@ -79,78 +84,7 @@ public class TextIO implements IO {
         this.scanner = new Scanner(System.in);
         this.debugInstance.send(DebugLevel.LEVEL_1, DebugSource.IO, "TextIO initialized.");
     }
-    /**
-     * Overridden method setViewer() to set own {@link Viewer}.
-     *
-     * @param viewer {@link Viewer} object to be set as {@link Viewer}
-     */
-    @Override
-    public void setViewer(Viewer viewer) {
-        this.viewer = viewer;
-        this.debugInstance.send(DebugLevel.LEVEL_3, DebugSource.IO, "Viewer is set.");
-    }
-    @Override
-    public void setTitle(String string) {
-    }
-    /**
-     * Output of the Board and his Entities.
-     */
-    public void visualize() {
-        StringBuilder output = new StringBuilder();
-        int size = this.viewer.getSize();
-        char headChar = 'A';
-        StringBuilder tap = new StringBuilder("  ");
-        /*own StringBuilder for the letters to be displayed above and beneath the board*/
-        StringBuilder letters = new StringBuilder();
-        letters.append("    ");
-        /*fill StringBuilder with letters*/
-        for (int j=1; j<=size; j++) {
-            letters.append(headChar++).append("  ");
-        }
-        /*output representation of board*/
-        for (int i=0; i<=size+1; i++) {
-            /*first line, only letters*/
-            if (i==0) {
-                output.append(letters).append("\n");
-            }
-            /*last line, only letters*/
-            else if (i == size+1) {
-                output.append(tap);
-                output.append(letters).append("\n");
-            }
-            /*every other line, number, board and number*/
-            else if (i<=size) {
-                output.append(tap);
-                output.append(i);
-                output.append(i>=10 ? " " : "  ");
-                for (int j=1; j<=size; j++) {
-                    output.append(positionToString(new Position(j, i)));
-                }
-                output.append("  ");
-                output.append(i).append("\n");
-                tap.append("  ");
-            }
-        }
-        System.out.println(output);
-    }
-    /**
-     * Overriden method display to get possibility for other classes to inform user.
-     *
-     * @param string containing information for user
-     */
-    @Override
-    public void display(String string) {
-        System.out.println(string);
-    }
 
-    /**
-     * Overriden method to display the turnament or game Results.
-     * @param string information which should be displayed on that Dialog.
-     */
-    @Override
-    public void dialog(String string) {
-        System.out.println(string);
-    }
     /**
      * Method positionToString() showing if there is an {@link towerwarspp.board.Entity} at given {@link Position} and what kind.
      *
@@ -160,7 +94,7 @@ public class TextIO implements IO {
     private String positionToString(Position position) {
         Entity entity = this.viewer.getEntity(position);
         /*check if there is an entity on that position*/
-        if(entity != null) {
+        if (entity != null) {
             /*get all information about entity at that position*/
             PlayerColor color = entity.getColor();
             boolean blocked = entity.isBlocked();
@@ -172,12 +106,10 @@ public class TextIO implements IO {
             if (blocked) {
                 /*colors for blocked towers*/
                 col = color == RED ? ANSI_WHITE : ANSI_CYAN;
-            }
-            else if (height == maxHeight) {
+            } else if (height == maxHeight) {
                 /*colors for towers with maximum height*/
                 col = color == RED ? ANSI_YELLOW : ANSI_PURPLE;
-            }
-            else {
+            } else {
                 /*normal stones*/
                 col = color == RED ? ANSI_RED : ANSI_BLUE;
             }
@@ -194,6 +126,84 @@ public class TextIO implements IO {
         /*if position is empty*/
         return " o ";
     }
+
+    /**
+     * Overridden method setViewer() to set own {@link Viewer}.
+     *
+     * @param viewer {@link Viewer} object to be set as {@link Viewer}
+     */
+    @Override
+    public void setViewer(Viewer viewer) {
+        this.viewer = viewer;
+        this.debugInstance.send(DebugLevel.LEVEL_3, DebugSource.IO, "Viewer is set.");
+    }
+
+    @Override
+    public void setTitle(String string) {
+    }
+
+    /**
+     * Output of the Board and his Entities.
+     */
+    public void visualize() {
+        StringBuilder output = new StringBuilder();
+        int size = this.viewer.getSize();
+        char headChar = 'A';
+        StringBuilder tap = new StringBuilder("  ");
+        /*own StringBuilder for the letters to be displayed above and beneath the board*/
+        StringBuilder letters = new StringBuilder();
+        letters.append("    ");
+        /*fill StringBuilder with letters*/
+        for (int j = 1; j <= size; j++) {
+            letters.append(headChar++).append("  ");
+        }
+        /*output representation of board*/
+        for (int i = 0; i <= size + 1; i++) {
+            /*first line, only letters*/
+            if (i == 0) {
+                output.append(letters).append("\n");
+            }
+            /*last line, only letters*/
+            else if (i == size + 1) {
+                output.append(tap);
+                output.append(letters).append("\n");
+            }
+            /*every other line, number, board and number*/
+            else if (i <= size) {
+                output.append(tap);
+                output.append(i);
+                output.append(i >= 10 ? " " : "  ");
+                for (int j = 1; j <= size; j++) {
+                    output.append(positionToString(new Position(j, i)));
+                }
+                output.append("  ");
+                output.append(i).append("\n");
+                tap.append("  ");
+            }
+        }
+        System.out.println(output);
+    }
+
+    /**
+     * Overriden method display to get possibility for other classes to inform user.
+     *
+     * @param string containing information for user
+     */
+    @Override
+    public void display(String string) {
+        System.out.println(string);
+    }
+
+    /**
+     * Overriden method to display the turnament or game Results.
+     *
+     * @param string information which should be displayed on that Dialog.
+     */
+    @Override
+    public void dialog(String string) {
+        System.out.println(string);
+    }
+
     /**
      * Overridden method deliver() parsing a textual input from the standard-input into a {@link Move}.
      *
@@ -225,25 +235,21 @@ public class TextIO implements IO {
                 /*if something else then "yes" or "y" will be inputted, return illegal move, so user get's another chance*/
                 this.debugInstance.send(DebugLevel.LEVEL_2, DebugSource.IO, "Move illegal. (" + nextMove + ")");
                 return new Move(new Position(1, 1), new Position(1, 1));
-            }
-
-            else if (nextMove.equals("save")) {
+            } else if (nextMove.equals("save")) {
                 System.out.println("Please name your Savefile");
                 saveGameName = this.scanner.nextLine();
                 save = true;
                 return null;
             }
         }
-        /*if no line was found*/
-        catch (NoSuchElementException e) {
+        /*if no line was found*/ catch (NoSuchElementException e) {
             return null;
         }
         try {
             /*if something else but "surrender" or nothing has been inputted*/
             move = Move.parseMove(nextMove);
             this.debugInstance.send(DebugLevel.LEVEL_3, DebugSource.IO, "Move parsed. (" + move + ")");
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             /*if input did not have the correct format, give user another chance*/
             System.out.println("Couldn't interpret move. Move needs to be like 'A2->A3'");
             this.debugInstance.send(DebugLevel.LEVEL_3, DebugSource.IO, "Wrong move format.");
@@ -256,6 +262,7 @@ public class TextIO implements IO {
 
     /**
      * Returns the name for the Savegame.
+     *
      * @return name of the Savegame
      */
     @Override
@@ -265,6 +272,7 @@ public class TextIO implements IO {
 
     /**
      * Returns true when the game should be saved.
+     *
      * @return true if save is in process.
      */
     @Override
