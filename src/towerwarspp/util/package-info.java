@@ -1,4 +1,4 @@
 /**
- * The util package which implements debugger and randomset
+ * The util package which implements debugger and randomset.
  */
 package towerwarspp.util;

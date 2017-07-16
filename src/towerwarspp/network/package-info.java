@@ -1,4 +1,4 @@
 /**
- * The network package which implements the Interface for a network game
+ * The network package which implements the Interface for a network game.
  */
 package towerwarspp.network;
