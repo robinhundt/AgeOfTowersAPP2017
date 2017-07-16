@@ -18,7 +18,7 @@ import towerwarspp.preset.Status;
  * On request, the {@link Board} provides a list of all possible moves which the player of the specified color has.
  * It also determines and delivers the best possible moves for the specified player evaluated according to the simple score strategy.
  *
- * @author Alexander Wähling, Robin Hundt
+ * @author Alexander Wähling
  * @version 15-07-17
  */
 public class Board extends SimpleBoard {

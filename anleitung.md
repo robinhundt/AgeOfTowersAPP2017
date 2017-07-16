@@ -90,7 +90,7 @@ Möchte man einen im Netzwerk angebotenen Spieler finden, so muss mindestens fü
   `-port <port>` und  
   `-name <Name des Spielers>` kann ein im Netzwerk angebotener Spieler gefunden werden. Diese drei Parameter sind jedoch optional.  
 Wird kein Host Name angegeben wird automatisch auf dem Lokalhost nach einem Spieler gesucht. Beim Weglassen des Port Parameters wird der standard Java RMI Port 1099 genutzt. Lässt der Benutzer ebenfalls den Namens Parameter weg, so wird auf dem spezifizierten Host (bzw. im default Fall dem localhost) nach allen möglichen Spielern gesucht, deren Namen dem Spieler ausgegeben und er wird interaktiv nach dem Spieler gefragt gegen den er sich messen möchte.  
-Sucht man nach Spielern läuft im nachfolgenden Spiel die gesamte Spiellogik auf dem eigenen Rechner ab. Dies bedeutet auch, dass derjenige der einen oder mehrere Remote Spieler sucht, dafür verantwortlich ist die Spielfeldgröße, den Delay, oder die Turnierparameter festzulegen.
+Sucht man nach Spielern, so läuft im nachfolgenden Spiel die gesamte Spiellogik auf dem eigenen Rechner ab. Dies bedeutet auch, dass derjenige der einen oder mehrere Remote Spieler sucht, dafür verantwortlich ist die Spielfeldgröße, den Delay, oder die Turnierparameter festzulegen.
 
 #### Aufgeben eines Spiels
 Einem menschlichen Spieler ist es möglich das Spiel aufzugeben. In der graphischen Oberfläche geschieht dies über den Surrender Button in der oberen rechten Ecke des Fensters.  

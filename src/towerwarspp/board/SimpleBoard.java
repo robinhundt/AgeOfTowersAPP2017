@@ -91,7 +91,7 @@ public class SimpleBoard implements Viewable {
         */
         public SimpleBoard (int n) {
 		if(n < 4 || n > 26) {
-			throw new IllegalArgumentException("The size " + n + " is not allowed");
+			throw new IllegalArgumentException("The size " + n + " is not allowed.");
 		}
                 board = new Entity[n+1][n+1];
 		size = n;
