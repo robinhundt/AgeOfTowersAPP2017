@@ -343,7 +343,12 @@ public class Node {
         }
         return bestChild;
     }
-    // TODO either comment or delete
+
+    /**
+     * Returns this Nodes nth highest scored Child after the UCB1 formulae.
+     * @param nthHighest nth highest child to return
+     * @return child node
+     */
     Node nthBestUCBChild(int nthHighest) {
         if(!expanded)
             throw new IllegalStateException("bestUCBChild can only be called on expanded Nodes");
