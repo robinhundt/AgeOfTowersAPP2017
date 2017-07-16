@@ -21,24 +21,28 @@ import towerwarspp.preset.Position;
 public class Entity {
 
 	/**
+	 * The color of the Entity.
+	 */
+	private final PlayerColor color;
+	/**
+	 * The maximum allowed height.
+	 */
+	private final int maxHeight;
+
+	/**
+	 * The maximum step range which a token on the board of the given size can have.
+	 */
+	private final int maxRange;
+
+	/**
 	 * The Position of the Entity on the board.
 	 */
 	private Position position;
 
 	/**
-	 * The color of the Entity.
-	 */
-	private final PlayerColor color;
-
-	/**
 	 * The height of the Entity. If height == 0, this entity represents a normal stone. If height > 0, it is a tower.
 	 */
 	private int height;
-
-	/**
-	 * The maximum allowed height.
-	 */
-	private final int maxHeight;
 
 	/**
 	 * Shows whether the Entity is blocked or not.
@@ -75,11 +79,6 @@ public class Entity {
 	* Instance of the class {@link Debug}.
 	*/ 
 	private Debug debug;
-
-	/**
-	 * The maximum step range which a token on the board of the given size can have.
-	 */
-	private final int maxRange;
 
 	/**
 	 * Constructor for the {@link Entity} object. creates a new Entity which represents a stone: has the height 0 and the range 1.
@@ -124,14 +123,6 @@ public class Entity {
 		this.maxRange = original.maxRange;
 		this.allMoves = original.copyAllMoves();
  		getCounter();
-	}
-	/**
-	 * Returns all moves which correlate with the specified step range: their end positions have the distance range to this token's current position.
-	 * @param range the step range which allows reaching the moves in question.
-	 * @return the Vector of positions
-	 */
-	public HashSet<Move> getRangeMoves(int range) {
-		return allMoves.get(range);
 	}
 	/**
 	 * Returns the current position of this entity.
@@ -196,14 +187,11 @@ public class Entity {
 		return isBlocked;
 	}
 	/**
-	 * Sets the Variable isBlocked to the specified value. If this entity gets blocked, all its current possible moves will be removed. 
+	 * Sets the Variable isBlocked to the specified value.
 	 * @param blocked defines if this entity representing a tower has to be blocked or unblocked.
 	 */
 	public void setBlocked(boolean blocked) {
 		this.isBlocked = blocked;
-		if(isBlocked) {
-			removeAllMoves();
-		}
 	}
 	/**
 	 * Returns true if this entity is a base.
@@ -217,8 +205,8 @@ public class Entity {
 	 * @return moveCounter.
 	 */
 	public int getMoveCounter() {
-		int cnt = getCounter();
-		return cnt;
+getCounter();
+		return moveCounter;
 	}
 	/**
 	 * Returns true if this entity is a tower.
@@ -247,19 +235,14 @@ public class Entity {
 	 * @return true if this entity can be moved.
 	 */
 	public boolean isMovable() {
-		if(!isBase && !isBlocked) {
-			int cnt = getCounter();
-			return cnt > 0;
+		if(isBase || isBlocked) {
+			return false;
 		}
-		return false;
+		return moveCounter > 0;
+
 	}
 	private int getCounter() {
-		int cnt = 0;
-		for(int i = 1; i <= range; ++i) {
-			cnt += allMoves.get(i).size();
-		}
-		if(cnt != moveCounter) System.out.println("Mistake " + cnt + " " + moveCounter);
-		return cnt;
+		return moveCounter;
 	}
 	/**
 	 * Clones this {@link Entity} instance with the copy-constructor.
@@ -313,15 +296,6 @@ public class Entity {
 		}
 	}
 	/**
-	 * Increases the step range of this entity by one. All newly possible moves are taken from the argument.
-	 * @param newMoves the newly possible moves which have to be added to this entity's possible moves.
-	 */
-	synchronized public void incRange(HashSet<Move> newMoves) {
-		++range;
-		allMoves.set(range, newMoves);
-		moveCounter += newMoves.size();
-	}
-	/**
 	 * Creates a new move to the position end add adds it to all possible moves of this entity if there was no such move.
 	 * @param end end position of the move in question.
 	 * @param range distance to the move's end position from the current position of this entity.
@@ -329,7 +303,7 @@ public class Entity {
 	synchronized public void addMove(Position end, int range) {
 		if(range != 0 && allMoves.get(range).add(new Move(position, end))) {
 			++moveCounter;
-			 getCounter();
+ getCounter();
 		}
 	}
 	/**
@@ -348,18 +322,6 @@ public class Entity {
 	 */
 	public void removeAllMoves() {
 		initialiseMoves();
- getCounter();
-	}
-	/**
-	 * Replaces the current collection of all possible moves with the specified collection of moves and changes the range value respectively.
-	 * @param allMoves new collection of all possible moves.
-	 * @param range the new step range.
-	 * @param moveConter the number of moves in the new move collection.
-	 */
-	public void setAllMoves(Vector<HashSet<Move>> allMoves, int range, int moveConter) {
-		this.allMoves = allMoves;
-		this.range = range;
-		this.moveCounter = moveCounter;
  getCounter();
 	}
 	/**
@@ -384,4 +346,33 @@ public class Entity {
 		moveCounter = 0;
 		this.range = 1;
 	}
+	/**
+	 * Returns all moves which correlate with the specified step range: their end positions have the distance range to this token's current position.
+	 * @param range the step range which allows reaching the moves in question.
+	 * @return the Vector of positions
+	 */
+	/*public HashSet<Move> getRangeMoves(int range) {
+		return allMoves.get(range);
+	}*/
+	/**
+	 * Increases the step range of this entity by one. All newly possible moves are taken from the argument.
+	 * @param newMoves the newly possible moves which have to be added to this entity's possible moves.
+	 */
+	/*synchronized public void incRange(HashSet<Move> newMoves) {
+		++range;
+		allMoves.set(range, newMoves);
+		moveCounter += newMoves.size();
+	}*/
+	/**
+	 * Replaces the current collection of all possible moves with the specified collection of moves and changes the range value respectively.
+	 * @param allMoves new collection of all possible moves.
+	 * @param range the new step range.
+	 * @param moveConter the number of moves in the new move collection.
+	 */
+	/*public void setAllMoves(Vector<HashSet<Move>> allMoves, int range, int moveConter) {
+		this.allMoves = allMoves;
+		this.range = range;
+		this.moveCounter = moveCounter;
+ getCounter();
+	}*/
 }

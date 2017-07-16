@@ -30,53 +30,62 @@ import towerwarspp.preset.Viewable;
 */
 public class SimpleBoard implements Viewable {
 	/**
-	* The size of the board.
-	*/
-	protected int size;
-	/**
-	* The current turn.
-	*/
-	protected PlayerColor turn = RED;
-	/**
-	* The current board satus.
-	*/
-	private Status status = OK;
-	/**
-	* A list of all potentially movable tokens belonging to the red player.
-	* This list contais only stones and towers (blocked and not blocked), but not the base.
-	*/
-	protected Vector<Entity> listRed = new Vector<Entity>();
-	/**
-	* A list of all potentially movable tokens belonging to the blue player.
-	* This list contais only stones and towers (blocked and not blocked), but not the base.
-	*/
-	protected Vector<Entity> listBlue = new Vector<Entity>();
-	/**
-	* The representation of the board as a 2-dimensional array of Entities.
-	*/
-	protected Entity[][] board;
-	/**
-	* The position of the red base.
-	*/
-	protected Position redBase;
-	/**
-	* The position of the blue base.
-	*/
-	protected Position blueBase;
-	/**
-	* Instance of the class {@link Debug}.
-	*/ 
-	protected Debug debug;
-	/**
 	* A list of {@link Haxagon} objects representing all possible directions on the board.
 	*/
 	private final Hexagon[] directions = { new Hexagon(1, 0), new Hexagon(0, 1), new Hexagon(-1, 1),
 			new Hexagon(-1, 0), new Hexagon(0, -1), new Hexagon(1, -1), };
 	/**
+	* The size of the board.
+	*/
+	protected int size;
+
+	/**
+	* The current turn.
+	*/
+	protected PlayerColor turn = RED;
+
+	/**
+	* The current board satus.
+	*/
+
+	private Status status = OK;
+
+	/**
+	* A list of all potentially movable tokens belonging to the red player.
+	* This list contais only stones and towers (blocked and not blocked), but not the base.
+	*/
+	protected Vector<Entity> listRed = new Vector<Entity>();
+
+	/**
+	* A list of all potentially movable tokens belonging to the blue player.
+	* This list contais only stones and towers (blocked and not blocked), but not the base.
+	*/
+	protected Vector<Entity> listBlue = new Vector<Entity>();
+
+	/**
+	* The representation of the board as a 2-dimensional array of Entities.
+	*/
+	protected Entity[][] board;
+
+	/**
+	* The position of the red base.
+	*/
+	protected Position redBase;
+
+	/**
+	* The position of the blue base.
+	*/
+	protected Position blueBase;
+
+	/**
+	* Instance of the class {@link Debug}.
+	*/ 
+	protected Debug debug;
+
+	/**
 	* Stores the information on the win type if the game is finished. This variable has value null as long as the game is not finished.
 	*/
 	private WinType winType = null;
-
 
         /**
         * Initialises a new object of the class SimpleBoard.

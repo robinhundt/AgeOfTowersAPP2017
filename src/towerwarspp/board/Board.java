@@ -135,9 +135,6 @@ public class Board extends SimpleBoard {
 		Vector<Entity> opponentEntityList = getEntityList(opponentColor);
 		Position ownBase = (ownColor == RED? redBase: blueBase);
 		boolean opponentCanDestroyBase = canBeDestroyed(ownBase, opponentEntityList);
-		/*if(opponentCanDestroyBase) {
-			System.out.println("Opponnet can destroy base. My col " + ownColor + ", his color: " + opponentColor);
-		}*/
 		Vector<Move> bestMoves = new Vector<Move>();
 		PriorityQueue<MoveScore> scoredMoves = new PriorityQueue<MoveScore>();
 		for(Entity ent : ownEntityList) {
@@ -193,30 +190,23 @@ public class Board extends SimpleBoard {
 		Position ownBase = (ownColor == RED? redBase: blueBase);
 		Position opponentBase = (ownColor == RED? blueBase: redBase);
 		int score = computeScore(move, opponentBase, ownColor);
-		// prove if I can beat the opponent's base: if so, return the Score with score and result WILL_WIN
 		if(move.getEnd().equals(opponentBase)) {
 			return new MoveScore(move, score, WILL_WIN);
 		}
-		// prove if the opponet does not have moves after this move (if the opponent loses)
 		Board copy = this.clone();
 		copy.makeMove(move);
 		if(copy.getStatus() == ownWin) {
 			return new MoveScore(move, score, WILL_WIN);
 		}
-		// prove if the opponet can reach my base in his turn after this move: if so, return score with result IS_LOSE
 		if(ownBaseCanBeDestroyed && canBeDestroyed(ownBase, copy.getEntityList(opponentColor))) {
-			//System.out.println("I see");
 			return new MoveScore(move, score, CAN_LOSE);
 		}
-		// prove if the opponent can make a move so that I do not have possible moves after it (short varient). If so, return score with result = CAN_LOSE
 		if (haveManyMoves(copy.getEntityList(ownColor))) {
 			return new MoveScore(move, score, UNKNOWN);
-		}
-		// prove if the opponent can make a move so that I do not have possible moves after it (longer varient: with executing the move). If so, return score with result CAN_LOSE 
+		} 
 		if(playerCanWin(copy, opponentColor)) {
 			return new MoveScore(move, score, CAN_LOSE);
 		}
-		// return the score with the result UNKNOWN
 		return new MoveScore(move, score, UNKNOWN);
 	}
 	/**
