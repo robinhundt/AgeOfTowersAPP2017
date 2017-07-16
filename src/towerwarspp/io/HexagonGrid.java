@@ -5,11 +5,9 @@ import towerwarspp.util.debug.DebugLevel;
 import towerwarspp.util.debug.DebugSource;
 import towerwarspp.preset.Position;
 /**
- * Class {@link HexagonGrid} creates the Grid of the Hexagons
- *
- * It calculates the Center coordinates of each {@link Hexagon}
- *
- * The Class creates the Arrays of {@link Polygon} which can be drawn in the {@link GraphicIO}
+ * Class {@link HexagonGrid} creates the Grid of the Hexagons.
+ * It calculates the Center coordinates of each {@link Hexagon}.
+ * The Class creates the Arrays of {@link Polygon} which can be drawn in the {@link GraphicIO}.
  *
  * @version 0.7 July 14th 2017
  * @author Kai Kuhlmann
@@ -20,12 +18,12 @@ public class HexagonGrid {
      */
     private Hexagon[][] hexagons;
     /**
-     * Array of drawable {@link Polygon} which are the {@link HexagonGrid}
+     * Array of drawable {@link Polygon} which are the {@link HexagonGrid}.
      */
     private Polygon[][] polygon;
     /**
      * Array of drawable {@link Polygon} which are the {@link Hexagon} on which are the
-     * Tokens of the Player
+     * Tokens of the Player.
      */
     private Polygon[][] markedPolygon;
     /**
@@ -37,15 +35,11 @@ public class HexagonGrid {
      */
     private Debug debugInstance;
     /**
-     * The Constructor of the {@link HexagonGrid}
-     *
-     * Set the Size of each {@link Polygon} and {@link Hexagon}
-     *
-     * Initialize the Arrays for the {@link Polygon} and {@link Hexagon}
-     *
-     * Starts the calculation of the coordinates of the {@link Hexagon.Center}
-     *
-     * Creates each {@link Hexagon} and saves them in the Array of {@link Hexagon}
+     * The Constructor of the {@link HexagonGrid}.
+     * Set the Size of each {@link Polygon} and {@link Hexagon}.
+     * Initialize the Arrays for the {@link Polygon} and {@link Hexagon}.
+     * Starts the calculation of the coordinates of the {@link Hexagon.Center}.
+     * Creates each {@link Hexagon} and saves them in the Array of {@link Hexagon}.
      *
      * @param boardSize The Size of the Board
      * @param polySize The Size of each {@link Polygon} or {@link Hexagon}
@@ -67,9 +61,8 @@ public class HexagonGrid {
     }
     /**
      * Setter for {@link Polygon}
-     *
      * Creates a {@link Polygon} with six Edges based on the Corners of a {@link Hexagon}
-     * and creates the {@link Polygon} which are the {@link Hexagon} on which are Tokens
+     * and creates the {@link Polygon} which are the {@link Hexagon} on which are Tokens.
      *
      * @param x X-Coordinate of the {@link HexagonGrid}
      * @param y Y-Coordinate of the {@link HexagonGrid}
@@ -118,14 +111,14 @@ public class HexagonGrid {
         this.debugInstance.send(DebugLevel.LEVEL_6, DebugSource.IO, "Polygon created. Coordinates (" + x + ", " + y + ")");
     }
     /**
-     * Getter for the Array of {@link Polygon} for drawing
+     * Getter for the Array of {@link Polygon} for drawing.
      * @return Array of {@link Polygon}
      */
     Polygon[][] getPolygon() {
         return this.polygon;
     }
     /**
-     * Getter for the Array of {@link Polygon} which are the marked Polygons on which are Tokens
+     * Getter for the Array of {@link Polygon} which are the marked Polygons on which are Tokens.
      * @return Array of {@link Polygon}
      */
     Polygon[][] getMarkedPolygon() {
@@ -144,7 +137,7 @@ public class HexagonGrid {
         this.debugInstance.send(DebugLevel.LEVEL_4, DebugSource.IO, "All Polygon updated.");
     }
     /**
-     * Get an {@link Hexagon.Center} on the specific coordinates
+     * Get an {@link Hexagon.Center} on the specific coordinates.
      * @param x X-Coordinate of the {@link HexagonGrid}
      * @param y Y-Coordinate of the {@link HexagonGrid}
      * @return the {@link Hexagon.Center}
@@ -153,7 +146,7 @@ public class HexagonGrid {
         return this.hexagons[x][y].getCenter();
     }
     /**
-     * Calculates the Coordinates in Pixel of the {@link Hexagon.Center} based on the Coordinates on the {@link HexagonGrid}
+     * Calculates the Coordinates in Pixel of the {@link Hexagon.Center} based on the Coordinates on the {@link HexagonGrid}.
      * @param x X-Coordinate of the {@link HexagonGrid}
      * @param y Y-Coordinate of the {@link HexagonGrid}
      * @return Array of the X and Y coordinates of the Center in Pixel

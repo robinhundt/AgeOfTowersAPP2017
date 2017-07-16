@@ -6,8 +6,8 @@ import towerwarspp.preset.Position;
 /**
  * Class {@link Hexagon} creates a single Hexagon
  *
- * This Class creates an Object of {@link Center} in which are the Coordinates of the Center
- * The Class creates also an Object of {@link Corner} which calculates the {@link Corner} based on the {@link Center}
+ * This Class creates an Object of {@link Center} in which are the Coordinates of the Center.
+ * The Class creates also an Object of {@link Corner} which calculates the {@link Corner} based on the {@link Center}.
  *
  * @version 0.4 July 14th 2017
  * @author Kai Kuhlmann
@@ -28,7 +28,7 @@ public class Hexagon {
     /**
      * Constructor
      *
-     * Set the {@link Center}, {@link Corner} and the {@link Position}
+     * Set the {@link Center}, {@link Corner} and the {@link Position}.
      *
      * @param x        X-Coordinate of center
      * @param y        Y-Coordinate of center
@@ -43,28 +43,28 @@ public class Hexagon {
         debugInstance.send(DebugLevel.LEVEL_7, DebugSource.IO, "Hexagon created on Coordinates (" + x + ", " + y + ")");
     }
     /**
-     * Getter of the Position of the Hexagon
+     * Getter of the Position of the Hexagon.
      * @return Returns the Position of the Hexagon
      */
     public Position getPosition() {
         return this.position;
     }
     /**
-     * Setter of the position of the Hexagon
+     * Setter of the position of the Hexagon.
      * @param position Position of the Hexagon
      */
     private void setPosition(Position position) {
         this.position = position;
     }
     /**
-     * Getter for Center
+     * Getter for Center.
      * @return the Center of the Hexagon
      */
     Center getCenter() {
         return this.center;
     }
     /**
-     * Setter of the center of the Hexagon
+     * Setter of the center of the Hexagon.
      * @param x X-Coordinate of center
      * @param y Y-Coordinate of center
      */
@@ -72,14 +72,14 @@ public class Hexagon {
         this.center = new Center(x, y);
     }
     /**
-     * Getter of the Corners of the Hexagon
+     * Getter of the Corners of the Hexagon.
      * @return Retruns an Array of the corners of the Hexagon
      */
     Corner[] getCorners() {
         return this.corners;
     }
     /**
-     * Setter of the corners of the Hexagon
+     * Setter of the corners of the Hexagon.
      * @param center The Center of the Hexagon
      * @param size   the radius from center to corner
      */
@@ -90,7 +90,7 @@ public class Hexagon {
         }
     }
     /**
-     * Updates the Hexagon
+     * Updates the Hexagon.
      * @param x    X-Coordinate of the Center of the Hexagon
      * @param y    Y-Coordinate of the Center of the Hexagon
      * @param size the radius from center to corner
@@ -102,7 +102,7 @@ public class Hexagon {
         }
     }
     /**
-     * Class {@link Corner} creates a single Corner
+     * Class {@link Corner} creates a single Corner.
      */
      class Corner {
         /**
@@ -110,7 +110,7 @@ public class Hexagon {
          */
         private int x, y;
         /**
-         * Constructor set the X and Y Coordinate of the Corner of the {@link Hexagon}
+         * Constructor set the X and Y Coordinate of the Corner of the {@link Hexagon}.
          */
         Corner(Center center, int size, int i) {
             int[] coordinates = calculateCorner(center, size, i);
@@ -118,35 +118,35 @@ public class Hexagon {
             setY(coordinates[1]);
         }
         /**
-         * Setter of the X-Coordinate of the Corner
+         * Setter of the X-Coordinate of the Corner.
          * @param x X-Coordinate of the Corner
          */
         private void setX(int x) {
             this.x = x;
         }
         /**
-         * Getter of the X-Coordinate of the Corner
+         * Getter of the X-Coordinate of the Corner.
          * @return X-Coordinate of the Corner
          */
         int getX() {
             return this.x;
         }
         /**
-         * Setter of the Y-Coordinate of the Corner
+         * Setter of the Y-Coordinate of the Corner.
          * @param y Y-Coordinate of the Corner
          */
         private void setY(int y) {
             this.y = y;
         }
         /**
-         * Getter of the Y-Coordinate of the Corner
+         * Getter of the Y-Coordinate of the Corner.
          * @return Y-Coordinate of the Corner
          */
         int getY() {
             return this.y;
         }
         /**
-         * Updates the Corner of the Hexagon
+         * Updates the Corner of the Hexagon.
          * @param center updated Center
          * @param size   the radius from center to corner
          * @param i      position
@@ -157,7 +157,7 @@ public class Hexagon {
             setY(coordinates[1]);
         }
         /**
-         * Calculates the Coordinates of the corner
+         * Calculates the Coordinates of the corner.
          * @param center updated Center
          * @param size   the radius from center to corner
          * @param i      position
@@ -176,7 +176,7 @@ public class Hexagon {
         }
     }
     /**
-     * Class {@link Center} creates a single Center
+     * Class {@link Center} creates a single Center.
      */
     class Center {
         /**
@@ -193,35 +193,35 @@ public class Hexagon {
             setY(y);
         }
         /**
-         * Setter of the X-Coordinate of the Center
+         * Setter of the X-Coordinate of the Center.
          * @param x X-Coordinate of the Center
          */
         private void setX(int x) {
             this.x = x;
         }
         /**
-         * Getter of the X-Coordinate of the Cente
+         * Getter of the X-Coordinate of the Center.
          * @return X-Coordinate of the Center
          */
         int getX() {
             return this.x;
         }
         /**
-         * Setter of the Y-Coordinate of the Center
+         * Setter of the Y-Coordinate of the Center.
          * @param y Y-Coordinate of the Center
          */
         private void setY(int y) {
             this.y = y;
         }
         /**
-         * Getter of the Y-Coordinate of the Center
+         * Getter of the Y-Coordinate of the Center.
          * @return Y-Coordinate of the Center
          */
         int getY() {
             return this.y;
         }
         /**
-         * Updates the Center of the Hexagon
+         * Updates the Center of the Hexagon.
          * @param x X-Coordinate of the Center
          * @param y Y-Coordinate of the Center
          */
