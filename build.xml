@@ -13,6 +13,7 @@
 	<target name="build" description="Compile project" depends="init">
 		<javac destdir="${build.dir}" includeantruntime="false" debug="true">
 			<src path="${src.dir}"/>
+			<exclude name="**/package-info.java"/>
 		</javac>
 	</target>
 	<target name="doc" description="Create JavaDoc files" depends="build">
