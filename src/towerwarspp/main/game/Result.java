@@ -19,7 +19,7 @@ public class Result {
      * Constructor
      * @param winner {@link PlayerColor} of winning {@link towerwarspp.preset.Player}
      * @param winnerMoves integer containing number of moves winner needed to win
-     * @param winType {@link WinType] of winning {@link towerwarspp.preset.Player}
+     * @param winType {@link WinType} of winning {@link towerwarspp.preset.Player}
      */
     Result(PlayerColor winner, int winnerMoves, WinType winType) {
         this.winner = winner;
