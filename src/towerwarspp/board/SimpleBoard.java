@@ -390,10 +390,10 @@ public class SimpleBoard implements Viewable {
 	*/
 	private Vector<Position> findPositionsInRange (Position center, int radius) {
 		Vector<Position> result = new Vector<Position>(radius*6);
-    			Hexagon curHex = new Hexagon(center);
-			Hexagon direction = new Hexagon(directions[4]);
-			direction.scale(radius);
-			curHex.add(direction);
+    		Hexagon curHex = new Hexagon(center);
+		Hexagon direction = new Hexagon(directions[4]);
+		direction.scale(radius);
+		curHex.add(direction);
     		for (int i = 0; i < 6; ++i) {
         		for(int j = 0; j < radius; ++j) {
 				if(isOnBoard(curHex.getX(), curHex.getY())) {
@@ -545,8 +545,8 @@ public class SimpleBoard implements Viewable {
 	* @param blockingStone the stone which is going to block the tower.
 	*/
 	private void blockTower(Entity tower, Entity blockingStone) {
-		setBlocked(tower, true);
 		actualiseTowerNeighboursRemoveRanges(tower, tower.getHeight());
+		setBlocked(tower, true);
 		removeAllMoves(tower);
 		if(tower.isMaxHeight()) {
 			positionOpened(tower.getPosition(), tower.getColor());

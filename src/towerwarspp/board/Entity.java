@@ -247,7 +247,6 @@ public class Entity {
 	 * @return true if this entity can be moved.
 	 */
 	public boolean isMovable() {
-		if(!allMoves.get(0).isEmpty()) System.out.println("Mistake move 0" );
 		if(!isBase && !isBlocked) {
 			int cnt = getCounter();
 			return cnt > 0;
@@ -383,6 +382,6 @@ public class Entity {
 			allMoves.add(i, new HashSet<Move>(i * 6 + 1));
 		}
 		moveCounter = 0;
-		range = 1;
+		this.range = 1;
 	}
 }
