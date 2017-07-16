@@ -164,14 +164,6 @@ public class SimpleBoard implements Viewable {
 		return (col == RED? listRed: listBlue);
 	}
 	/**
-	* Puts the specified token on the specified position on the board.
-	* @param ent the token in question.
-	* @param pos position for the specified token to be placed on.
-	*/
-	protected void setElement(Entity ent, Position pos) {
-		board[pos.getLetter()][pos.getNumber()] = ent;
-	}
-	/**
 	* Returns the token located on the specified position on the board.
 	* @param pos the position of the token that has to be returned.
 	* @return the token located on the specified position on the board.
@@ -180,11 +172,19 @@ public class SimpleBoard implements Viewable {
 		return board[pos.getLetter()][pos.getNumber()];
 	}
 	/**
+	* Puts the specified token on the specified position on the board.
+	* @param ent the token in question.
+	* @param pos position for the specified token to be placed on.
+	*/
+	private void setElement(Entity ent, Position pos) {
+		board[pos.getLetter()][pos.getNumber()] = ent;
+	}
+	/**
 	* Blocks or unblocks the specified tower.
 	* @param tower the tower which has to be blocked.
 	* @param block specifies if the tower in question has to be blocked or unblocked (if block == true, the tower has to be blocked).
 	*/
-	protected void setBlocked(Entity tower, boolean block) {
+	private void setBlocked(Entity tower, boolean block) {
 		tower.setBlocked(block);
 	}
 	/**
@@ -193,7 +193,7 @@ public class SimpleBoard implements Viewable {
 	* @param pos the end position of the move which has to be possible for the specified token.
 	* @param range distance to the position pos from the token's current position.
 	*/
-	protected void addMove(Entity ent, Position pos, int range) {
+	private void addMove(Entity ent, Position pos, int range) {
 		ent.addMove(pos, range);
 	}
 	/**
@@ -202,14 +202,14 @@ public class SimpleBoard implements Viewable {
 	* @param pos the end position of the move which has to be removed from the token's possible moves list.
 	* @param range distance to the position pos from the token's current position.
 	*/
-	protected void removeMove(Entity ent, Position pos, int range) {
+	private void removeMove(Entity ent, Position pos, int range) {
 		ent.removeMove(pos, range);
 	}
 	/**
 	* Removes all moves of the specified token.
 	* @param entthe token whose moves have to be removed.
 	*/
-	protected void removeAllMoves(Entity ent) {
+	private void removeAllMoves(Entity ent) {
 		ent.removeAllMoves();
 	}
 	/**
@@ -218,7 +218,7 @@ public class SimpleBoard implements Viewable {
 	* @param stone the token (stone) whose step range has to be increased.
 	* @param n the required change of the step range.
 	*/
-	protected void addRanges(Entity stone, int n) {
+	private void addRanges(Entity stone, int n) {
 		for(int i = 0; i < n; ++i) {
 			incRange(stone);
 			Vector<Position> opponents = findPositionsInRange(stone.getPosition(), stone.getRange());
@@ -245,7 +245,7 @@ public class SimpleBoard implements Viewable {
 	* adding any new moves to its list of possible moves.
 	* @param ent the token whose step range has to be increased.
 	*/
-	protected void incRange(Entity ent) {
+	private void incRange(Entity ent) {
 		ent.incRange();
 	}
 	/**
@@ -253,21 +253,21 @@ public class SimpleBoard implements Viewable {
 	* All moves which are no more possible will be removed from the token's list of possible moves.
 	* @param ent the token whose step range has to be decreased.
 	*/
-	protected void decRange(Entity ent) {
+	private void decRange(Entity ent) {
 		ent.decRange();
 	}
 	/**
 	* Increases the height of the specified token.
 	* @param tower the token whose height has to be increased.
 	*/
-	protected void incHeight(Entity tower) {
+	private void incHeight(Entity tower) {
 		tower.incHeight();
 	}
 	/**
 	* Decreases the height of the specified token.
 	* @param tower the token whose height has to be decreased.
 	*/
-	protected void decHeight(Entity tower) {
+	private void decHeight(Entity tower) {
 		tower.decHeight();
 	}
 	/**
@@ -275,14 +275,14 @@ public class SimpleBoard implements Viewable {
 	* @param ent the token whose position has to be changed.
 	* @param pos the new position.
 	*/
-	protected void setPosition(Entity ent, Position pos) {
+	private void setPosition(Entity ent, Position pos) {
 		ent.setPosition(pos);
 	}
 	/**
 	* Adds the specified token to the list of movable tokens of the corresponding color.
 	* @param ent the token in question.
 	*/
-	protected void addToList(Entity ent) {
+	private void addToList(Entity ent) {
 		Vector<Entity> list = (ent.getColor() == RED? listRed: listBlue);
 		list.add(ent);
 	}
@@ -290,7 +290,7 @@ public class SimpleBoard implements Viewable {
 	* Removes the specified token from the the list of movable tokens of the corresponding color.
 	* @param ent the token in question.
 	*/
-	protected void removeFromList(Entity ent) {
+	private void removeFromList(Entity ent) {
 		Vector<Entity> list = (ent.getColor() == RED? listRed: listBlue);
 		list.remove(ent);
 
