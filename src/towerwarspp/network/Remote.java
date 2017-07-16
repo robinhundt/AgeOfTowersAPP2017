@@ -30,11 +30,11 @@ public class Remote {
     /**
      * ip-address or resolvable name of Registry to connect with
      */
-    private String host;
+    private final String host;
     /**
      * Either player is offered on local RMI with this port, or a player is looked for on remote RMI on this port.
      */
-    private int port;
+    private final int port;
 
     /**
      * Setup local RMI with specified port. If there is already a RMI instance on that port running, it's used instead
@@ -106,7 +106,7 @@ public class Remote {
             registry.rebind(name, netPlayer);
             System.out.println("Offering player " + name + " on port " + port);
         } catch (RemoteException e) {
-            System.out.println(e);
+            System.out.println("Unable to offer " + name + " on port " + port);
             System.exit(1);
         }
     }
