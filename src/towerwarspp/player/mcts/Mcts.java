@@ -1,22 +1,21 @@
 package towerwarspp.player.mcts;
 
-import static towerwarspp.util.debug.DebugLevel.*;
-import static towerwarspp.util.debug.DebugSource.PLAYER;
-import static towerwarspp.player.mcts.Task.*;
-import static towerwarspp.preset.Status.OK;
-
-import java.util.ArrayDeque;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.ArrayList;
-import java.util.concurrent.Future;
-
 import towerwarspp.board.Board;
-import towerwarspp.util.debug.Debug;
 import towerwarspp.player.PlayStrategy;
-
 import towerwarspp.preset.Move;
 import towerwarspp.preset.PlayerColor;
+import towerwarspp.util.debug.Debug;
+
+import java.util.ArrayDeque;
+import java.util.ArrayList;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
+
+import static towerwarspp.player.mcts.Task.*;
+import static towerwarspp.preset.Status.OK;
+import static towerwarspp.util.debug.DebugLevel.*;
+import static towerwarspp.util.debug.DebugSource.PLAYER;
 
 
 /**
@@ -66,7 +65,7 @@ public class Mcts implements Runnable{
     /**
      * Bias that is used as a constant in the calculation of the UCB1 in formulae during {@link Node#bestUCBChild()}.
      */
-    double bias = DEF_BIAS;
+    private double bias = DEF_BIAS;
     /**
      * The default score that is backpropagated through the tree at the end of a simulation or when a terminal node is
      * reached.
@@ -203,7 +202,7 @@ public class Mcts implements Runnable{
 
     /**
      * Return the current {@link TreeSelectionStrategy} employed by the algorithm when deciding on it's next move.
-     * @return
+     * @return current tree selection strategy
      */
     public TreeSelectionStrategy getTreeSelectionStrategy() {
         return treeSelectionStrategy;
@@ -221,7 +220,7 @@ public class Mcts implements Runnable{
      * This method is always called fro outside this Thread. It will set {@link #startTime} to the current System time.
      * Then add a {@link Task#MOVE_REQUESTED} to the queue and set the callers Thread to wait(). If the Thread is woke up, it
      * will return the Move currently store in {@link #currentBestMove}.
-     * @return
+     * @return the {@link #currentBestMove} after the sspecified {@link #timePerMove}
      */
     public synchronized Move getMove() {
         startTime = System.currentTimeMillis();
@@ -352,7 +351,7 @@ public class Mcts implements Runnable{
      * be played. Depending on the setting of {@link #treeSelectionStrategy} either the Move with the highest win ratio
      * represented by the Node returned by calling {@link Node#maxChild()} on the root, is selected or the move that has been
      * played the most often represented by the Node returned from {@link Node#robustChild()}.
-     * @return
+     * @return the Move of the best root child Node depending on the Tree Selection strategy
      */
     private Move bestMove() {
         debug.send(LEVEL_2, PLAYER, "Mcts: Completed tree iterations, calculating best move...");
@@ -368,23 +367,36 @@ public class Mcts implements Runnable{
         return selectedChild.getMove();
     }
 
+    /**
+     * Adds a {@link Task} the the task queue
+     * @param task task to add to end of queue
+     */
     synchronized private void addTask(Task task) {
         tasks.add(task);
     }
 
+    /**
+     * Removes a {@link Task} from the task queue
+     */
     synchronized private void removeTask() {
         tasks.removeFirst();
     }
 
+    /**
+     * Returns and removes a {@link Task} from the Tsk queue
+     * @return task from head of queue
+     */
     synchronized private Task pollTask() {
         return tasks.poll();
     }
 
+    /**
+     * Returns but does not remove the Task at the head of the queue
+     * @return head of the {@link #tasks} queue
+     */
     private Task peekTask() {
         return tasks.peek();
     }
-
-
 
     /**
      * Reinitialize this Mcts object by setting the board to the new Board passed via {@link #newBoard}.
@@ -409,16 +421,14 @@ public class Mcts implements Runnable{
 
     /**
      * Decides if to update the current {@link PlayStrategy} depending on the weight of the last played Move.
-     * If the weight is above 0.90 the play strategy is change to a {@link PlayStrategy#LIGHT} playout to reduce
+     * If the weight is above 0.98 the play strategy is changed to a {@link PlayStrategy#LIGHT} playout to reduce
      * the bias introduced by the heavy playout strategy.
-     * @param weight
+     * @param weight weight of last selected child Node
      */
     private void checkPlayoutStrategy(double weight) {
         if(playStrategy == PlayStrategy.DYNAMIC) {
             if(weight > 0.98) {
                 playStrategy = PlayStrategy.LIGHT;
-            } else {
-                playStrategy = PlayStrategy.HEAVY;
             }
         }
     }
@@ -486,7 +496,7 @@ public class Mcts implements Runnable{
     /**
      * Method to make a part of the search tree that is of no use anymore available to be cleared by the Garbage Collector
      * by iteratively setting the parent references of all the ancestors of the passed Node to null.
-     * @param node
+     * @param node node to start freein memory from
      */
     private void freeAncestorMemory(Node node) {
         if(node.getParent() != null) {

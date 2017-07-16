@@ -92,7 +92,7 @@ public class Node {
         debug = Debug.getInstance();
         this.player = board.getTurn() == RED ? BLUE : RED;
         this.enemy = player == RED ? BLUE : RED;
-        this.bias = bias;
+        Node.bias = bias;
 
         children = new ArrayList<>();
 
@@ -116,7 +116,7 @@ public class Node {
     }
     /**
      * Returns whether this Node has a terminal child (representing a terminal game state).
-     * @return
+     * @return whether this Node has a terminal Child
      */
     boolean hasTerminalChild() {
         return terminalChild != null;
@@ -124,14 +124,14 @@ public class Node {
     /**
      * Check first with {@link #hasTerminalChild()} if a Node has a terminal Child.
      * If that is the case, this method will return it, otherwise null will be returned.
-     * @return
+     * @return terminal Child of this Node
      */
     Node getTerminalChild() {
         return terminalChild;
     }
     /**
      * Returns the weight ({@link #wins} / {@link #games} ratio) of this Node.
-     * @return
+     * @return weight of this Node
      */
     double getWeight() {
         return wins / games;
@@ -139,7 +139,7 @@ public class Node {
 
     /**
      * Returns the {@link #move} represented by this Node.
-     * @return
+     * @return move stored inside this Node
      */
     Move getMove() {
         return move;
@@ -147,7 +147,7 @@ public class Node {
 
     /**
      * Returns the player associated with the stored {@link #move}.
-     * @return
+     * @return player whose {@link #move} is stored
      */
     PlayerColor getPlayer() {
         return player;
@@ -155,7 +155,7 @@ public class Node {
 
     /**
      * Returns the {@link #player}'s enemy.
-     * @return
+     * @return enemy of {@link #player}
      */
     PlayerColor getEnemy() {
         return enemy;
@@ -163,7 +163,7 @@ public class Node {
 
     /**
      * Wins for this player in this Nodes subtree.
-     * @return
+     * @return {@link #wins} for {@link #player} in subtree of this Node
      */
     double getWins() {
         return wins;
@@ -171,7 +171,7 @@ public class Node {
 
     /**
      * Games played in this Nodes subtree.
-     * @return
+     * @return {@link #games} played in this subtree
      */
     double getGames() {
         return games;
@@ -179,7 +179,7 @@ public class Node {
 
     /**
      * Will return true if this Node is fully expanded, meaning for all possible children at least one playout has been done.
-     * @return
+     * @return whether this Node is fully expanded
      */
     boolean isExpanded() {
         return expanded;
@@ -187,7 +187,7 @@ public class Node {
 
     /**
      * Returns the direct ancestor of this Node. Null in case of root Node.
-     * @return
+     * @return the {@link #parent} Node of this Node
      */
     Node getParent() {
         return parent;
@@ -202,7 +202,7 @@ public class Node {
 
     /**
      * Returns the ArrayList containing this Nodes explored children.
-     * @return
+     * @return {@link #children} of this Node
      */
     ArrayList<Node> getChildren() {
         return children;
@@ -210,7 +210,7 @@ public class Node {
 
     /**
      * Returns the number of explored children.
-     * @return
+     * @return number of children of this Node
      */
     int childCount() {
         return children.size();
@@ -230,7 +230,7 @@ public class Node {
 
     /**
      * Returns the status of {@link #terminal}
-     * @return
+     * @return whether this Node represent a terminal game state
      */
     boolean isTerminal() {
         return terminal;
@@ -243,10 +243,10 @@ public class Node {
      *  w: number of won games for this Node {@link #wins}
      *  n: number of games played for this Node {@link #games}
      *  c: bias parameter that can be set t
-     * @param bias
-     * @return
+     * @param bias bias tu use in UCB1 formulae
+     * @return UCB1 score calculated
      */
-    double upperConfBound(double bias) {
+    private double upperConfBound(double bias) {
         return wins / games + bias * Math.sqrt( Math.log(parent.games) / games);
     }
 
