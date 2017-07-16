@@ -23,48 +23,48 @@ import static towerwarspp.preset.PlayerColor.RED;
  */
 public class Game {
     /**
-     * {@link Player} with {@link PlayerColor} RED
+     * {@link Player} with {@link PlayerColor} RED.
      */
     private Player redPlayer;
     /**
-     * {@link Player} with {@link PlayerColor} BLUE
+     * {@link Player} with {@link PlayerColor} BLUE.
      */
     private Player bluePlayer;
     /**
-     * {@link Board} to play with
+     * {@link Board} to play with.
      */
     private Board board;
     /**
-     * {@link View} object to visualize the {@link Board} and {@link Game}
+     * {@link View} object to visualize the {@link Board} and {@link Game}.
      */
     private View view;
     /**
-     * boolean debug activating debug-mode if true
+     * boolean debug activating debug-mode if true.
      */
     private boolean debug;
     /**
-     * boolean hasView showing if {@link View} object is given
+     * boolean hasView showing if {@link View} object is given.
      */
     private boolean hasView;
     /**
-     * integer delayTime, time to wait after every turn
+     * integer delayTime, time to wait after every turn.
      */
     private int delayTime;
     /**
-     * {@link Debug} object that is used to print out debug information from all parts of the program in main game loop
+     * {@link Debug} object that is used to print out debug information from all parts of the program in main game loop.
      */
     private Debug debugMsg;
 
     /**
-     * Save Object, which saves all moves and exports them to a savefile
+     * Save Object, which saves all moves and exports them to a savefile.
      */
     private Save saveGame;
     /**
-     *Constructor setting {@link Player}s, {@link Board}, {@link View} and integer variables
+     *Constructor setting {@link Player}s, {@link Board}, {@link View} and integer variables.
      *
      * @param redPlayer {@link Player} with {@link PlayerColor} RED
      * @param bluePlayer {@link Player} with {@link PlayerColor} BLUE
-     * @param boardSize integer size of {@link Board}
+     * @param boardSize integer size of {@link Board}.
      * @param view {@link View} object providing possibility for visualization
      * @param debug integer debug activating debug mode if true
      * @param delayTime time to wait after every turn (in millisecond)
@@ -110,7 +110,7 @@ public class Game {
     }
 
     /**
-     * Constructor for loading games from an .aot-Save-File
+     * Constructor for loading games from an .aot-Save-File.
      * @param redPlayer {@link Player} with {@link PlayerColor} RED
      * @param bluePlayer {@link Player} with {@link PlayerColor} BLUE
      * @param view {@link View} object providing possibility for visualization
@@ -135,7 +135,7 @@ public class Game {
 
     /**
      * Method play to start the {@link Game}, means requesting {@link Move}s from {@link Player}s, updating the {@link Board}
-     * and visualizing the whole game
+     * and visualizing the whole game.
      *
      * @param timeOut integer timeOut, maximum number of {@link Move}s, after which the {@link Game} will be stopped
      * @return {@link Result} containing information about the winner of this {@link Game}
@@ -225,7 +225,7 @@ public class Game {
     }
 
     /**
-     * Method winnerMoves to calculate number of moves of the winner
+     * Method winnerMoves to calculate number of moves of the winner.
      *
      * @param combinedMoveCounter total number of move from both player
      * @return integer number of moves winner needed to win
@@ -245,7 +245,7 @@ public class Game {
     }
 
     /**
-     * returns the the playercolor of the player, who has to play now
+     * Returns the the playercolor of the player, who has to play now.
      * @return Returns which Player is at Turn
      */
     public PlayerColor turn () {
@@ -253,7 +253,7 @@ public class Game {
     }
 
     /**
-     * checks if save is true in view.
+     * Checks if save is true in view.
      */
     private void checkSave() {
         if(view.getSave()) {

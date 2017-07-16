@@ -9,8 +9,8 @@ import java.io.IOException;
 public class LoadParserException extends IOException {
 
     /**
-     * the Constructor for th exception
-     * @param msg the message to be called
+     * the Constructor for th exception.
+     * @param msg the message to be called.
      */
     public LoadParserException(String msg) {
         super(msg);
