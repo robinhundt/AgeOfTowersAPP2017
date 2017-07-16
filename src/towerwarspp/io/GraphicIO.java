@@ -134,6 +134,7 @@ public class GraphicIO extends JFrame implements IO {
      * @param save true if button clicked false when dialog hidden.
      */
     private void setSave(boolean save) {
+        System.out.println(save);
         this.save = save;
     }
     /**
@@ -290,8 +291,8 @@ public class GraphicIO extends JFrame implements IO {
                 if(!saveFileName.getText().equals("")) {
                     saveGameName = saveFileName.getText();
                     debugInstance.send(DebugLevel.LEVEL_4, DebugSource.IO, "Save is true. saveFileName String is set.");
+                    saveDialog.dispose();
                     wakeUp();
-                    saveDialog.setVisible(false);
                 }
             }
         });
