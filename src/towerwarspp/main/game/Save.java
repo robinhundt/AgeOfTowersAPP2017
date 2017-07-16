@@ -11,7 +11,7 @@ import towerwarspp.preset.Move;
 /**
  * This class provides the function of saving and loading Save-Games.
  * it saves the history of moves in an ArrayDeque of Moves and writes them into a
- * textfile with the ".aot"-ending
+ * text file with the ".aot"-ending
  * @author Alexander Wähling
  * @version 1.2
  */

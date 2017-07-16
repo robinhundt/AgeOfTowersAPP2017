@@ -95,6 +95,7 @@ public class Entity {
 		this.size = size;
 		maxHeight = size/3;
 		maxRange = 6*maxHeight+2;
+		this.debug = Debug.getInstance();
 		initialiseMoves();
 	}
 	/**
@@ -126,6 +127,7 @@ public class Entity {
 		this.maxRange = original.maxRange;
 		this.allMoves = original.copyAllMoves();
  		getCounter();
+		this.debug = Debug.getInstance();
 	}
 	/**
 	 * Returns the current position of this entity.
