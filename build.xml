@@ -35,7 +35,7 @@
 		</javadoc>
 	</target>
 	<target name ="jar" description="Creates Jar-File" depends="build">
-		<jar destfile="${build.dir}/AgeOfTowers.jar" basedir="${build.dir}">
+		<jar destfile="AgeOfTowers.jar" basedir="${build.dir}">
 			<manifest>
 				<attribute name="Main-Class" value="towerwarspp.main.AgeOfTowers"/>
 			</manifest >

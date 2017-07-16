@@ -16,6 +16,7 @@ import java.util.Scanner;
  * find can be used to either offer a Player object on a local RMI or get a reference to a remote Player from a RMI
  * at host:port .
  * Default port is 1099 per RMI specifications.
+ * @author Alexander Wähling
  */
 public class Remote {
     /**

@@ -55,7 +55,6 @@ import static towerwarspp.util.debug.DebugSource.PLAYER;
  * Likewise if a move is decided on, the root of the tree is set to it's child Node representing this move.
  * Through this concurrency and reuse of viable subtree the algorithm achieves better result than by building up a new
  * search tree for each move request.
- * @author Robin Hundt
  * @version 13-07-17
  */
 public class Mcts implements Runnable{

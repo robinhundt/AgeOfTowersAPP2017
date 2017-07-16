@@ -80,7 +80,7 @@ public class Entity {
 
 	/**
 	* Instance of the class {@link Debug}.
-	*/ 
+	*/
 	private Debug debug;
 
 	/**
@@ -99,8 +99,8 @@ public class Entity {
 		initialiseMoves();
 	}
 	/**
-	 * Constructor for for the {@link Entity} object which has to be used in order to create a base: 
-	 * it allowes to set the variable isBase on true. 
+	 * Constructor for for the {@link Entity} object which has to be used in order to create a base:
+	 * it allowes to set the variable isBase on true.
 	 * @param pos the current position of this token.
 	 * @param color the color of this token.
 	 * @param size the size of the board on which this token will be used for the TowerWars game.
@@ -234,7 +234,7 @@ public class Entity {
 		return allMoves.get(range).contains(new Move(position, end));
 	}
 	/**
-	 * Returns true if this entity can be moved. This means: this entity is not a base, not blocked and has at least one possible move. 
+	 * Returns true if this entity can be moved. This means: this entity is not a base, not blocked and has at least one possible move.
 	 * @return true if this entity can be moved.
 	 */
 	public boolean isMovable() {

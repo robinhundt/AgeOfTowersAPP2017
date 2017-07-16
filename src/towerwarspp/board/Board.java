@@ -154,14 +154,18 @@ public class Board extends SimpleBoard {
 		boolean opponentCanDestroyBase = canBeDestroyed(ownBase, opponentEntityList);
 		Vector<Move> bestMoves = new Vector<Move>();
 		PriorityQueue<MoveScore> scoredMoves = new PriorityQueue<MoveScore>();
-		for(Entity ent : ownEntityList) {
+		Vector<Move> allMoves = allPossibleMoves(ownColor);
+		for(Move move : allMoves) {
+			scoredMoves.add(scoreMove(move, ownColor, opponentCanDestroyBase));
+		}
+		/*for(Entity ent : ownEntityList) {
 			Vector<HashSet<Move>> allMoves = ent.getMoves();
 			for(HashSet<Move> rangeMoves : allMoves) {
 				for(Move move : rangeMoves) {
 					scoredMoves.add(scoreMove(move, ownColor, opponentCanDestroyBase));
 				}
 			}		
-		}
+		}*/
 		if(!scoredMoves.isEmpty()) {
 			int curScore = scoredMoves.peek().getScore();
 			MoveResult curResult = scoredMoves.peek().getResult();

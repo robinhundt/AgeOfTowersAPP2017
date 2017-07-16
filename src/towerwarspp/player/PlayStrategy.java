@@ -9,6 +9,7 @@ import java.util.Vector;
 
 /**
  * Class offering enums representing different play strategies and methods that implement those strategies.
+ * @author Alexander Wähling, Robin Hundt
  *
  */
 public enum PlayStrategy {

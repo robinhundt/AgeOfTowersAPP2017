@@ -8,7 +8,7 @@ import towerwarspp.preset.Status;
  * Enum class representing the different states a {@link towerwarspp.preset.Player} can be in.
  * Players PlayState should correspond to the method that is next in line to be called. E.g. if request() has been called
  * on a player, its PlayState should be {@link #CONFIRM} because the confirm() method has to be called next.
- * @author Robin Hundt
+ * @author Alexander Wähling
  * @version 08-07-17
  */
 public enum PlayerState {
