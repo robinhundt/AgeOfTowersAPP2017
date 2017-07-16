@@ -334,8 +334,8 @@ public class AgeOfTowers {
                 ap.isSet("delay") ? ap.getDelay() : 0, save);
                 result = game.play(ap.isSet("timeout") ? ap.getTimeOut() : 0, game.turn());
             } else {
-                Game game = new Game(redPlayer, bluePlayer, ap.getSize(), io, ap.isDebug(), 
-                ap.isSet("delay") ? ap.getDelay() : 0);
+                Game game = new Game(redPlayer, bluePlayer, ap.getSize(), io,
+                        ap.isSet("delay") ? ap.getDelay() : 0);
                 result = game.play(ap.isSet("timeout") ? ap.getTimeOut() : 0, game.turn());
             }
 
