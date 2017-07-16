@@ -125,7 +125,7 @@ public class Debug {
 
     /**
      * Calling this method will return the currently logged debug output inside {@link #debugMessages}.
-     * @return
+     * @return String containing all the logged debug messages
      */
     @Override
     public String toString() {
