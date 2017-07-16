@@ -340,7 +340,6 @@ public class ParameterInput {
                     args.append("--statistic").append(" ");
                 }
 
-                System.out.println(args);
                 String argsString = args.toString();
                 string = argsString.split(" ");
                 frame.dispose();
@@ -466,9 +465,6 @@ public class ParameterInput {
 
     synchronized public String[] getString() throws Exception {
         wait();
-        for(int i = 0; i < string.length; ++i) {
-            System.out.print(string[i]);
-        }
         return string;
     }
 }
