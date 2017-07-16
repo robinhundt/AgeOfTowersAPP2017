@@ -48,9 +48,9 @@ public class TSave extends Save {
 
     /**
      * exports a TSave - Object to a file
-     * 1. Line : size of the {@link Board}
+     * 1. Line : size of the Board
      * 2. - n. Line Moves of the Game
-     * n. - (n+16).Line the Results of the {@link Tournament}
+     * n. - (n+16).Line the Results of the Tournament
      * @param file the name of the File
      */
     public void exportT(String file) {
@@ -85,7 +85,7 @@ public class TSave extends Save {
 
     /**
      * This Method Loads a TSave-Object from an .aot-Savefile using the parser of the super-class and 
-     * {@link parseTournament}
+     * parseTournament
      */
     @Override
     public  TSave load(String file) throws LoadParserException, IOException {
