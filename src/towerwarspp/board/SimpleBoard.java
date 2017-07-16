@@ -340,15 +340,12 @@ public class SimpleBoard implements Viewable {
 			status = ILLEGAL;
 			if(ent == null) {
 				debug.send(LEVEL_1, BOARD, "Entity is not on the board " + move.toString());
-				throw new IllegalArgumentException("Board: Entity not on the board " + move);
 			}
 			if(ent.getColor() != turn) {
 				debug.send(LEVEL_1, BOARD, "Wrong color: entity color = " + ent.getColor() + ", move = " + move.toString());
-				throw new IllegalArgumentException("Board: false color " + move + " entity color: "+ ent.getColor());
 			}
 			debug.send(LEVEL_1, BOARD, "Move does not exist: turn = " + turn + ", move = " + move.toString());
-			throw new IllegalArgumentException("Board: move does not ex. " + move);
-			//return status;
+			return status;
 		}
 		ent = changeStart(ent, start);
 		changeEnd(ent, start, end);

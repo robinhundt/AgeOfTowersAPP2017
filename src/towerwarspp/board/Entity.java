@@ -126,7 +126,6 @@ public class Entity {
 		this.maxHeight = original.maxHeight;
 		this.maxRange = original.maxRange;
 		this.allMoves = original.copyAllMoves();
- 		getCounter();
 		this.debug = Debug.getInstance();
 	}
 	/**
@@ -210,7 +209,6 @@ public class Entity {
 	 * @return moveCounter.
 	 */
 	public int getMoveCounter() {
-getCounter();
 		return moveCounter;
 	}
 	/**
@@ -246,14 +244,6 @@ getCounter();
 		return moveCounter > 0;
 
 	}
-	private int getCounter() {
-		int cnt = 0;
-		for(int i = 1; i <= range; ++i) {
-			cnt += allMoves.get(i).size();
-		}
-		if(cnt != moveCounter) System.out.println("cnt != moveCounter");
-		return cnt;
-	}
 	/**
 	 * Clones this {@link Entity} instance with the copy-constructor.
 	 * @return the clone of this entity.
@@ -268,7 +258,6 @@ getCounter();
 	public void incHeight() {
 		++height;
 		if(height > maxHeight) {
-			System.out.println("Tower has height > maxHeight");
 			debug.send(LEVEL_1, BOARD, "Tower has height > maxHeight");
 		}
 	}
@@ -278,7 +267,6 @@ getCounter();
 	public void decHeight() {
 		--height;
 		if(height < 0) {
-			System.out.println("Entity has height < 0");
 			debug.send(LEVEL_1, BOARD, "Entity has height < 0");
 		}
 	}
@@ -291,7 +279,6 @@ getCounter();
 		allMoves.set(range, new HashSet<Move>());
 		--range;
 		if(range < 0) {
-			System.out.println("range < 0");
 			debug.send(LEVEL_1, BOARD, "range < 0");
 		}
 	}
@@ -301,7 +288,6 @@ getCounter();
 	public void incRange() {
 		++range;
 		if(range > maxRange) {
-			System.out.println("range > maxRange");
 			debug.send(LEVEL_1, BOARD, "range > maxRange");
 		}
 	}
@@ -313,7 +299,6 @@ getCounter();
 	synchronized public void addMove(Position end, int range) {
 		if(range != 0 && allMoves.get(range).add(new Move(position, end))) {
 			++moveCounter;
- getCounter();
 		}
 	}
 	/**
@@ -324,7 +309,6 @@ getCounter();
 	synchronized public void removeMove(Position end, int range) {
 		if(range != 0 && allMoves.get(range).remove(new Move(position, end))) {
 			--moveCounter;
- getCounter();
 		}
 	}
 	/**
@@ -332,7 +316,6 @@ getCounter();
 	 */
 	public void removeAllMoves() {
 		initialiseMoves();
- getCounter();
 	}
 	/**
 	 * Returns collection of clones of all possible moves.

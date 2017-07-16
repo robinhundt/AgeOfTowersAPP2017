@@ -29,7 +29,7 @@ Das Spiel kann folgendermaßen kompiliert und gestartet werden:
 
 ####Kommandozeilenparameter
 - Einstellungen beginnen mit einem `-` und Schalter mit `--`
-- `--help` zeigt die Hilfe des Spiels an mit kurzen Eklärungen zu allen möglichen Parametern
+- `--help` zeigt die Hilfe des Spiels an mit kurzen Erklärungen zu allen möglichen Parametern
 ####Nichtoptionale Einstellungen für lokale Spiele:
 - Bei einem lokalen Spiel müssen die folgenden Einstellungen gesetzt werden:
 - Der Spielertyp des roten und blauen Spielers (zu Spielertypen mehr unter **Spielertypen**)
@@ -54,7 +54,7 @@ Ein Beispielaufruf des Spieles mit einem menschlichen Spieler als **RED** und ei
     - Während dem Turniermodus tauscht die Rolle der Spieler
     - Am Ende des Turniermodus werden die Ergebnisse der einzelnen Spiele den Spielern wieder in ihrer Startposition zugeordnet
     - Ist die Einstellung `-timeout` gesetzt, gilt diese pro im Turnier gespielten Spiel
-    - Am Ende des Turniers erhält man eine Statistik über die Anzahl der gespielten Spiele, die Anzahl der gewonnen Spiele pro Spieler, wie oft sie auf welche Art gewonnen haben und wie viele Züge sie im Schnitt benötigt haben
+    - Am Ende des Turniers erhält man eine Statistik über die Anzahl der gespielten Spiele, die Anzahl der gewonnenen Spiele pro Spieler, wie oft sie auf welche Art gewonnen haben und wie viele Züge sie im Schnitt benötigt haben
 - **`--statistic`** bewirkt die kontinuierliche Ausgabe der Turnierergebenisse
 
 ## Spielertypen
@@ -73,7 +73,7 @@ Die folgenden Spielertypen können entweder über `-offer <Spielertyp>` im Netzw
 -   - Erweiterter Computer Spieler der seine Züge mit Hilfe des Monte Carlo Tree Search Algorithmus auswählt
 -   - Für diesen Spieler existieren eine Vielzahl an veränderbaren Parametern die genutzt werden können um seine Spielweise anzupassen (siehe Abschnitt **Monty Carlo Player**)
 - ###remote
--   - Ist einer der angebenen Spielertypen beim Programmstart vom Typ `remote` so wird im Netzwerk nach einem Spieler gesucht mit dem das Spiel gespielt werden kann (siehe Abschnitt Netzwerkspiel->Spieler finden)
+-   - Ist einer der angegebenen Spielertypen beim Programmstart vom Typ `remote` so wird im Netzwerk nach einem Spieler gesucht mit dem das Spiel gespielt werden kann (siehe Abschnitt Netzwerkspiel->Spieler finden)
 
 ####Netzwerkspiel
 Es gibt zwei Arten von Netzwerkspiel:
@@ -81,7 +81,7 @@ Es gibt zwei Arten von Netzwerkspiel:
 ####1. Spieler anbieten:
 - Möchte man einen Spieler im Netzwerk anbieten muss die Einstellung `-offer <Player type>` und `-name <Name des Netzwerkspielers>` gesetzt sein
 - Möchte man einen Netzwerkspieler auf einem bestimmten Port anbieten, so kann dies über die Einstellung `-port <Port>`  erreicht werden (Standardmäßig werden Spieler auf dem default Java RMI Port 1099 angeboten)
-- Beim Anbieten eines Spielers im Netzwerk ist Standardmäßig die graphische Ausgabe aktiviert. Dies kann ebenfall über die `-output {graphic, text, none}` Einstellung geändert werden
+- Beim Anbieten eines Spielers im Netzwerk ist Standardmäßig die graphische Ausgabe aktiviert. Dies kann ebenfalls über die `-output {graphic, text, none}` Einstellung geändert werden
 
 ####2. Spieler finden
 Möchte man einen im Netzwerk angebotenen Spieler finden, so muss mindestens für einen der beiden Spieler Einstellungen der Spielertyp `remote` sein (Er kann auch für beide `remote` sein).
@@ -101,7 +101,7 @@ In der Text Ein-/Ausgabe wird das Aufgeben dadurch realisiert, dass entweder `su
 Das Spiel bietet eine Speicher- und Lademechanik, die es ermöglicht, ein Spiel in eine Textdatei zu speichern.
 Spielt man AgeOfTowers mit der Graphik-Ausgabe, so kann man einfach auf `Save and Exit` klicken. Dann öffnet sich 
 ein Dialog, in dem der Textdatei noch ein Name gegeben werden muss. Ist dies erfolgt, so wird dies mit `Save` bestätigt.
-Nach einem abschließden Zug wird das Spiel beendet. 
+Nach einem abschließenden Zug wird das Spiel beendet. 
 
 In der Konsolenausgabe ist der Pfad zur Speicherdatei im `.aot`-Format zu lesen. Dieser führt in das Home-Verzeichnis des Users mit dem Unterordner `AOT_Saves`.
 Dies ist auch wärend eines Bot-Spiels möglich.
@@ -134,7 +134,7 @@ Parameter               |       Optionen                                        
                         |                                                           |
 `--statistic`           |Flag                                                       |- Kontinuierliche Anzeige des Turnierstatus während eines Turniers
                         |                                                           |
-`-load`                 |Name der Datei, die geladen werden soll "Name.aot"         |-läd die angegebene Save-File als Spielstand
+`-load`                 |Name der Datei, die geladen werden soll "Name.aot"         |- Lädt die angegebene Save-File als Spielstand
                         |                                                           |
                         |                                                           |
  **Remote**             |                                                           |
@@ -165,7 +165,7 @@ Parameter               |       Optionen                                        
                         |                                                           |
 `-pstrategy`            |PlayOut Strategie: light (l), heavy (h), dynamic (d)       |- PlayOut Strategie die der MCTS Algorithmus in der Simulationsphase verwendet
                         |                                                           |
-`-tstrategy`            |TreeSelection Strategie: max (m), robus (r)                |- TreeSelection Strategie welche der MCTS Algorithmus verwendet  um den bestmöglichen Zug auszuwählen
+`-tstrategy`            |TreeSelection Strategie: max (m), robus (r)                |- TreeSelection Strategie welche der MCTS Algorithmus verwendet um den bestmöglichen Zug auszuwählen
                         |                                                           |- Max ist der Zug mit der höchsten win / game ratio und robust der Zug mit den meisten simulierten Spielen
 `-parallel`             |Ungefähre maximale Anzahl an nebenläufigen Threads der KI  |- Kann gesetzt werden, um der KI es zu ermöglichen eine höhere Anzahl an Threads zur Simulierung von Spielen zu verwenden
                         |                                                           |
