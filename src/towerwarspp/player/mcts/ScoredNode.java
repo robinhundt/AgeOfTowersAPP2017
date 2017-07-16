@@ -1,7 +1,7 @@
 package towerwarspp.player.mcts;
 
 /**
- * Simple Data container class that contains pairs of Nodes and their score. Implements {@link Comparable<ScoredNode>}
+ * Simple Data container class that contains pairs of Nodes and their score. Implements {@link Comparable}
  * to impose a total ordering. Scored Nodes are order by the natural ordering of their scores.
  */
 class ScoredNode implements Comparable<ScoredNode>{

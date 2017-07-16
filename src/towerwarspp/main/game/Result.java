@@ -39,7 +39,7 @@ public class Result {
     }
 
     /**
-     * Overridden method toString providing simple output of the {@link Result}}
+     * Overridden method toString providing simple output of the {@link Result}
      * @return String containing all information of this object
      */
     @Override
