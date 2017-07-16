@@ -1,14 +1,10 @@
 package towerwarspp.main;
-import jdk.nashorn.internal.scripts.JD;
-
+import static javax.swing.WindowConstants.DISPOSE_ON_CLOSE;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
-
-import static javax.swing.WindowConstants.DISPOSE_ON_CLOSE;
-
 /**
  * Class Parameter Input to provide a graphical option to select settings and flags for the game
  *
@@ -368,7 +364,6 @@ public class ParameterInput {
         frame.setLocationRelativeTo(null);
         frame.pack();
     }
-
     /**
      * Add the ActionListener to the redPlayer RadioButtons.
      */
@@ -419,7 +414,6 @@ public class ParameterInput {
             }
         }
     }
-
     /**
      * Add the ActionListener to the bluePlayer RadioButtons.
      */
@@ -470,14 +464,12 @@ public class ParameterInput {
             }
         }
     }
-
     /**
      * Method which wakes the called Thread.
      */
     synchronized private void wakeup() {
         notify();
     }
-
     /**
      * Returns the Arguments as an Array.
      * @return The Arguments

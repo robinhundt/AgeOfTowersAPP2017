@@ -46,7 +46,7 @@ public interface View {
     /**
      * Get the String which the user has chosen for the Filename
      * @return the Filename
-     * @throws Exception
+     * @throws Exception if Thread is interrupted
      */
     String getSaveGameName() throws Exception;
 }

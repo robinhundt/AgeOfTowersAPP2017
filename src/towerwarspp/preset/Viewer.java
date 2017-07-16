@@ -1,11 +1,5 @@
 package towerwarspp.preset;
-
-//import towerwarspp.board.MoveList;
-
 import towerwarspp.board.Entity;
-
-import java.util.Vector;
-
 /**
 * This is an interface for a board viewer. It has to observe an object which represents a board and deliver
 * the following information to the caller: 

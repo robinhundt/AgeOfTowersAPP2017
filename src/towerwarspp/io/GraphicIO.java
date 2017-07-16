@@ -566,7 +566,7 @@ public class GraphicIO extends JFrame implements IO {
     /**
      * Waits for Player Input and set the Main-Thread to wait().
      * @return Move
-     * @throws Exception Illegal move
+     * @throws Exception if Thread is interrupted
      */
     @Override
     synchronized public Move deliver() throws Exception {

@@ -1,11 +1,9 @@
 package towerwarspp.main;
-
 import towerwarspp.board.Board;
 import towerwarspp.io.GraphicIO;
 import towerwarspp.io.IO;
 import towerwarspp.io.TextIO;
 import towerwarspp.io.View;
-
 import towerwarspp.util.debug.Debug;
 import towerwarspp.util.debug.DebugLevel;
 import towerwarspp.main.game.*;
@@ -15,11 +13,6 @@ import towerwarspp.player.*;
 import towerwarspp.player.mcts.Mcts;
 import towerwarspp.player.mcts.TreeSelectionStrategy;
 import towerwarspp.preset.*;
-
-
-
-
-
 /**
  * Class AgeOfTower - main class to start a new game of TowerWarsPP.
  *

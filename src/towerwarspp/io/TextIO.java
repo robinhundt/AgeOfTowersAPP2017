@@ -198,7 +198,7 @@ public class TextIO implements IO {
      * Overridden method deliver() parsing a textual input from the standard-input into a {@link Move}.
      *
      * @return {@link Move} user wants to make
-     * @throws Exception if input has wrong format
+     * @throws Exception if Thread is interrupted
      */
     @Override
     public Move deliver() throws Exception {
