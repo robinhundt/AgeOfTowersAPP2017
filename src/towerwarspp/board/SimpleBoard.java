@@ -7,7 +7,6 @@ import static towerwarspp.util.debug.DebugSource.*;
 import static towerwarspp.main.WinType.*;
 
 import java.util.HashSet;
-import java.util.ListIterator;
 import java.util.Vector;
 
 import towerwarspp.util.debug.Debug;
@@ -806,9 +805,7 @@ public class SimpleBoard implements Viewable {
 		removeAllMoves(stone);
 		int addRanges = 0;	//additional step range
 		Vector<Position> closeNeighbours = findPositionsInRange(stone.getPosition(), 1);
-		ListIterator<Position> it = closeNeighbours.listIterator();
-		while(it.hasNext()) {
-			Position neighbourPos = it.next();
+		for(Position neighbourPos: closeNeighbours) {
 			Entity neighbour = getElement(neighbourPos);
 			if(checkMoveForStone(neighbourPos, stone.getColor(), 1) ) {
 				addMove(stone, neighbourPos, 1);
