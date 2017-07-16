@@ -668,7 +668,7 @@ public class SimpleBoard implements Viewable {
 	* Commits changes caused by blocking, removing or dismantling of a tower in respect to its neighbours of the same color.
 	* 	1. For all neighbouring stones of the same color: their step ranges will be decreased and all corresponding
 	*		remote moves will be removed from their lists of possible moves.
-	* 	2. For all neigbouring towers of the same color: no changes are needed.
+	* 	2. For all neighbouring towers of the same color: no changes are needed.
 	* @param tower the tower in question.
 	* @param change the necessary change in the step range: will be subtracted from the current range values of the neighbouring stones.
 	*/
@@ -685,7 +685,7 @@ public class SimpleBoard implements Viewable {
 	* Commits changes caused by creating, increasing or unblocking of a tower in respect to its neighbours of the same color.
 	* 	1. For all neighbouring stones of the same color: their step ranges will be increased and all newly available
 	*		remote moves will be added to their lists of possible moves.
-	* 	2. For all neigbouring towers of the same color: 
+	* 	2. For all neighbouring towers of the same color:
 	*		no changes are needed if the height of the increased/unblocked tower is not maximum.
 	* 	3. If the tower in question has reached the maximum height, all moves to its position will be removed 
 	* 		from the lists of possible moves for all tokens (stones and towers) of the same color in case they had such moves.
