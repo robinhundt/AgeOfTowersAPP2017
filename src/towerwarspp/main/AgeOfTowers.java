@@ -287,8 +287,8 @@ public class AgeOfTowers {
     }
 
     /**
-     * creats an Adv2-Player
-     * @return the adv2-Player
+     * Creates an Adv2-Player with the settings stored within the {@link ArgumentParser}.
+     * @return the created adv2-Player object
      */
     private Adv2Player createAdv2Player() {
         TreeSelectionStrategy treeSelectionStrategy = TreeSelectionStrategy.MAX;
