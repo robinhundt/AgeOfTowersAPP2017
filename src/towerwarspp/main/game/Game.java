@@ -75,7 +75,7 @@ public class Game {
      * @param debug integer debug activating debug mode if true
      * @param delayTime time to wait after every turn (in millisecond)
      */
-    public Game(Player redPlayer, Player bluePlayer, int boardSize, View view, boolean debug, int delayTime) {
+    public Game(Player redPlayer, Player bluePlayer, int boardSize, View view, boolean debug, int delayTime) throws Exception{
         debugMsg = Debug.getInstance();
         /*if one of the players is null*/
         if (redPlayer == null || bluePlayer == null) {
@@ -89,7 +89,7 @@ public class Game {
         this.view = view;
         this.boardSize = boardSize;
         saveGame = new Save(boardSize);
-        
+
 
         if(debug)
             System.out.print(debugMsg);
@@ -108,10 +108,8 @@ public class Game {
         try {
             this.redPlayer.init(board.getSize(), RED);
             this.bluePlayer.init(board.getSize(), BLUE);
-        }
-        catch (Exception e) {
-            e.printStackTrace();
-            System.exit(1);
+        } catch (RemoteException e) {
+            throw new RemoteException("Remote player error.");
         }
 
         if(debug)
@@ -127,47 +125,8 @@ public class Game {
      * @param delayTime time to wait after every turn (in millisecond)
      * @param saveGame Save-Object from Save-File
      */
-    public Game (Player redPlayer, Player bluePlayer, View view, boolean debug, int delayTime, Save saveGame) {
-        debugMsg = Debug.getInstance();
-        /*if one of the players is null*/
-        if (redPlayer == null || bluePlayer == null) {
-            throw new IllegalArgumentException("Player cannot be null!");
-        }
-        /*set players , debug-mode, delay time and viewer*/
-        this.redPlayer = redPlayer;
-        this.bluePlayer = bluePlayer;
-        this.debug = debug;
-        this.delayTime = delayTime;
-        this.view = view;
-        this.saveGame = saveGame;
-        this.boardSize = saveGame.getSize();
-        
-
-        if(debug)
-            System.out.println(debugMsg);
-
-        /*create new board and include viewer object in view*/
-        board = new Board(boardSize);
-        if(view != null) {
-            view.setViewer(board.viewer());
-            hasView = true;
-        }
-
-        if(debug)
-            System.out.print(debugMsg);
-
-        /*try to initialized players*/
-        try {
-            this.redPlayer.init(board.getSize(), RED);
-            this.bluePlayer.init(board.getSize(), BLUE);
-        }
-        catch (Exception e) {
-            debugMsg.send(DebugLevel.LEVEL_1, DebugSource.MAIN, "Player initialization failed: \n " + e.getMessage());
-            System.exit(1);
-        }
-        if(debug)
-            System.out.print(debugMsg);
-        //replays the savegame and sets the board of the players
+    public Game (Player redPlayer, Player bluePlayer, View view, boolean debug, int delayTime, Save saveGame) throws Exception{
+        this(redPlayer, bluePlayer, saveGame.getSize(), view, debug, delayTime);
         replay(saveGame);
         ((BasePlayer)redPlayer).setBoard(board.clone());
         ((BasePlayer)bluePlayer).setBoard(board.clone());
@@ -224,7 +183,7 @@ public class Game {
                 view.display(currentColor + "'move :" + currentMove);
                 view.display("Status: " + board.getStatus());
             }
-            
+
             saveGame.add(currentMove);
             /*check if boardstatus of player is equal to own boardstatus*/
             currentPlayer.confirm(board.getStatus());
@@ -240,7 +199,7 @@ public class Game {
                 Thread.sleep(delayTime);
             }
             catch (InterruptedException e) {
-                e.printStackTrace();
+                debugMsg.send(DebugLevel.LEVEL_2, DebugSource.MAIN, "game interrupted during sleep.");
             }
 
             /*if view object has been added, visualized game*/
@@ -298,12 +257,12 @@ public class Game {
      */
     private void checkSave() {
         if(view.getSave() == true) {
-           try {
-               saveGame.export(view.getSaveGameName());
-           } catch (Exception e) {
-               System.out.println("saving failed");
-           }               
-           System.exit(0);
+            try {
+                saveGame.export(view.getSaveGameName());
+            } catch (Exception e) {
+                System.out.println("saving failed");
+            }
+            System.exit(0);
         }
         return;
     }
