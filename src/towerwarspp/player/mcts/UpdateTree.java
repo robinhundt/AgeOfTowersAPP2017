@@ -79,11 +79,26 @@ class UpdateTree implements Runnable {
         }
     }
 
+    /**
+     *  Running this method in a parallel Thread by passing on instance of this class to a Thread and executing it will
+     *  will enable the {@link Mcts} algorithm to do multiple iterations of the select - expand - simulate - backpropagate
+     *  loop concurrently.
+     *
+     *  In this method first from the root the Child that has the {@link #nthSubtree} highest USB1 score is selected.
+     *  From there on at each depth the child with the highest UCB score is selected
+     *  until a child is reached whose {@link Node#isExpanded()} returns false. Then this Child is expanded and
+     *  a simulation according to the specified {@link #playStrategy} is executed. The result of that simulation is
+     *  backpropagated up the tree.
+     */
     @Override
     public void run() {
         Node selectedChild = root;
         debug.send(LEVEL_3, PLAYER, "Mcts: Select on " + root);
         debug.send(LEVEL_4, PLAYER, "Roots children: " + root.getChildren().toString());
+
+        /* Selection phase of the algorithm:
+        * From the root first select the Child that has the nth highest UCB1 score specified during object construction.
+        */
         if(selectedChild.isExpanded() && !selectedChild.isTerminal()) {
            selectedChild = selectedChild.nthBestUCBChild(nthSubtree % selectedChild.childCount());
            board.makeMove(selectedChild.getMove());
@@ -92,7 +107,9 @@ class UpdateTree implements Runnable {
                 debug.send(LEVEL_5, PLAYER, "Mcts: Found terminal Node " + selectedChild);
             }
         }
-        Node expNode = null;
+        /* From there on at each depth select the child with the highest UCB1 score as long as the selected Child
+        * is expanded and not terminal*/
+        Node expNode;
             while (selectedChild.isExpanded() && !selectedChild.isTerminal()) {
                 selectedChild = selectedChild.bestUCBChild();
                 debug.send(LEVEL_5, PLAYER, "Mcts: selected child " + selectedChild);
@@ -108,15 +125,16 @@ class UpdateTree implements Runnable {
 
             if(selectedChild.isTerminal()) {
                 selectedChild.backPropagateScore(DEF_SCORE, board.getStatus() == BLUE_WIN ? BLUE : RED);
-            }
-
-            if(!selectedChild.isTerminal() && !selectedChild.isExpanded()) {
+            } else if(!selectedChild.isExpanded()) {
+                /* if the selected Child is neither terminal nor expanded expand the Node and do a playout, then backpropagate
+                * the result */
                 expNode = selectedChild.expand(board);
                 if(expNode != null) {
 
                     board.makeMove(expNode.getMove());
 
                     if(board.getStatus() != OK) {
+//                        System.out.println("Setting terminal");
                         expNode.setTerminalTrue();
                     } else {
                         expNode.backPropagateScore(DEF_SCORE, playout(board, playStrategy));
