@@ -4,6 +4,8 @@ import towerwarspp.board.Board;
 import towerwarspp.io.View;
 import towerwarspp.main.Debug;
 import towerwarspp.main.WinType;
+import towerwarspp.main.debug.DebugLevel;
+import towerwarspp.main.debug.DebugSource;
 import towerwarspp.preset.*;
 import towerwarspp.player.*;
 
@@ -160,7 +162,7 @@ public class Game {
             this.bluePlayer.init(board.getSize(), BLUE);
         }
         catch (Exception e) {
-            e.printStackTrace();
+            debugMsg.send(DebugLevel.LEVEL_1, DebugSource.MAIN, "Player initialization failed: \n " + e.getMessage());
             System.exit(1);
         }
         if(debug)
@@ -208,11 +210,13 @@ public class Game {
 
             /*get a move from current player*/
             currentMove = currentPlayer.request();
-
+            debugMsg.send(DebugLevel.LEVEL_1, DebugSource.MAIN, currentColor + " made move " + currentMove);
             checkSave();            
 
             /*make move on board*/
             board.makeMove(currentMove);
+            debugMsg.send(DebugLevel.LEVEL_1, DebugSource.MAIN, "Board status: " + board.getStatus() + " after" +
+                    "placing move.");
             
 
             /*if debug mode is enabled output information*/

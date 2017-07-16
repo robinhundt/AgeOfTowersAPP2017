@@ -226,7 +226,8 @@ public class AgeOfTowers {
             /*set player as given*/
             player = ap.isSet("name") ? remote.find(ap.getName()) : remote.find();
         } catch (Exception e) {
-            e.printStackTrace();
+            System.out.println(e.getMessage());
+            System.out.println("Exiting program...");
             System.exit(1);
         }
         /*return found player*/
@@ -262,7 +263,7 @@ public class AgeOfTowers {
             players[RED] = createPlayer(ap.getRed());
             players[BLUE] = createPlayer(ap.getBlue());
         } catch (ArgumentParserException e) {
-            e.printStackTrace();
+            System.out.println("Player creation failed, exiting program..." + e.getMessage());
             System.exit(1);
         }
         /*return created players, init needs to be called*/
@@ -341,7 +342,8 @@ public class AgeOfTowers {
             }
 
         } catch (Exception e) {
-            e.printStackTrace();
+            System.out.println(e.getMessage());
+            System.out.println("Exiting program...");
             System.exit(1);
         }
         if (io != null ) {
@@ -364,7 +366,8 @@ public class AgeOfTowers {
                     ap.isSet("delay") ? ap.getDelay() : 0, board.getSize(), ap.getGameCount(), ap.isSet("timeout") ? ap.getTimeOut() : 0);
             tResult = tournament.play(ap.isStatistic());
         } catch (Exception e) {
-            e.printStackTrace();
+            System.out.println(e.getMessage());
+            System.out.println("Exiting program...");
             System.exit(1);
         }
         if (io != null) {
