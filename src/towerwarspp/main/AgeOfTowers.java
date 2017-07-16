@@ -130,7 +130,7 @@ public class AgeOfTowers {
             } else if(ap.isSet("blue") && ap.isSet("red") && (ap.isSet("size") || ap.isSet("load"))) {
                 if(ap.isSet("load")) {
                     try {
-                        save = Save.load(ap.getLoadName());
+                        save = save.load(ap.getLoadName());
                     } catch(Exception e) {
                         System.out.println("Loading Failed");
                     }

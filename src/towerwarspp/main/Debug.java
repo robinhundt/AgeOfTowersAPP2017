@@ -8,7 +8,8 @@ import static towerwarspp.main.debug.DebugLevel.*;
 import static towerwarspp.main.debug.DebugSource.NO_SOURCE_DEBUG;
 
 /**
- * Created by robin on 11.07.17.
+ * 
+ * @author Robin Hundt
  */
 public class Debug {
 

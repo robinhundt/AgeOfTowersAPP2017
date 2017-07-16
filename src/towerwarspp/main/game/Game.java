@@ -132,6 +132,13 @@ public class Game {
         ((BasePlayer)bluePlayer).setBoard(board.clone());
     }
 
+    /**
+     * returns the save-Game
+     * @return the save-Game
+     */
+    public Save getSaveGame() {
+        return saveGame;
+    }
 
     /**
      * Method play to start the {@link Game}, means requesting {@link Move}s from {@link Player}s, updating the {@link Board}

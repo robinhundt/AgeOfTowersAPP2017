@@ -1,9 +1,10 @@
 package towerwarspp.main.tournament;
 
+import java.util.ArrayDeque;
+
 import towerwarspp.io.View;
-import towerwarspp.main.game.Game;
-import towerwarspp.main.game.Result;
 import towerwarspp.preset.*;
+import towerwarspp.main.game.*;
 
 /**
  * Class {@link Tournament} to start a given number of {@link Game}s
@@ -37,6 +38,11 @@ public class Tournament {
      */
     private int delayTime, boardSize, games, timeOut;
 
+    /**
+     * TSave object for being able to save and load tournaments
+     */
+    private TSave save;
+
 
     /**
      * Constructor setting every parameter as given.
@@ -60,6 +66,7 @@ public class Tournament {
         this.boardSize = boardSize;
         this.games = games;
         this.timeOut = timeOut;
+        this.save = new TSave(boardSize);
     }
 
     /**
@@ -90,7 +97,8 @@ public class Tournament {
             }
 
             /*create game with given settings*/
-            Game game = new Game(players[red], players[blue], boardSize, view, debug, delayTime);
+            Game game = new Game(players[red], players[blue], boardSize, view, debug, delayTime);            
+            this.save.setMoveHistory(game.getSaveGame().getMoveHistory());
 
             /*start game, output result of this game and include result in the statistic about this tournament*/
                 /*start game and store result*/
@@ -103,6 +111,7 @@ public class Tournament {
                     /*output current status of the statistic*/
                 if (statistic)
                     view.dialog(tResult.toString());
+                save.setResult(tResult);
             }
         }
 

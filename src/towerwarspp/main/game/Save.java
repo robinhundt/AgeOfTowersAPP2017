@@ -64,16 +64,6 @@ public class Save implements Iterable<Move> {
      */
     private static final boolean RED = true, BLUE = false;
 
-    /**
-     * shows, if this is a saveGame for a tournament or not
-     */
-    private boolean tournament = false;
-
-    /**
-     * empty TResult-Object. Filled, if tournament is true
-     */
-    private TResult result;
-
    
 
     /**
@@ -86,16 +76,6 @@ public class Save implements Iterable<Move> {
     }
 
     /**
-     * Tournament-Constructor. Used to construct a Tournament-Save-Game
-     */
-    public Save (int size, TResult result) {
-        this.size = size;
-        this.historySize = 0;
-        this.result = result;
-        this.tournament = true;
-    }
-
-    /**
      * getter for the boardsize
      * @return the the size of the saved board
      */
@@ -104,11 +84,19 @@ public class Save implements Iterable<Move> {
     }
 
     /**
-     * returns the size of the ArrayDeque
+     * returns the ArrayDeque
      * @return the ArrayDeque with the moves
      */
-    public int getHistorySize() {
-        return historySize;
+    public ArrayDeque<Move> getMoveHistory() {
+        return moveHistory;
+    }
+
+    /**
+     * sets the ArrayDeque
+     * @param moveHistory the new ArrayDeque
+     */
+    public void setMoveHistory(ArrayDeque<Move> moveHistory) {
+        this.moveHistory = moveHistory;
     }
 
     /**
@@ -117,6 +105,14 @@ public class Save implements Iterable<Move> {
      */
     public Move getNextMove() {
         return moveHistory.poll();
+    }
+
+    /**
+     * returns the savePath
+     * @return the savePath
+     */
+    public String getSavePath() {
+        return savePath;
     }
 
     /**
@@ -163,9 +159,6 @@ public class Save implements Iterable<Move> {
             dir.mkdir();
             PrintWriter writer = new PrintWriter(savePath + fileName + ".aot", "UTF-8");
             writer.println(size);
-            if(tournament == true) {
-                exportTournatment(writer);
-            }
             boolean currentPlayer = RED;
             for(Move i : moveHistory) {
                 writer.println(i.toString() + (currentPlayer == RED ? ",Red" : ",Blue"));
@@ -183,7 +176,7 @@ public class Save implements Iterable<Move> {
      * @param file the name of the file to be loaded
      * @return the parsed Save-Object
      */
-    public static Save load(String file) throws LoadParserException, IOException {
+    public Save load(String file) throws LoadParserException, IOException {
 
         try(BufferedReader br = new BufferedReader(new FileReader(savePath + file))){
             Save a = new Save(Integer.parseInt(br.readLine()));
@@ -202,7 +195,7 @@ public class Save implements Iterable<Move> {
      * @param str the string to be parsed
      * @return the Move-Object
      */
-    private static Move parseLoad(String str) throws LoadParserException  {
+    public static Move parseLoad(String str) throws LoadParserException  {
         try {
             Matcher m = movePattern.matcher(str);
             m.find();
@@ -210,55 +203,5 @@ public class Save implements Iterable<Move> {
         } catch (Exception e){
             throw new LoadParserException("illegal Savefile!");
         } 
-    }
-
-    /**
-     * writes the values of the TResult
-     * @param writer writes the Lines to the file
-     */
-    private void exportTournatment(PrintWriter writer) {
-        int red = 0, blue = 1;
-        for(int i = red; i < blue; i++) {
-            writer.println(result.getWins()[i]);
-            writer.println(result.getBaseDestroyed()[i]);
-            writer.println(result.getNoPosMoves()[i]);
-            writer.println(result.getIllegalMove()[i]);
-            writer.println(result.getSurrender()[i]);
-            writer.println(result.getAvgMoves()[i]);
-            writer.println(result.getTotalMoves()[i]);
-        }
-        writer.println(result.getTimeoutGames());
-        writer.println(result.getTotalGames());
-    }
-    private static TResult parseTournament(BufferedReader br) throws LoadParserException {
-        int red = 0, blue = 1;
-        TResult resultp = new TResult();
-        int[] wins = new int[2];       
-        int[] baseDestroyed = new int[2];
-        int[] noPosMoves = new int[2];
-        int[] illegalMove = new int[2];
-        int[] surrender = new int[2];
-        double[] avgMoves = new double[2];
-        try {
-            for(int i = red; i < blue; i++) {
-                wins[i] = Integer.parseInt(br.readLine());
-                baseDestroyed[i] = Integer.parseInt(br.readLine());
-                noPosMoves[i] = Integer.parseInt(br.readLine());
-                illegalMove[i] = Integer.parseInt(br.readLine());
-                surrender[i] = Integer.parseInt(br.readLine());
-                avgMoves[i] = Double.parseDouble(br.readLine());
-            }
-            resultp.setTimeoutGames(Integer.parseInt(br.readLine()));
-            resultp.setTotalGames(Integer.parseInt(br.readLine()));
-            resultp.setWins(wins);
-            resultp.setBaseDestroyed(baseDestroyed);
-            resultp.setNoPosMoves(noPosMoves);
-            resultp.setIllegalMove(illegalMove);
-            resultp.setSurrender(surrender);
-            resultp.setAvgMoves(avgMoves);
-            return resultp;
-        } catch (Exception e) {
-            throw new LoadParserException("illegal tournamentsave");
-        }        
     }
 }
