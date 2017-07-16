@@ -34,7 +34,7 @@
 				windowtitle="APP">
 		</javadoc>
 	</target>
-	<target name ="jar" description="Creates Jar-File" depends="build">
+	<target name ="jar" description="Creates Jar-File" depends="doc">
 		<jar destfile="AgeOfTowers.jar" basedir="${build.dir}">
 			<manifest>
 				<attribute name="Main-Class" value="towerwarspp.main.AgeOfTowers"/>
