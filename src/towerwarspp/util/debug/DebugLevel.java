@@ -1,7 +1,8 @@
 package towerwarspp.util.debug;
 
 /**
- * Created by robin on 11.07.17.
+ * Enumeration of the different debug level for different output level for {@link Debug}.
+ * @author Robin Hundt
  */
 public enum DebugLevel {
     NO_LEVEL_DEBUG,

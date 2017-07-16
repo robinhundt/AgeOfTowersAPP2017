@@ -1,7 +1,8 @@
 package towerwarspp.util.debug;
 
 /**
- * Created by robin on 11.07.17.
+ * Enumeration of the Debug Source for the specific output of {@link Debug}.
+ * @author Robin Hundt
  */
 public enum DebugSource {
     NO_SOURCE_DEBUG,
