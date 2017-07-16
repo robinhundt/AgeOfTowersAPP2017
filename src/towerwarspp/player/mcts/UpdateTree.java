@@ -20,6 +20,7 @@ import towerwarspp.preset.PlayerColor;
 
 /**
  * Runnable class that provides the option of parallelization of the Monte Carlo tree search algorithm.
+ * @author Robin Hundt
  */
 class UpdateTree implements Runnable {
     /**

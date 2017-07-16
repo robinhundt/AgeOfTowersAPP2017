@@ -2,6 +2,7 @@ package towerwarspp.player.mcts;
 
 /**
  * Enum class whose fields represent states the MCTS  algorithm can be in.
+ * @author Robin Hundt
  */
 public enum Task {
     /**

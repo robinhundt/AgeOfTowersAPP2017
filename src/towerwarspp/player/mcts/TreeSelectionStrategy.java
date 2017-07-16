@@ -2,6 +2,7 @@ package towerwarspp.player.mcts;
 
 /**
  * Enum class to differentiate between different TreeSelectionStrategies.
+ * @author Robin Hundt
  */
 public enum TreeSelectionStrategy {
     /**

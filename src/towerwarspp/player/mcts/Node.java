@@ -20,6 +20,7 @@ import towerwarspp.preset.PlayerColor;
  * A Node holds information about the Move it represents, the color of the player that has this move, the enemy's color,
  * the parent of this Node, whether it has a terminal child (representing a terminal game state), a list of explored
  * children as well es a list of unexplored children.
+ * @author Robin Hundt
  */
 
 class Node {
