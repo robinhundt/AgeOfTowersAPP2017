@@ -1,6 +1,8 @@
 package towerwarspp.main.game;
 
 import towerwarspp.board.Board;
+import towerwarspp.io.GraphicIO;
+import towerwarspp.io.TextIO;
 import towerwarspp.io.View;
 import towerwarspp.util.debug.Debug;
 import towerwarspp.main.WinType;
@@ -39,9 +41,10 @@ public class Game {
      */
     private View view;
     /**
-     * boolean debug activating debug-mode if true.
+     * TextIO {@link View} used to send game state to debug output if debug is wished and the {@link #view} is instanceof
+     * {@link towerwarspp.io.GraphicIO}.
      */
-    private boolean debug;
+    private TextIO debugOutput;
     /**
      * boolean hasView showing if {@link View} object is given.
      */
@@ -53,7 +56,7 @@ public class Game {
     /**
      * {@link Debug} object that is used to print out debug information from all parts of the program in main game loop.
      */
-    private Debug debugMsg;
+    private Debug debug;
 
     /**
      * Save Object, which saves all moves and exports them to a savefile.
@@ -64,38 +67,40 @@ public class Game {
      *
      * @param redPlayer {@link Player} with {@link PlayerColor} RED
      * @param bluePlayer {@link Player} with {@link PlayerColor} BLUE
-     * @param boardSize integer size of {@link Board}.
+     * @param boardSize integer size of {@link Board}
      * @param view {@link View} object providing possibility for visualization
-     * @param debug integer debug activating debug mode if true
      * @param delayTime time to wait after every turn (in millisecond)
      */
-    public Game(Player redPlayer, Player bluePlayer, int boardSize, View view, boolean debug, int delayTime) throws Exception{
-        debugMsg = Debug.getInstance();
+    public Game(Player redPlayer, Player bluePlayer, int boardSize, View view, int delayTime) throws Exception{
+        debug = Debug.getInstance();
         /*if one of the players is null*/
-        if (redPlayer == null || bluePlayer == null) {
-            throw new IllegalArgumentException("Player cannot be null!");
-        }
+            if (redPlayer == null || bluePlayer == null) {
+                throw new IllegalArgumentException("Player cannot be null!");
+            }
         /*set players , debug-mode, delay time and viewer*/
         this.redPlayer = redPlayer;
         this.bluePlayer = bluePlayer;
-        this.debug = debug;
         this.delayTime = delayTime;
         this.view = view;
         saveGame = new Save(boardSize);
 
 
-        if(debug)
-            System.out.print(debugMsg);
+        if(debug.isCollecting())
+            System.out.print(debug);
 
         /*create new board and include viewer object in view*/
         board = new Board(boardSize);
         if(view != null) {
             view.setViewer(board.viewer());
             hasView = true;
+            if(debug.isCollecting() && view instanceof GraphicIO) {
+                debugOutput = new TextIO();
+                debugOutput.setViewer(board.viewer());
+            }
         }
 
-        if(debug)
-            System.out.print(debugMsg);
+        if(debug.isCollecting())
+            System.out.print(debug);
 
         /*try to initialized players*/
         try {
@@ -105,8 +110,8 @@ public class Game {
             throw new RemoteException("Remote player error.");
         }
 
-        if(debug)
-            System.out.print(debugMsg);
+        if(debug.isCollecting())
+            System.out.print(debug);
     }
 
     /**
@@ -119,7 +124,7 @@ public class Game {
      * @param saveGame Save-Object from Save-File
      */
     public Game (Player redPlayer, Player bluePlayer, View view, boolean debug, int delayTime, Save saveGame) throws Exception{
-        this(redPlayer, bluePlayer, saveGame.getSize(), view, debug, delayTime);
+        this(redPlayer, bluePlayer, saveGame.getSize(), view, delayTime);
         this.saveGame = saveGame;
         replay(this.saveGame);
         ((BasePlayer)redPlayer).setBoard(board.clone());
@@ -144,8 +149,8 @@ public class Game {
      * @throws Exception if an error occurs in the {@link Board} or {@link View} object
      */
     public Result play(int timeOut, PlayerColor turn) throws Exception {
-        if(debug)
-            System.out.print(debugMsg);
+        if(debug.isCollecting())
+            System.out.print(debug);
         /*set redPlayer as first player, red as first color, and counter of move*/
         Player currentPlayer = turn == RED ? redPlayer : bluePlayer;
         PlayerColor currentColor = turn;
@@ -160,8 +165,12 @@ public class Game {
 
         /*as long as a valid move has been made and none of the players did not win, ask for next moves*/
         while (board.getStatus() == OK && ((timeOut != 0 && moveCounter < timeOut) || timeOut == 0)) {
-            if (debug)
-                System.out.print(debugMsg);
+
+            if (debug.isCollecting()) {
+                System.out.print(debug);
+                if(debugOutput != null)
+                    debugOutput.visualize();
+            }
             /*increment move count*/
             moveCounter++;
             /*output turn*/
@@ -170,17 +179,17 @@ public class Game {
 
             /*get a move from current player*/
             currentMove = currentPlayer.request();
-            debugMsg.send(DebugLevel.LEVEL_1, DebugSource.MAIN, currentColor + " made move " + currentMove);
+            debug.send(DebugLevel.LEVEL_1, DebugSource.MAIN, currentColor + " made move " + currentMove);
             checkSave();            
 
             /*make move on board*/
             board.makeMove(currentMove);
-            debugMsg.send(DebugLevel.LEVEL_1, DebugSource.MAIN, "Board status: " + board.getStatus() + " after" +
+            debug.send(DebugLevel.LEVEL_1, DebugSource.MAIN, "Board status: " + board.getStatus() + " after" +
                     "placing move.");
             
 
             /*if debug mode is enabled output information*/
-            if (debug && currentMove != null && hasView) {
+            if (debug.isCollecting() && currentMove != null && hasView) {
                 view.display("Status: " + board.getStatus() + currentColor + "'move :" + currentMove);
             }
 
@@ -199,7 +208,7 @@ public class Game {
                 Thread.sleep(delayTime);
             }
             catch (InterruptedException e) {
-                debugMsg.send(DebugLevel.LEVEL_2, DebugSource.MAIN, "game interrupted during sleep.");
+                debug.send(DebugLevel.LEVEL_2, DebugSource.MAIN, "game interrupted during sleep.");
             }
 
             /*if view object has been added, visualized game*/
@@ -241,7 +250,6 @@ public class Game {
      */
     private void replay(Save save) {
         for(Move i : saveGame) {
-            System.out.println("zug gemacht");
             Status stat = board.makeMove(i);
         }
     }
@@ -261,11 +269,10 @@ public class Game {
         if(view.getSave()) {
             try {
                 saveGame.export(view.getSaveGameName());
-                System.exit(0);
             } catch (Exception e) {
                 System.out.println("saving failed");
             }
-            
+            System.exit(0);
         }
     }
 }
