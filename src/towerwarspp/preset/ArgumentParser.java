@@ -1,11 +1,13 @@
 package towerwarspp.preset;
 
+import com.sun.org.apache.xpath.internal.Arg;
 import towerwarspp.main.OutputType;
 import towerwarspp.main.debug.DebugLevel;
 import towerwarspp.main.debug.DebugSource;
 import towerwarspp.player.PlayStrategy;
 import towerwarspp.player.mcts.TreeSelectionStrategy;
 
+import java.rmi.RemoteException;
 import java.util.HashMap;
 
 /**
@@ -331,11 +333,19 @@ public class ArgumentParser {
     }
 
     public int getSize() throws ArgumentParserException {
-        return Integer.parseInt((String) getSetting("size"));
+        try {
+            return Integer.parseInt((String) getSetting("size"));
+        } catch (NumberFormatException e) {
+            throw new ArgumentParserException("size argument has wrong format.");
+        }
     }
 
     public int getDelay() throws ArgumentParserException {
-        return Integer.parseInt((String) getSetting("delay"));
+        try {
+            return Integer.parseInt((String) getSetting("delay"));
+        } catch (NumberFormatException e) {
+            throw new ArgumentParserException("delay argument has wrong format.");
+        }
     }
 
     public PlayerType getRed() throws ArgumentParserException {
@@ -367,7 +377,11 @@ public class ArgumentParser {
     }
 
     public int getPort() throws ArgumentParserException {
-        return Integer.parseInt((String) getSetting("port"));
+        try{
+            return Integer.parseInt((String) getSetting("port"));
+        } catch (NumberFormatException e) {
+            throw new ArgumentParserException("port argument has wrong format.");
+        }
     }
 
     public String getName() throws ArgumentParserException {
@@ -379,18 +393,30 @@ public class ArgumentParser {
     }
 
     public int getGameCount() throws ArgumentParserException {
-        return Integer.parseInt((String) getSetting("games"));
+        try {
+            return Integer.parseInt((String) getSetting("games"));
+        } catch (NumberFormatException e) {
+            throw new ArgumentParserException("games argument has wrong format.");
+        }
     }
 
     public int getTimeOut() throws ArgumentParserException {
-        return Integer.parseInt((String) getSetting("timeout"));
+        try {
+            return Integer.parseInt((String) getSetting("timeout"));
+        } catch (NumberFormatException e) {
+            throw new ArgumentParserException("timeout argument has wrong format");
+        }
     }
 
     public PlayerType getOfferedType() throws ArgumentParserException {
         return parsePlayerType((String) getSetting("offer"));
     }
     public long getThinkingTime() throws ArgumentParserException {
-        return  Long.parseLong((String) getSetting("thinktime"));
+        try{
+            return  Long.parseLong((String) getSetting("thinktime"));
+        } catch (NumberFormatException e) {
+            throw new ArgumentParserException("thinktime argument has wrong format");
+        }
     }
 
     public DebugLevel getDebugLevel() throws ArgumentParserException {
@@ -414,11 +440,19 @@ public class ArgumentParser {
     }
 
     public int getParrallelFactor() throws ArgumentParserException {
-        return Integer.parseInt((String) getSetting("parallel"));
+        try {
+            return Integer.parseInt((String) getSetting("parallel"));
+        } catch (NumberFormatException e) {
+            throw new ArgumentParserException("parallel argument has wrong format.");
+        }
     }
 
     public double getBias() throws ArgumentParserException {
-        return Double.parseDouble((String) getSetting("bias"));
+        try {
+            return Double.parseDouble((String) getSetting("bias"));
+        } catch (NumberFormatException e) {
+            throw new ArgumentParserException("bias argument has wrong format");
+        }
     }
 
 }

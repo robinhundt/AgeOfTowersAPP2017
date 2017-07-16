@@ -162,6 +162,9 @@ public class AgeOfTowers {
             System.out.println(e.getMessage());
             System.out.println(helpOutput());
             System.exit(1);
+        } catch (Exception e) {
+            System.out.println("Unknown error occured. Exiting program...");
+            System.exit(1);
         }
     }
 
