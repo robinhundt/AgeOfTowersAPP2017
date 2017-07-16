@@ -1,4 +1,3 @@
-
 <img src="AoTLogo" width="620">
 
 
@@ -114,60 +113,60 @@ Die Lademechanik wird beim aufrufen der .jar -Datei benutzt. Man übergibt den N
 
 ## Quick Reference
 
-Parameter             |       Optionen                                            |   Beschreibung
-----------------------|-----------------------------------------------------------|------------------
-`-size`               |Zahl von 4 bis einschließlich 26                           |- Setzt die Feldgröße auf den spezifizierten Wert
-                      |                                                           |
-`-red`                |Einer der Spielertypen beschrieben unter Spielertypen      |- Setzt den roten Spieler auf den spezifizierten Typ
-                      |                                                           |
-`-blue`               |SpielerTyp des blauen Spielers                             |- Setzt den blauen Spieler auf den spezifizierten Spieler Typ
-                      |                                                           |
-**Optional**          |                                                           |                                                     
-                      |                                                           |
-`-delay`              |Verzögerung in Millisekunden                               |- Zeit die zwischen den Zügen der Spieler vergehen soll
-                      |                                                           |
-`-output`             |none, text, graphic                                        |- Art der Ausgabe des Spiels
-                      |                                                           |
-`-timeout`            |Zuganzahl                                                  |- Anzahl der maximalen Züge pro Spiel bevor dieses abgebrochen wird
-                      |                                                           |- Kann für normale Spiele sowie für Turniere angegeben werden
-`-games`              |Anzahl (n > 1) an Spielen im Turnier                       |- Startet ein Turnier mit der angegebenen Anzahl an Spielen
-                      |                                                           |
-`--statistic`         |Flag                                                       |- Kontinuierliche Anzeige des Turnierstatus während eines Turniers
-                      |                                                           |
-`-load`               |Name der Datei, die geladen werden soll "Name.aot"         |-läd die angegebene Save-File als Spielstand
-                      |                                                           |
-                      |                                                           |
- **Remote**           |                                                           |
-                      |                                                           |
-`-offer`              |Angebotener Spieler Typ                                    |- Bietet einen Spieler dieses Types im Netzwek an
-                      |                                                           |
-`-name`               |Name des Netzwerkspielers                                  |- Spezifiziert den Namen unter dem ein Netzwerkspieler angeboten werden soll
-                      |                                                           |
-`-port`               |Gültiger Port                                              |- Port auf dem entweder ein Netzwerkspieler angeboten oder gesucht werden soll
-                      |                                                           |
-`-host`               |Host (Bsp. CIP-Rechner Adresse oder IP)                    |- Host auf dem nach einem Netzwerkspieler gesucht werden soll
-                      |                                                           |
-**Debug**             |                                                           |
-                      |                                                           |
-`--debug`             |Flag                                                       |- Wenn gesetzt werden alle LEVEL1 Debug Ausgaben ausgegeben
-                      |                                                           |
-`-dlevel`             |Debug Level von 1 bis 7 (Zahl)                             |- Wenn gesetzt werden alle Debug Nachrichten die dem gesetzten Level oder niedriger ausgegeben
-                      |                                                           |
-`-dsource`            |Ort der Debug Nachrichten: board, io, main, network, player|- Wenn gesetzt werden alle Debug Nachrichten aus dem spezifizierten Bereich ausgegeben
-                      |                                                           |- Kann in Verbindung mit `-dlevel` genutzt werden um Debug aus einem Bereich mit einem spezifizierten Level oder niedriger zu erhalten
-                      |                                                           |  
-**Monty Carlo Player**|                                                           |
-                      |                                                           |
-`-thinktime`          |Zeit pro Zug in ms                                         |- Setzt die Zeit die die erweiterte KI pro Runde verwenden wird um den bis dahin besten Zug zu berechnen
-`--fair`              |Flag                                                       |- Wenn gesetzt wird die KI immer so viel Zeit für die Berechnung ihres Zuges verwenden wie der Gegner zuvor gebraucht hat
-                      |                                                           |
-**Advanced Settings** |                                                           |
-                      |                                                           |
-`-pstrategy`          |PlayOut Strategie: light (l), heavy (h), dynamic (d)       |- PlayOut Strategie die der MCTS Algorithmus in der Simulationsphase verwendet
-                      |                                                           |
-`-tstrategy`          |TreeSelection Strategie: max (m), robus (r)                |- TreeSelection Strategie welche der MCTS Algorithmus verwendet  um den bestmöglichen Zug auszuwählen
-                      |                                                           |- Max ist der Zug mit der höchsten win / game ratio und robust der Zug mit den meisten simulierten Spielen
-`-parallel`           |Ungefähre maximale Anzahl an nebenläufigen Threads der KI  |- Kann gesetzt werden, um der KI es zu ermöglichen eine höhere Anzahl an Threads zur Simulierung von Spielen zu verwenden
-                      |                                                           |
-`-bias`               |Bias Faktor in der UCB1 Formel                             |- Kann gesetzt werden um den bias Faktor zur Berechnung der UCB1 Werte von Nodes im MCTS zu verändern (Erfahrungsgemäß sollten Werte zwischen 0,4 und 2,5 gewählt werden)
-                      |                                                           |
+Parameter               |       Optionen                                            |   Beschreibung
+------------------------|-----------------------------------------------------------|------------------
+`-size`                 |Zahl von 4 bis einschließlich 26                           |- Setzt die Feldgröße auf den spezifizierten Wert
+                        |                                                           |
+`-red`                  |Einer der Spielertypen beschrieben unter Spielertypen      |- Setzt den roten Spieler auf den spezifizierten Typ
+                        |                                                           |
+`-blue`                 |SpielerTyp des blauen Spielers                             |- Setzt den blauen Spieler auf den spezifizierten Spieler Typ
+                        |                                                           |
+**Optional**            |                                                           |                                                     
+                        |                                                           |
+`-delay`                |Verzögerung in Millisekunden                               |- Zeit die zwischen den Zügen der Spieler vergehen soll
+                        |                                                           |
+`-output`               |none, text, graphic                                        |- Art der Ausgabe des Spiels
+                        |                                                           |
+`-timeout`              |Zuganzahl                                                  |- Anzahl der maximalen Züge pro Spiel bevor dieses abgebrochen wird
+                        |                                                           |- Kann für normale Spiele sowie für Turniere angegeben werden
+`-games`                |Anzahl (n > 1) an Spielen im Turnier                       |- Startet ein Turnier mit der angegebenen Anzahl an Spielen
+                        |                                                           |
+`--statistic`           |Flag                                                       |- Kontinuierliche Anzeige des Turnierstatus während eines Turniers
+                        |                                                           |
+`-load`                 |Name der Datei, die geladen werden soll "Name.aot"         |-läd die angegebene Save-File als Spielstand
+                        |                                                           |
+                        |                                                           |
+ **Remote**             |                                                           |
+                        |                                                           |
+`-offer`                |Angebotener Spieler Typ                                    |- Bietet einen Spieler dieses Types im Netzwek an
+                        |                                                           |
+`-name`                 |Name des Netzwerkspielers                                  |- Spezifiziert den Namen unter dem ein Netzwerkspieler angeboten werden soll
+                        |                                                           |
+`-port`                 |Gültiger Port                                              |- Port auf dem entweder ein Netzwerkspieler angeboten oder gesucht werden soll
+                        |                                                           |
+`-host`                 |Host (Bsp. CIP-Rechner Adresse oder IP)                    |- Host auf dem nach einem Netzwerkspieler gesucht werden soll
+                        |                                                           |
+**Debug**               |                                                           |
+                        |                                                           |
+`--debug`               |Flag                                                       |- Wenn gesetzt werden alle LEVEL1 Debug Ausgaben ausgegeben
+                        |                                                           |
+`-dlevel`               |Debug Level von 1 bis 7 (Zahl)                             |- Wenn gesetzt werden alle Debug Nachrichten die dem gesetzten Level oder niedriger ausgegeben
+                        |                                                           |
+`-dsource`              |Ort der Debug Nachrichten: board, io, main, network, player|- Wenn gesetzt werden alle Debug Nachrichten aus dem spezifizierten Bereich ausgegeben
+                        |                                                           |- Kann in Verbindung mit `-dlevel` genutzt werden um Debug aus einem Bereich mit einem spezifizierten Level oder niedriger zu erhalten
+                        |                                                           |  
+**Monty Carlo Player**  |                                                           |
+                        |                                                           |
+`-thinktime`            |Zeit pro Zug in ms                                         |- Setzt die Zeit die die erweiterte KI pro Runde verwenden wird um den bis dahin besten Zug zu berechnen
+`--fair`                |Flag                                                       |- Wenn gesetzt wird die KI immer so viel Zeit für die Berechnung ihres Zuges verwenden wie der Gegner zuvor gebraucht hat
+                        |                                                           |
+**Advanced AI Settings**|                                                           |
+                        |                                                           |
+`-pstrategy`            |PlayOut Strategie: light (l), heavy (h), dynamic (d)       |- PlayOut Strategie die der MCTS Algorithmus in der Simulationsphase verwendet
+                        |                                                           |
+`-tstrategy`            |TreeSelection Strategie: max (m), robus (r)                |- TreeSelection Strategie welche der MCTS Algorithmus verwendet  um den bestmöglichen Zug auszuwählen
+                        |                                                           |- Max ist der Zug mit der höchsten win / game ratio und robust der Zug mit den meisten simulierten Spielen
+`-parallel`             |Ungefähre maximale Anzahl an nebenläufigen Threads der KI  |- Kann gesetzt werden, um der KI es zu ermöglichen eine höhere Anzahl an Threads zur Simulierung von Spielen zu verwenden
+                        |                                                           |
+`-bias`                 |Bias Faktor in der UCB1 Formel                             |- Kann gesetzt werden um den bias Faktor zur Berechnung der UCB1 Werte von Nodes im MCTS zu verändern (Erfahrungsgemäß sollten Werte zwischen 0,4 und 2,5 gewählt werden)
+                        |                                                           |
