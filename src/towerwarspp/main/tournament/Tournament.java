@@ -70,7 +70,7 @@ public class Tournament {
      *
      * @return {@link TResult} providing a statistic about this {@link Tournament}
      */
-    public TResult play(boolean statistic) {
+    public TResult play(boolean statistic) throws Exception {
         /*create new TResult object to collect information for every game and create statistic*/
         TResult tResult = new TResult();
         /*set redplayer as first player and blue player second*/
@@ -93,24 +93,19 @@ public class Tournament {
             Game game = new Game(players[red], players[blue], boardSize, view, debug, delayTime);
 
             /*start game, output result of this game and include result in the statistic about this tournament*/
-            try {
                 /*start game and store result*/
-                Result result = game.play(timeOut, PlayerColor.RED);
+            Result result = game.play(timeOut, PlayerColor.RED);
                 /*include result in statistic*/
-                tResult.addResult(result);
-                if(hasView) {
+            tResult.addResult(result);
+            if(hasView) {
                     /*output result of last game*/
-                    view.display(result.toString());
+                view.display(result.toString());
                     /*output current status of the statistic*/
-                    if (statistic)
-                        view.dialog(tResult.toString());
-                }
-            }
-            catch (Exception e) {
-                e.printStackTrace();
-                System.exit(1);
+                if (statistic)
+                    view.dialog(tResult.toString());
             }
         }
+
         return tResult;
     }
 }
