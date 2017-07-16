@@ -57,7 +57,7 @@ public class GraphicIO extends JFrame implements IO {
      */
     private Vector<Move> possibleMoves;
     /**
-     * deliveMove-Object
+     * Move-Object which is used for deliver()
      */
     private Move deliverMove;
     /**
@@ -98,13 +98,9 @@ public class GraphicIO extends JFrame implements IO {
     private Debug debugInstance;
     /**
      * Constructor of the Class {@link GraphicIO}.
-     *
      * Creates a JFrame and add a ComponentListener which listens on the resize of the JFrame.
-     *
-     * Adds to the JPanel an MouseMotionListener and an MouseMoveListener for the click Event and mousemouve Event.
-     *
+     * Adds to the JPanel an MouseMotionListener and an MouseMoveListener for the click Event and mousemove Event.
      * Calculates the Size of the JPanel.
-     *
      */
     public GraphicIO() {
         this.debugInstance = Debug.getInstance();
@@ -151,15 +147,11 @@ public class GraphicIO extends JFrame implements IO {
     }
     /**
      * Setter of Viewer and Initialize of JPanels.
-     *
      * Creates the {@link HexagonGrid} when not initialized before.
-     *
      * Get the Arrays of {@link Polygon} which are
      *  1. All Hexagons.
      *  2. All Hexagons a little smaller (for marking the tokens of the actual Player).
-     *
      *  Add all JPanels to the JFrame.
-     *
      * @param viewer Viewer-Object
      */
     @Override
@@ -206,7 +198,7 @@ public class GraphicIO extends JFrame implements IO {
     }
     /**
      * Set the Text of the ResultDialog and set the Dialog on visible.
-     * @param string String which sould be displayed.
+     * @param string String which should be displayed.
      */
     @Override
     public void dialog(String string) {
@@ -329,11 +321,8 @@ public class GraphicIO extends JFrame implements IO {
     }
     /**
      * Listener on Resize of Frame.
-     *
      * Recalculate the {@link Polygon} size.
-     *
      * Update the {@link HexagonGrid}
-     *
      * @return the Adapter
      */
     private ComponentAdapter getFrameResize() {
@@ -350,9 +339,7 @@ public class GraphicIO extends JFrame implements IO {
     }
     /**
      * Setter of the size of a single Polygon.
-     *
      * Calculates the {@link Polygon} size based on the size of the Frame
-     *
      */
     private void setPolygonSize() {
         double frameWidth = this.jPanel.getWidth();
@@ -383,9 +370,9 @@ public class GraphicIO extends JFrame implements IO {
         return null;
     }
     /**
-     * Creates the MouseListener for the JPanel for the clicks and hover on stones.
+     * Creates the MouseListener for the JPanel for the clicks and hover over a token.
      * When you hover over a token it shows the possible Moves of this token same for click,
-     * but only possible on own Stones.
+     * but only possible on own token.
      * @return MouseListener
      */
     private MouseAdapter getMouseListener() {
