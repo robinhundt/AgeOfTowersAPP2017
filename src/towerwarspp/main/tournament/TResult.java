@@ -140,7 +140,7 @@ public class TResult {
 
     /**
      * Sets the value of illegalMoves
-     * @param the new value of illegal Moves
+     * @param illegalMove the new value of illegal Moves
      */
     void setIllegalMove(int[] illegalMove) {
         this.illegalMove = illegalMove;
@@ -156,7 +156,7 @@ public class TResult {
 
     /**
      * Sets the value of surrender.
-     * @param the new value of surrender
+     * @param surrender the new value of surrender
      */
     public void setSurrender(int[] surrender) {
         this.surrender = surrender;
@@ -172,7 +172,7 @@ public class TResult {
 
     /**
      * Sets the value of avgMoves.
-     * @param the new value of avgMoves
+     * @param avgMoves the new value of avgMoves
      */
     void setAvgMoves(double[] avgMoves) {
         this.avgMoves = avgMoves;
@@ -188,7 +188,7 @@ public class TResult {
 
     /**
      * Sets the value of totalMoves.
-     * @param the new value of totalMoves
+     * @param totalMoves the new value of totalMoves
      */
     public void setTotalMoves(int[] totalMoves) {
         this.totalMoves = totalMoves;
@@ -204,7 +204,7 @@ public class TResult {
 
     /**
      * Sets the value of timeoutGames.
-     * @param the new value of timeoutGames
+     * @param timeoutGames the new value of timeoutGames
      */
     void setTimeoutGames(int timeoutGames) {
         this.timeoutGames = timeoutGames;
@@ -220,7 +220,7 @@ public class TResult {
 
     /**
      * Sets the value of totalGames.
-     * @param the new value of totalGames
+     * @param totalGames the new value of totalGames
      */
     void setTotalGames (int totalGames) {
         this.totalGames = totalGames;
