@@ -123,6 +123,7 @@ public class Entity {
 		this.maxHeight = original.maxHeight;
 		this.maxRange = original.maxRange;
 		this.allMoves = original.copyAllMoves();
+ 		getCounter();
 	}
 	/**
 	 * Returns all moves which correlate with the specified step range: their end positions have the distance range to this token's current position.
@@ -216,7 +217,8 @@ public class Entity {
 	 * @return moveCounter.
 	 */
 	public int getMoveCounter() {
-		return moveCounter;
+		int cnt = getCounter();
+		return cnt;
 	}
 	/**
 	 * Returns true if this entity is a tower.
@@ -245,21 +247,20 @@ public class Entity {
 	 * @return true if this entity can be moved.
 	 */
 	public boolean isMovable() {
+		if(!allMoves.get(0).isEmpty()) System.out.println("Mistake move 0" );
 		if(!isBase && !isBlocked) {
-			int cnt = 0;
-			for(int i = 1; i <= range; ++i) {
-				if(!allMoves.get(i).isEmpty()) {
-					//return true;
-					cnt += allMoves.get(i).size();
-				}
-			}
-			if(cnt != moveCounter) {
-				System.out.println("cnt != moveCounter");
-			}
-			System.out.println("cnt = " + cnt + ", moveCounter = " + moveCounter);
+			int cnt = getCounter();
 			return cnt > 0;
 		}
 		return false;
+	}
+	private int getCounter() {
+		int cnt = 0;
+		for(int i = 1; i <= range; ++i) {
+			cnt += allMoves.get(i).size();
+		}
+		if(cnt != moveCounter) System.out.println("Mistake " + cnt + " " + moveCounter);
+		return cnt;
 	}
 	/**
 	 * Clones this {@link Entity} instance with the copy-constructor.
@@ -275,7 +276,8 @@ public class Entity {
 	public void incHeight() {
 		++height;
 		if(height > maxHeight) {
-			debug.send(LEVEL_7, BOARD, "Tower has height > maxHeight");
+			System.out.println("Tower has height > maxHeight");
+			debug.send(LEVEL_1, BOARD, "Tower has height > maxHeight");
 		}
 	}
 	/**
@@ -284,7 +286,8 @@ public class Entity {
 	public void decHeight() {
 		--height;
 		if(height < 0) {
-			debug.send(LEVEL_7, BOARD, "Entity has height < 0");
+			System.out.println("Entity has height < 0");
+			debug.send(LEVEL_1, BOARD, "Entity has height < 0");
 		}
 	}
 	/**
@@ -296,7 +299,8 @@ public class Entity {
 		allMoves.set(range, new HashSet<Move>());
 		--range;
 		if(range < 0) {
-			debug.send(LEVEL_7, BOARD, "range < 0");
+			System.out.println("range < 0");
+			debug.send(LEVEL_1, BOARD, "range < 0");
 		}
 	}
 	/**
@@ -305,7 +309,8 @@ public class Entity {
 	public void incRange() {
 		++range;
 		if(range > maxRange) {
-			debug.send(LEVEL_7, BOARD, "range > maxRange");
+			System.out.println("range > maxRange");
+			debug.send(LEVEL_1, BOARD, "range > maxRange");
 		}
 	}
 	/**
@@ -323,8 +328,9 @@ public class Entity {
 	 * @param range distance to the move's end position from the current position of this entity.
 	 */
 	synchronized public void addMove(Position end, int range) {
-		if(allMoves.get(range).add(new Move(position, end))) {
+		if(range != 0 && allMoves.get(range).add(new Move(position, end))) {
 			++moveCounter;
+			 getCounter();
 		}
 	}
 	/**
@@ -333,8 +339,9 @@ public class Entity {
 	 * @param range distance to the move's end position from the current position of this entity.
 	 */
 	synchronized public void removeMove(Position end, int range) {
-		if(allMoves.get(range).remove(new Move(position, end))) {
+		if(range != 0 && allMoves.get(range).remove(new Move(position, end))) {
 			--moveCounter;
+ getCounter();
 		}
 	}
 	/**
@@ -342,6 +349,7 @@ public class Entity {
 	 */
 	public void removeAllMoves() {
 		initialiseMoves();
+ getCounter();
 	}
 	/**
 	 * Replaces the current collection of all possible moves with the specified collection of moves and changes the range value respectively.
@@ -353,6 +361,7 @@ public class Entity {
 		this.allMoves = allMoves;
 		this.range = range;
 		this.moveCounter = moveCounter;
+ getCounter();
 	}
 	/**
 	 * Returns collection of clones of all possible moves.
