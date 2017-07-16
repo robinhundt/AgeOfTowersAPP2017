@@ -2,6 +2,7 @@ package towerwarspp.player;
 
 import towerwarspp.board.Board;
 import towerwarspp.preset.Move;
+import towerwarspp.preset.PlayerColor;
 
 import java.util.Random;
 import java.util.Vector;
@@ -30,15 +31,25 @@ public enum PlayStrategy {
     private static Random random = new Random();
 
     /**
-     * Uses the passed {@link Board} object to get all moves available to the Player returned by {@link }
-     * @param board
-     * @return
+     * Uses the passed {@link Board} object to get all moves available to the Player returned by {@link Board#getTurn()},
+     * then randomly selects one of them and returns it.
+     * The Board instance is not changed in any way.
+     * @param board board to get available moves from
+     * @return randomly selected move
      */
     public static Move lightPlay(Board board) {
         Vector<Move> moves = board.allPossibleMoves(board.getTurn());
         return moves.get(random.nextInt(moves.size()));
     }
 
+    /**
+     * Uses the passed {@link Board} object to get all moves available to the Player returned by {@link Board#getTurn()},
+     * then assigns a score to each of them by using the {@link Board#altScore(Move, PlayerColor)} evaluation function
+     * and returns a random move out of the highest scored moves.
+     * The {@link Board} instance is not changed in any way
+     * @param board board to get moves from
+     * @return randomly selected move out of the highest scored moves
+     */
     public static Move heavyPlay(Board board) {
         // get all possible moves that this player has available
         Vector<Move> moves = board.allPossibleMoves(board.getTurn());
