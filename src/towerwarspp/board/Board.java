@@ -15,10 +15,10 @@ import towerwarspp.preset.Status;
 /**
  * This class represents an extended board which, on the one hand, has the same functionality as {@link SimpleBoard}
  * and on the other hand, gives the possibility to score moves according to different score strategies, including the simple one.
- * On request, the Board provides a list of all possible moves which the specified player has. 
+ * On request, the {@link Board} provides a list of all possible moves which the player of the specified color has.
  * It also determines and delivers the best possible moves for the specified player evaluated according to the simple score strategy.
  *
- * @author Anastasiia Kysliak
+ * @author Alexander Wähling, Robin Hundt
  * @version 15-07-17
  */
 public class Board extends SimpleBoard {
@@ -145,33 +145,12 @@ public class Board extends SimpleBoard {
 				}
 			}		
 		}
-		/*if(opponentCanDestroyBase) {
-			System.out.println("My moves " + scoredMoves.size());
-			System.out.println(scoredMoves.peek().getResult() + " " + scoredMoves.peek().getScore());
-			for(MoveScore sc : scoredMoves) {
-				System.out.print(sc.getResult() + " " + sc.getScore() + ", ");
-			}
-			System.out.println();
-		}*/
 		if(!scoredMoves.isEmpty()) {
-			/*System.out.println("All scores");
-			PriorityQueue test = new PriorityQueue<MoveScore>();
-			while(!scoredMoves.isEmpty()) {
-				MoveScore sc = scoredMoves.poll();
-				System.out.print(sc.getMove() + " " + sc.getScore() + " " + sc.getResult() + ", ");
-				test.add(sc);
-			}
-			scoredMoves = test;*/
 			int curScore = scoredMoves.peek().getScore();
 			MoveResult curResult = scoredMoves.peek().getResult();
 			while(!scoredMoves.isEmpty() && scoredMoves.peek().getScore() == curScore && scoredMoves.peek().getResult() == curResult) {
 				bestMoves.add(scoredMoves.poll().getMove());
 			}
-			/*System.out.println("Best");
-			for(Move move : bestMoves) {
-				System.out.print(move +  ", ");
-			}
-			System.out.println();*/
 		}
 		return bestMoves;		
 	}

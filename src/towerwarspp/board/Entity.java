@@ -11,9 +11,11 @@ import towerwarspp.preset.Move;
 import towerwarspp.preset.PlayerColor;
 import towerwarspp.preset.Position;
 /**
- * This Class represents the tokens in the TowerWars game. Every {@link Entity} object contains information about
- * its current position, height, possible moves, if it is blocked and if it is a base. Each object representing a simple stone
- * can become a tower, but if the object represents a base, this property can not be changed.
+ * This class represents a token in the TowerWars game. Every {@link Entity} object contains information about
+ * its current position on the board, height, possible moves, if it is blocked, and if it is a base (has height 0 and no possible moves).
+ * Each {@link Entity} object representing a simple stone can become a tower. But if the object represents a base, the property of being a base
+ * can not be changed. Additionally, every {@link Entity} has information about the board size, the maximal allowed tower height, 
+ * and the maximal possible step range.
  *
  * @author Anastasiia Kysliak
  * @version 15-07-2017
@@ -351,33 +353,4 @@ getCounter();
 		moveCounter = 0;
 		this.range = 1;
 	}
-	/**
-	 * Returns all moves which correlate with the specified step range: their end positions have the distance range to this token's current position.
-	 * @param range the step range which allows reaching the moves in question.
-	 * @return the Vector of positions
-	 */
-	/*public HashSet<Move> getRangeMoves(int range) {
-		return allMoves.get(range);
-	}*/
-	/**
-	 * Increases the step range of this entity by one. All newly possible moves are taken from the argument.
-	 * @param newMoves the newly possible moves which have to be added to this entity's possible moves.
-	 */
-	/*synchronized public void incRange(HashSet<Move> newMoves) {
-		++range;
-		allMoves.set(range, newMoves);
-		moveCounter += newMoves.size();
-	}*/
-	/**
-	 * Replaces the current collection of all possible moves with the specified collection of moves and changes the range value respectively.
-	 * @param allMoves new collection of all possible moves.
-	 * @param range the new step range.
-	 * @param moveConter the number of moves in the new move collection.
-	 */
-	/*public void setAllMoves(Vector<HashSet<Move>> allMoves, int range, int moveConter) {
-		this.allMoves = allMoves;
-		this.range = range;
-		this.moveCounter = moveCounter;
- getCounter();
-	}*/
 }

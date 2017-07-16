@@ -8,14 +8,13 @@ import towerwarspp.board.Entity;
 *	the current turn,
 *	the clone of a token located on some particular field of the board if this field is not empty.
 *
-* @author Kai Kuhlmann
-* @author Anastasiia Kysliak
+* @author Kai Kuhlmann, Anastasiia Kysliak
 * @version 15-07-17
 */
 public interface Viewer {
 	/**
-	* Returns the size the observed board.
-	* @return the size the observed board. 
+	* Returns the size of the observed board.
+	* @return the size of the observed board. 
 	*/
    	int getSize();
 	/**

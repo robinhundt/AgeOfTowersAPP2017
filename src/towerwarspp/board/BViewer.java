@@ -1,4 +1,5 @@
 package towerwarspp.board;
+
 import towerwarspp.preset.PlayerColor;
 import towerwarspp.preset.Position;
 import towerwarspp.preset.Status;
