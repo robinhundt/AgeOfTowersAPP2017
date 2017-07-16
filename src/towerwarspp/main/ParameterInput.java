@@ -16,47 +16,45 @@ import static javax.swing.WindowConstants.DISPOSE_ON_CLOSE;
  * @version 0.3 July 16th 2017
  */
 public class ParameterInput {
-    String string[];
-    JFrame frame;
-    JRadioButton text;
-    JRadioButton graphic;
-    JRadioButton none;
-    JRadioButton redHuman;
-    JRadioButton blueHuman;
-    JRadioButton redRandom;
-    JRadioButton blueRandom;
-    JRadioButton redSimple;
-    JRadioButton blueSimple;
-    JRadioButton redAdvanced1;
-    JRadioButton blueAdvanced1;
-    JRadioButton redAdvanced2;
-    JRadioButton blueAdvanced2;
-    JRadioButton redAdvanced3;
-    JRadioButton blueAdvanced3;
-    JRadioButton redRemote;
-    JRadioButton blueRemote;
-    JLabel redThinkTimeLabel;
-    JLabel blueThinkTimeLabel;
-    JLabel redHostLabel;
-    JLabel redPortLabel;
-    JLabel blueHostLabel;
-    JLabel bluePortLabel;
-    JTextField redThinkTime;
-    JTextField blueThinkTime;
-    JTextField redHostInput;
-    JTextField redPortInput;
-    JTextField blueHostInput;
-    JTextField bluePortInput;
-    ButtonGroup redPlayer;
-    ButtonGroup bluePlayer;
-    ButtonGroup outputGroup;
-    ArrayList<JRadioButton> redRadioButtons;
-    ArrayList<JRadioButton> blueRadioButtons;
-    JButton done = new JButton("Done");
+    private String string[];
+    private JFrame frame;
+    private JRadioButton text;
+    private JRadioButton graphic;
+    private JRadioButton none;
+    private JRadioButton redHuman;
+    private JRadioButton blueHuman;
+    private JRadioButton redRandom;
+    private JRadioButton blueRandom;
+    private JRadioButton redSimple;
+    private JRadioButton blueSimple;
+    private JRadioButton redAdvanced1;
+    private JRadioButton blueAdvanced1;
+    private JRadioButton redAdvanced2;
+    private JRadioButton blueAdvanced2;
+    private JRadioButton redAdvanced3;
+    private JRadioButton blueAdvanced3;
+    private JRadioButton redRemote;
+    private JRadioButton blueRemote;
+    private JLabel redThinkTimeLabel;
+    private JLabel blueThinkTimeLabel;
+    private JLabel redHostLabel;
+    private JLabel redPortLabel;
+    private JLabel blueHostLabel;
+    private JLabel bluePortLabel;
+    private JTextField redThinkTime;
+    private JTextField blueThinkTime;
+    private JTextField redHostInput;
+    private JTextField redPortInput;
+    private JTextField blueHostInput;
+    private JTextField bluePortInput;
+    private ArrayList<JRadioButton> redRadioButtons;
+    private ArrayList<JRadioButton> blueRadioButtons;
+    private JButton done = new JButton("Done");
     /**
      * Consturctor of this Class which initialize all Elements which should be displayed.
+     *
      * There were also added some ActionListener.
-     */
+    */
     ParameterInput() {
         String[] debugOutput = {"", "IO", "Board", "Main", "Network", "Player"};
         String[] debugLevel = {"", "1", "2", "3", "4", "5", "6", "7"};
@@ -87,14 +85,14 @@ public class ParameterInput {
         graphic = new JRadioButton("graphic");
         graphic.setSelected(true);
         none = new JRadioButton("none");
-        outputGroup = new ButtonGroup();
+        ButtonGroup outputGroup = new ButtonGroup();
         outputGroup.add(graphic);
         outputGroup.add(text);
         outputGroup.add(none);
         redRadioButtons = new ArrayList<>();
         blueRadioButtons = new ArrayList<>();
-        redPlayer = new ButtonGroup();
-        bluePlayer = new ButtonGroup();
+        ButtonGroup redPlayer = new ButtonGroup();
+        ButtonGroup bluePlayer = new ButtonGroup();
         redRadioButtons.add(redHuman = new JRadioButton("human"));
         blueRadioButtons.add(blueHuman = new JRadioButton("human"));
         redRadioButtons.add(redRandom = new JRadioButton("random"));
@@ -337,7 +335,7 @@ public class ParameterInput {
                 if(statistic.isSelected()) {
                     args.append("--statistic").append(" ");
                 }
-                if(!error.equals("")) {
+                if(!error.toString().equals("")) {
                     // Error Dialog
                     JDialog errorDialog = new JDialog(frame,"Result");
                     JTextArea errorArea = new JTextArea();
