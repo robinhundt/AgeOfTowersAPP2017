@@ -54,8 +54,8 @@ public class ParameterInput {
     ParameterInput() {
         String[] debugOutput = {"", "IO", "Board", "Main", "Network", "Player"};
         String[] debugLevel = {"", "1", "2", "3", "4", "5", "6", "7"};
-        JComboBox outputBox = new JComboBox(debugOutput);
-        JComboBox levelBox = new JComboBox(debugLevel);
+        JComboBox<String> outputBox = new JComboBox<>(debugOutput);
+        JComboBox<String> levelBox = new JComboBox<>(debugLevel);
         frame = new JFrame("Parameter Input");
         JPanel panel = new JPanel();
         panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
