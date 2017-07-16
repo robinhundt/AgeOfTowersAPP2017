@@ -86,8 +86,8 @@ public class Adv2Player extends BasePlayer {
      * Initializes this Player by first calling {@link super#init(int, PlayerColor)} then {@link Mcts#setInit(Board)} to
      * notify Mcts algorithm about new game state.
      * If the Thread {@link #ai} is not alive, it's started.
-     * @param boardSize
-     * @param playerColor
+     * @param boardSize size to initialize {@link BasePlayer}'s board with.
+     * @param playerColor color of this Player
      * @throws Exception if boardSize is less than 4 or greater than 26
      */
     @Override
