@@ -53,8 +53,8 @@ public class Board extends SimpleBoard {
 	 */
 	public Board clone() {
 		Entity[][] newBoard = new Entity[size+1][size+1];
-		newBoard[1][1] = board[1][1].clone();
-		newBoard[size][size] = board[size][size].clone();
+		newBoard[1][1] = getElement(new Position(1, 1)).clone();
+		newBoard[size][size] = getElement(new Position(size, size)).clone();
 		Vector<Entity> newListRed = cloneAndPutOnBoard(listRed, newBoard);
 		Vector<Entity> newListBlue = cloneAndPutOnBoard(listBlue, newBoard);
 		return new Board(size, turn, newListRed, newListBlue, newBoard, redBase, blueBase);
@@ -93,7 +93,7 @@ public class Board extends SimpleBoard {
         Position endPos = move.getEnd();
         if(endPos.equals(opponentBase))
             return WIN;
-        Entity opponent = board[endPos.getLetter()][endPos.getNumber()];
+        Entity opponent = getElement(endPos);
         int score = 3 * distance(move.getStart(), opponentBase) - distance(endPos, opponentBase);
         int disToOwnBase = distance(move.getStart(), ownBase);
         if(disToOwnBase < 4 && disToOwnBase < size / 4.0)

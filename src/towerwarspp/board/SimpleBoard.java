@@ -45,12 +45,6 @@ public class SimpleBoard implements Viewable {
 	protected PlayerColor turn = RED;
 
 	/**
-	* The current board satus.
-	*/
-
-	private Status status = OK;
-
-	/**
 	* A list of all potentially movable tokens belonging to the red player.
 	* This list contais only stones and towers (blocked and not blocked), but not the base.
 	*/
@@ -61,11 +55,6 @@ public class SimpleBoard implements Viewable {
 	* This list contais only stones and towers (blocked and not blocked), but not the base.
 	*/
 	protected Vector<Entity> listBlue = new Vector<Entity>();
-
-	/**
-	* The representation of the board as a 2-dimensional array of Entities.
-	*/
-	protected Entity[][] board;
 
 	/**
 	* The position of the red base.
@@ -81,6 +70,16 @@ public class SimpleBoard implements Viewable {
 	* Instance of the class {@link Debug}.
 	*/ 
 	protected Debug debug;
+
+	/**
+	* The current board satus.
+	*/
+	private Status status = OK;
+
+	/**
+	* The representation of the board as a 2-dimensional array of Entities.
+	*/
+	private Entity[][] board;
 
 	/**
 	* Stores the information on the win type if the game is finished. This variable has value null as long as the game is not finished.
