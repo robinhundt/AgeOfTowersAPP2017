@@ -82,35 +82,35 @@ public class TResult {
         totalMoves = new int[2];
     }
 
-    public int[] getWins() {
+    int[] getWins() {
         return Arrays.copyOf(wins, wins.length);
     }
 
-    public void setWins(int[] wins) {
+    void setWins(int[] wins) {
         this.wins = wins;
     }
 
-    public int[] getBaseDestroyed() {
+    int[] getBaseDestroyed() {
         return Arrays.copyOf(baseDestroyed, baseDestroyed.length);
     }
 
-    public void setBaseDestroyed(int[] baseDestroyed) {
+    void setBaseDestroyed(int[] baseDestroyed) {
         this.baseDestroyed = baseDestroyed;
     }
 
-    public int[] getNoPosMoves() {
+    int[] getNoPosMoves() {
         return Arrays.copyOf(noPosMoves, noPosMoves.length);
     }
 
-    public void setNoPosMoves(int[] noPosMoves) {
+    void setNoPosMoves(int[] noPosMoves) {
         this.noPosMoves = noPosMoves;
     }
 
-    public int[] getIllegalMove() {
+    int[] getIllegalMove() {
         return Arrays.copyOf(illegalMove, illegalMove.length);
     }
 
-    public void setIllegalMove(int[] illegalMove) {
+    void setIllegalMove(int[] illegalMove) {
         this.illegalMove = illegalMove;
     }
 
@@ -122,15 +122,15 @@ public class TResult {
         this.surrender = surrender;
     }
 
-    public double[] getAvgMoves() {
+    double[] getAvgMoves() {
         return Arrays.copyOf(avgMoves, avgMoves.length);
     }
 
-    public void setAvgMoves(double[] avgMoves) {
+    void setAvgMoves(double[] avgMoves) {
         this.avgMoves = avgMoves;
     }
 
-    public int[] getTotalMoves() {
+    int[] getTotalMoves() {
         return Arrays.copyOf(totalMoves, totalMoves.length);
     }
 
@@ -138,19 +138,19 @@ public class TResult {
         this.totalMoves = totalMoves;
     }
 
-    public int getTimeoutGames() {
+    int getTimeoutGames() {
         return timeoutGames;
     }
 
-    public void setTimeoutGames(int timeoutGames) {
+    void setTimeoutGames(int timeoutGames) {
         this.timeoutGames = timeoutGames;
     }
 
-    public int getTotalGames() {
+    int getTotalGames() {
         return totalGames;
     }
 
-    public void setTotalGames (int totalGames) {
+    void setTotalGames (int totalGames) {
         this.totalGames = totalGames;
     }
 

@@ -59,12 +59,6 @@ public class Game {
      * Save Object, which saves all moves and exports them to a savefile
      */
     private Save saveGame;
-
-    /**
-     * the size of the board
-     */
-    private int boardSize;
-
     /**
      *Constructor setting {@link Player}s, {@link Board}, {@link View} and integer variables
      *
@@ -87,7 +81,6 @@ public class Game {
         this.debug = debug;
         this.delayTime = delayTime;
         this.view = view;
-        this.boardSize = boardSize;
         saveGame = new Save(boardSize);
 
 
@@ -263,7 +256,7 @@ public class Game {
      * checks if save is true in view.
      */
     private void checkSave() {
-        if(view.getSave() == true) {
+        if(view.getSave()) {
             try {
                 saveGame.export(view.getSaveGameName());
             } catch (Exception e) {
