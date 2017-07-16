@@ -7,16 +7,34 @@ import java.util.Random;
 import java.util.Vector;
 
 /**
- * Created by robin on 12.07.17.
+ * Class offering enums representing different play strategies and methods that implement those strategies.
+ *
  */
 public enum PlayStrategy {
+    /**
+     * Light PlayStrategy is equivalent to making moves at random. If an AI Player is employing a LIGHT strategy
+     * he should use the offered {@link #lightPlay(Board)} method.
+     */
     LIGHT,
+    /**
+     * Heavy PlayStrategy uses an evaluation function to score moves and randomly chose one of the highest scored ones.
+     */
     HEAVY,
+    /**
+     * Dynamically change between {@link #LIGHT} and {@link #HEAVY}.
+     */
     DYNAMIC;
-
+    /**
+     * Random instance to generate pseudo random numbers.
+     */
     private static Random random = new Random();
 
-    public static Move rndPlay(Board board) {
+    /**
+     * Uses the passed {@link Board} object to get all moves available to the Player returned by {@link }
+     * @param board
+     * @return
+     */
+    public static Move lightPlay(Board board) {
         Vector<Move> moves = board.allPossibleMoves(board.getTurn());
         return moves.get(random.nextInt(moves.size()));
     }
