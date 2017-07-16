@@ -1,13 +1,11 @@
 package towerwarspp.preset;
 
-import com.sun.org.apache.xpath.internal.Arg;
 import towerwarspp.main.OutputType;
-import towerwarspp.main.debug.DebugLevel;
-import towerwarspp.main.debug.DebugSource;
+import towerwarspp.util.debug.DebugLevel;
+import towerwarspp.util.debug.DebugSource;
 import towerwarspp.player.PlayStrategy;
 import towerwarspp.player.mcts.TreeSelectionStrategy;
 
-import java.rmi.RemoteException;
 import java.util.HashMap;
 
 /**
