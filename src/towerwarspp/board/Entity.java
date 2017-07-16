@@ -55,7 +55,7 @@ public class Entity {
 	private int range = 1;
 
 	/**
-	 * Contains all posiible moves of this entity sorted according to the step range needed for reaching the end position.
+	 * Contains all possible moves of this entity sorted according to the step range needed for reaching the end position.
 	 * This means: the position n in the Vector contains a reference to the HashSet where all possible moves of the range n are stored.
 	 */
 	private Vector<HashSet<Move>> allMoves;
@@ -98,7 +98,7 @@ public class Entity {
 	 * Constructor for for the {@link Entity} object which has to be used in order to create a base: 
 	 * it allowes to set the variable isBase on true. 
 	 * @param pos the current position of this token.
-	 * @param the color of this token.
+	 * @param color the color of this token.
 	 * @param size the size of the board on which this token will be used for the TowerWars game.
 	 * @param isBase defines if the new token has to be a base or a normal stone.
 	 */

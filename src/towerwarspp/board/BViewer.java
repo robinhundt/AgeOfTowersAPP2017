@@ -1,6 +1,4 @@
 package towerwarspp.board;
-
-import towerwarspp.preset.Move;
 import towerwarspp.preset.PlayerColor;
 import towerwarspp.preset.Position;
 import towerwarspp.preset.Status;
@@ -23,7 +21,7 @@ public class BViewer implements Viewer {
 	private SimpleBoard board;
 	/**
 	* Creates a new instance of the class {@link BViewer}.
-	* @param board the viewable board object that has to be observed by this {@link BViwer}. 
+	* @param board the viewable board object that has to be observed by this {@link BViewer}.
 	*/
 	public BViewer(SimpleBoard board) {
 		this.board = board;

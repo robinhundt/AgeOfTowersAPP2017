@@ -30,7 +30,7 @@ import towerwarspp.preset.Viewable;
 */
 public class SimpleBoard implements Viewable {
 	/**
-	* A list of {@link Haxagon} objects representing all possible directions on the board.
+	* A list of {@link Hexagon} objects representing all possible directions on the board.
 	*/
 	private final Hexagon[] directions = { new Hexagon(1, 0), new Hexagon(0, 1), new Hexagon(-1, 1),
 			new Hexagon(-1, 0), new Hexagon(0, -1), new Hexagon(1, -1), };
@@ -207,7 +207,7 @@ public class SimpleBoard implements Viewable {
 	}
 	/**
 	* Removes all moves of the specified token.
-	* @param entthe token whose moves have to be removed.
+	* @param ent the token whose moves have to be removed.
 	*/
 	private void removeAllMoves(Entity ent) {
 		ent.removeAllMoves();
@@ -733,7 +733,7 @@ public class SimpleBoard implements Viewable {
 	* list of the neighbouring towers of the other color.
 	* @param pos the position in question.
 	* @param col the color of the towers which are no more allowed to be dismantled on the position closedPos.
-	* @openForOpponent this parameter defines, if the same position has to be added to the list of possible moves 
+	* @param openForOpponent this parameter defines, if the same position has to be added to the list of possible moves
 	*	for the towers of th other color (if so, openForOpponent == true).
 	*/
 	private void positionClosedAndOpenedForTowers(Position pos, PlayerColor col, boolean openForOpponent) {
@@ -847,7 +847,7 @@ public class SimpleBoard implements Viewable {
 	* @param base position of the base which determines positions of the new entities.
 	* @param dist the maximal allowed distance to the base.
 	* @param col the color of the player whose entities have to be created and set on the board.
-	* @list the list where all newly created entities have to be stored.
+	* @param list the list where all newly created entities have to be stored.
 	*/
 	private void initialiseEntities(Position base, int dist, PlayerColor col, Vector<Entity> list) {
 		for(int i = 1; i <= dist; ++i) {

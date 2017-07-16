@@ -4,7 +4,7 @@ import towerwarspp.preset.Move;
 /**
 * This class represents the information on a move in respect to its score made according to the simple strategy
 * and the move's possible consequence. The score is stored as an integer value.
-* The possible conseq‪nce is represented by one of the {@like MoveResult} values. 
+* The possible conseq‪uence is represented by one of the {@like MoveResult} values.
 *
 * @author Anastasiia Kysliak
 * @version 15-07-17

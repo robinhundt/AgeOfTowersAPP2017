@@ -1,12 +1,8 @@
 package towerwarspp.board;
 
 import towerwarspp.preset.*;
-import towerwarspp.io.*;
-import static towerwarspp.preset.PlayerColor.*;
-import static towerwarspp.preset.Status.*;
 import static towerwarspp.board.ChangeType.*;
 import java.util.Vector;
-import java.util.ListIterator;
 import java.lang.Exception;
 
 public class Change {
