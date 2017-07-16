@@ -1,7 +1,4 @@
 package towerwarspp.main.game;
-
-
-
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
@@ -9,15 +6,8 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.ArrayDeque;
 import java.util.Iterator;
-import java.io.IOException;
 import java.util.regex.*;
-
-import towerwarspp.main.game.LoadParserException;
-import towerwarspp.main.tournament.*;
-
 import towerwarspp.preset.Move;
-
-
 /**
  * This class provides the function of saving and loading Save-Games.
  * it saves the history of moves in an ArrayDeque of Moves and writes them into a
