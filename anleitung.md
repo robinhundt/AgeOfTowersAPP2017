@@ -98,6 +98,18 @@ Einem menschlichen Spieler ist es möglich das Spiel aufzugeben. In der graphisc
 In der Text Ein-/Ausgabe wird das Aufgeben dadurch realisiert, dass entweder `surrender` oder ein leerer Zug eingeben wird. Im zweiten Fall wird der Benutzer aufgefordert das Aufgeben zu bestätigen um ungewünschtes Aufgeben zu vermeiden.
 
 ### Speichern und Laden eines Spiels
+#### Speichern
+Das Spiel bietet eine Speicher -und Lademechanik, die es ermöglicht, ein Spiel in eine Textdatei zu speichern.
+Spielt man AgeOfTowers mit der Graphik-Ausgabe, so kann man einfach auf `Save and Exit` klicken. Dann öffnet sich 
+ein Dialog, in dem der Textdatei noch ein Name gegeben werden muss. Ist dies erfolgt, so wird dies mit `Save` bestätigt.
+
+Nach einem abschließden Zug wird das Spiel beendet. In der Konsolenausgabe ist der Pfad zur Speicherdatei im `.aot`-Format zu lesen. Dieser führt in das Home-Verzeichnis des Users mit dem Unterordner `AOT_Saves`.
+Dies ist auch wärend eines Bot-Spiels möglich.
+
+In der Text Ein-/Ausgabe kann nur gespeichert, wenn ein menschlicher Spieler beteiligt ist. Dieser muss, wenn er am Zug ist statt eines normalen Zuges `save` eingeben. Nach einer Rückfrage des Programms muss wieder der Name der zu-erstellenden Speicherdatei eingegeben werden. Enter bestätigt den Speichervorgang, beendet das Spiel und gibt wieder den Pfad zu Datei aus.
+
+#### Laden
+Die Lademechanik wird beim aufrufen der .jar -Datei benutzt. Man übergibt den Namen einer `.aot` - Datei hinter der Setting `-load`. Dabei ist zu beachten, dass nun keine Setting `-size` mehr gemacht werden muss, da die größe des gespeicherten Boards geladen wird.
 
 
 ## Quick Reference
@@ -121,6 +133,8 @@ Parameter             |       Optionen                                          
 `-games`              |Anzahl (n > 1) an Spielen im Turnier                       |- Startet ein Turnier mit der angegebenen Anzahl an Spielen
                       |                                                           |
 `--statistic`         |Flag                                                       |- Kontinuierliche Anzeige des Turnierstatus während eines Turniers
+                      |                                                           |
+`-load`               |Name der Datei, die geladen werden soll "Name.aot"         |-läd die angegebene Save-File als Spielstand
                       |                                                           |
                       |                                                           |
  **Remote**           |                                                           |
