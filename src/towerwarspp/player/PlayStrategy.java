@@ -28,7 +28,7 @@ public enum PlayStrategy {
     /**
      * Random instance to generate pseudo random numbers.
      */
-    private static Random random = new Random();
+    private static final Random random = new Random();
 
     /**
      * Uses the passed {@link Board} object to get all moves available to the Player returned by {@link Board#getTurn()},

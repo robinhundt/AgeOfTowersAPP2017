@@ -26,15 +26,15 @@ public class Adv2Player extends BasePlayer {
     /**
      * Debug object to send debug messages.
      */
-    private Debug debug;
+    private final Debug debug;
     /**
      * Core piece of this player. This reference to the implementation of the Monte
      */
-    private Mcts mcts;
+    private final Mcts mcts;
     /**
      * Thread that the {@link #mcts} Runnable is executed in.
      */
-    private Thread ai;
+    private final Thread ai;
 
 
     /**
@@ -64,7 +64,7 @@ public class Adv2Player extends BasePlayer {
     @Override
     Move deliverMove() {
         Move move = mcts.getMove();
-        debug.send(DebugLevel.LEVEL_1, DebugSource.PLAYER, "Adv2Player " + color + " moving " + move);
+        debug.send(DebugLevel.LEVEL_2, DebugSource.PLAYER, "Adv2Player " + color + " moving " + move);
         return move;
     }
 

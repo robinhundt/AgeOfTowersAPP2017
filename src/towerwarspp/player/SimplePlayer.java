@@ -28,7 +28,7 @@ public class SimplePlayer extends BasePlayer {
      * Random instance that is used to generate pseudo-rnd Integers that are used to pick a rnd move from all
      * possible moves for ths player.
      */
-    private Random rnd;
+    private final Random rnd;
 
     /**
      * Construct a new Random Player. For the initialization of the {@link #rnd} object no seed is used, which causes

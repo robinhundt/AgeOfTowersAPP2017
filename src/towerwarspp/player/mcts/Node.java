@@ -22,7 +22,7 @@ import towerwarspp.preset.PlayerColor;
  * children as well es a list of unexplored children.
  */
 
-public class Node {
+class Node {
     /**
      * Bias that is used as a constant in the calculation of the UCB1 in formulae during {@link Node#bestUCBChild()}.
      */
@@ -36,7 +36,7 @@ public class Node {
      * seed of the random number generator to a value very likely to be distinct from any other invocation of this constructor."
      * @see <a href="https://docs.oracle.com/javase/8/docs/api/java/util/Random.html#Random--">JavaDoc Random</a>
      */
-    private static Random random = new Random();
+    private static final Random random = new Random();
     /**
      * Number of wins in the subtree containing this Node.
      */
@@ -61,11 +61,11 @@ public class Node {
     /**
      * The player whose possible {@link #move} is saved in the Node.
      */
-    private PlayerColor player;
+    private final PlayerColor player;
     /**
      * The players enemy.
      */
-    private PlayerColor enemy;
+    private final PlayerColor enemy;
     /**
      * The parent Node of this Node.
      */
@@ -77,7 +77,7 @@ public class Node {
     /**
      * Explored (meaning a playout has been done from their represented game state) children of this Node.
      */
-    private ArrayList<Node> children;
+    private final ArrayList<Node> children;
     /**
      * Children of this Node for which no information has been gathered.
      */

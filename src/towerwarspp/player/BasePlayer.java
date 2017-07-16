@@ -24,7 +24,7 @@ public abstract class BasePlayer implements Player {
      * Board instance on which the player places all his own and opponent moves. Is used to guarantee
      * that no moves are played that are considered Illegal by ones own Board implementation (necessary for remote play)
      */
-    protected Board board;
+    Board board;
     /**
      * State that represents the point in the request - confirm - makeMove cycle of the Player
      */
@@ -32,9 +32,11 @@ public abstract class BasePlayer implements Player {
     /**
      * Color of this Player instance
      */
-    protected PlayerColor color;
-
-    private Debug debug = Debug.getInstance();
+    PlayerColor color;
+    /**
+     * {@link Debug} Debug instance to log messages.
+     */
+    private final Debug debug = Debug.getInstance();
 
     /**
      * Only abstract method. Is called inside the request method. Subclasses of BasePlayer should put their logic into
@@ -113,6 +115,7 @@ public abstract class BasePlayer implements Player {
      */
     @Override
     public void update(Move opponentMove, Status boardStatus) throws Exception {
+        debug.send(DebugLevel.LEVEL_1, DebugSource.PLAYER, "BasePlayer: " + color + " received move " + opponentMove);
         if(state != PlayerState.UPDATE)
             throw new Exception("Illegal PlayerState. makeMove can only be called after confirm or at first if Player is Blue");
 

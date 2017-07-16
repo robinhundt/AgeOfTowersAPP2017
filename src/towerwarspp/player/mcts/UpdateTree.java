@@ -25,25 +25,25 @@ class UpdateTree implements Runnable {
     /**
      * {@link Debug} object that is used to send relevant debug messages.
      */
-    private Debug debug;
+    private final Debug debug;
     /**
      * Board that the algorithm is executed on.
      */
-    private Board board;
+    private final Board board;
     /**
      * Root of the search tree.
      */
-    private Node root;
+    private final Node root;
     /**
      * The play strategy employed in the simulation phase of the algorithm
      */
-    private PlayStrategy playStrategy;
+    private final PlayStrategy playStrategy;
     /**
      * Variable specifying which subtree of the current root to explore. For example if set to 3, in the first selection
      * step the Node with the third highest UCB1 score is selected. From there on only Nodes that have a maximal
      * UCB1 score are selected.
      */
-    private int nthSubtree;
+    private final int nthSubtree;
 
     /**
      * Constructor to construct a new UpdateTree object. As {@link Board} only copies of the actual board the game is

@@ -75,12 +75,12 @@ public class Mcts implements Runnable{
     /**
      * Reference to Debug object that is used to send debug messages.
      */
-    private Debug debug;
+    private final Debug debug;
     /**
      * ExecutorService that is used to provide parallelization of the main select - expand - simulate - backpropagate
      * loop of the algorithm. Is used to run instance of the Runnable {@link UpdateTree}.
      */
-    private ExecutorService updatePool;
+    private final ExecutorService updatePool;
     /**
      * Array of Futures that is used to store the Futures returned by the {@link ExecutorService#submit(Runnable)} method.
      */
@@ -143,7 +143,7 @@ public class Mcts implements Runnable{
      */
     private TreeSelectionStrategy treeSelectionStrategy = TreeSelectionStrategy.MAX;
 
-    private ArrayDeque<Task> tasks;
+    private final ArrayDeque<Task> tasks;
 
 
     /**
