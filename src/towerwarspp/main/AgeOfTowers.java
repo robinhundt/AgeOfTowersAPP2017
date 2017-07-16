@@ -159,7 +159,8 @@ public class AgeOfTowers {
     }
 
     /**
-     *
+     * This method initialises the Parameter-Input
+     * @return the parameter-input as String-Array
      */
     synchronized private String[] initArguments() throws Exception {
         ParameterInput parameterInput = new ParameterInput();
@@ -285,6 +286,10 @@ public class AgeOfTowers {
         return player;
     }
 
+    /**
+     * creats an Adv2-Player
+     * @return the adv2-Player
+     */
     private Adv2Player createAdv2Player() {
         TreeSelectionStrategy treeSelectionStrategy = TreeSelectionStrategy.MAX;
         PlayStrategy playStrategy = PlayStrategy.DYNAMIC;
@@ -371,7 +376,10 @@ public class AgeOfTowers {
     }
 
 
-
+    /**
+     * The Main of the Game. Starts the new {@link AgeOfTowers} - Object
+     * @param args the Arguments from the comand-line
+     */
     public static void main(String[] args) {
 
         new AgeOfTowers(args);

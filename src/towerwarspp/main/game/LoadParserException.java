@@ -7,11 +7,12 @@ import java.io.IOException;
  * @author Alexander Wähling
  */
 public class LoadParserException extends IOException {
+
+    /**
+     * the Constructor for th exception
+     * @param msg the message to be called
+     */
     public LoadParserException(String msg) {
         super(msg);
-    }
-
-    public LoadParserException(String msg, Throwable cause) {
-        super(msg, cause);
     }
 }

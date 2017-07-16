@@ -27,6 +27,11 @@ public class Result {
         this.winType = winType;
     }
 
+    /**
+     * alternative Constructor
+     * @param moves move-number for win
+     * @param winType the type of the win
+     */
     Result(int moves, WinType winType) {
         this.winner = null;
         this.winnerMoves = moves;

@@ -30,13 +30,8 @@ public class TSave extends Save {
 
     /**
      * Constructor for TSave
+     * @param size the size of the board
      */
-    public TSave (int size, TResult result) {
-        super(size);
-        this.result = result;
-        this.tournament = true;
-    }
-
     public TSave (int size) {
         super(size);
         this.result = new TResult();
@@ -67,9 +62,12 @@ public class TSave extends Save {
         } catch (Exception e) {
             System.out.println("Error Saving File");
         }
-        
-
     }
+
+    /**
+     * This Method writes the {@link Tournament}-Result with agiven writer to a textfile
+     * @param writer the PrintWriter ith the file
+     */
     private void writeTournatment(PrintWriter writer) {
         int red = 0, blue = 1;
         for(int i = red; i < blue; i++) {
