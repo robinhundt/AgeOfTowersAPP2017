@@ -66,7 +66,7 @@ class UpdateTree implements Runnable {
         while (board.getStatus() == OK) {
             Move move;
             if(playStrategy == PlayStrategy.LIGHT)
-                move = PlayStrategy.rndPlay(board);
+                move = PlayStrategy.lightPlay(board);
             else
                 move = PlayStrategy.heavyPlay(board);
             board.makeMove(move);

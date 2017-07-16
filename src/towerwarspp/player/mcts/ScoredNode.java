@@ -16,8 +16,8 @@ class ScoredNode implements Comparable<ScoredNode>{
 
     /**
      * Construct a new pair that holds a reference to the passed Node and it's  score.
-     * @param node
-     * @param ucbScore
+     * @param node Node stored in ScoredNode
+     * @param ucbScore score to store with Node
      */
     ScoredNode(Node node, double ucbScore) {
         this.node = node;
@@ -26,8 +26,9 @@ class ScoredNode implements Comparable<ScoredNode>{
 
     /**
      * Imposes a total ordering on scored Nodes equivalent to the ordering of their double scores.
-     * @param scoredNode
-     * @return
+     * @param scoredNode ScoredNode to compare this instance with
+     * @return negative value if passed ScoredNode is greater, positive value if passed ScoredNode greater and 0 if they
+     * have an equal score
      */
     @Override
     public int compareTo(ScoredNode scoredNode) {

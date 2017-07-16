@@ -11,7 +11,7 @@ import towerwarspp.preset.Move;
  */
 public class RndPlayer extends BasePlayer {
     /**
-     * Implementation of the {@link BasePlayer#deliverMove()} method. Uses the method {@link PlayStrategy#rndPlay(Board)}
+     * Implementation of the {@link BasePlayer#deliverMove()} method. Uses the method {@link PlayStrategy#lightPlay(Board)}
      * to get a random from all the possible moves of this player at the current game state. The PlayerColor does not
      * need to  be passed, because the board itself knows whose turn it is and this method should only be called if it's
      * also this players turn.
@@ -19,6 +19,6 @@ public class RndPlayer extends BasePlayer {
      */
     @Override
     Move deliverMove() {
-        return PlayStrategy.rndPlay(board);
+        return PlayStrategy.lightPlay(board);
     }
 }
