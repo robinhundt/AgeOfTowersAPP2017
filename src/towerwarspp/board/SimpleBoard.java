@@ -330,7 +330,6 @@ public class SimpleBoard implements Viewable {
 	*/
 	public Status makeMove(Move move) {
 		if (move == null) {
-			turn = (turn == RED? BLUE: RED);
 			winType = SURRENDER;
 			status = (turn == RED ? BLUE_WIN : RED_WIN);
 			return status;
