@@ -343,8 +343,8 @@ public class GraphicIO extends JFrame implements IO {
      *
      */
     private void setPolygonSize() {
-        double frameWidth = this.jFrame.getWidth();
-        double frameHeight = this.jFrame.getHeight();
+        double frameWidth = this.jPanel.getWidth();
+        double frameHeight = this.jPanel.getHeight();
         double gridX = (frameWidth / (viewer.getSize() + ((1.0 / 2.0) * (viewer.getSize() - 1)))) / 2.0;
         double gridY = frameHeight / (viewer.getSize() * 2.0);
         gridX = gridX * Math.cos(Math.toRadians(30.0));
