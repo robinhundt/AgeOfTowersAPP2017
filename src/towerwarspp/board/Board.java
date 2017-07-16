@@ -22,9 +22,26 @@ import towerwarspp.preset.Status;
  * @version 15-07-17
  */
 public class Board extends SimpleBoard {
+	/**
+	 * Constant used in the evaluation of moves in {@link #altScore(Move, PlayerColor)}. Represents a move that leads to
+	 * direct victory.
+	 */
 	public static final int WIN = Integer.MAX_VALUE;
+	/**
+	 * Constant used in the evaluation of moves in {@link #altScore(Move, PlayerColor)}. Represents a move that leads to
+	 * to a position allowing the enmy to win within one move.
+	 */
 	public static final int LOSE = Integer.MIN_VALUE;
+	/**
+	 * Constant used in the evaluation of moves in {@link #altScore(Move, PlayerColor)}. Is assigned to moves that have
+	 * their starting position within a certain distance of their base. Is used so there are always a certain amount of
+	 * entities guarding the base.
+	 */
 	private static final int DEFENCE = -5000;
+	/**
+	 * Constant used in the evaluation of moves in {@link #altScore(Move, PlayerColor)}. Represents a move from an entity
+	 * that was in a {@link #DEFENCE} position but now has the opportunity to defeat an enemy stone.
+	 */
 	private static final int DEFEND = 5000;
 
  	/**
