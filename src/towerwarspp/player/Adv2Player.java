@@ -13,6 +13,7 @@ import towerwarspp.util.debug.DebugSource;
 /**
  * Advanced AI enemy that uses a threading enabled implementation of the Monte Carlo tree search algorithm to decide
  * on his move after the specified amount of time. See {@link Mcts} for an explanation of the algorithm employed.
+ * @author Robin Hundt
  */
 public class Adv2Player extends BasePlayer {
     /**
