@@ -498,7 +498,7 @@ public class Mcts implements Runnable{
     /**
      * Method to make a part of the search tree that is of no use anymore available to be cleared by the Garbage Collector
      * by iteratively setting the parent references of all the ancestors of the passed Node to null.
-     * @param node node to start freein memory from
+     * @param node node to start freeing memory from
      */
     private void freeAncestorMemory(Node node) {
         if(node.getParent() != null) {
