@@ -1,4 +1,4 @@
-package towerwarspp.main.debug;
+package towerwarspp.util.debug;
 
 /**
  * Created by robin on 11.07.17.

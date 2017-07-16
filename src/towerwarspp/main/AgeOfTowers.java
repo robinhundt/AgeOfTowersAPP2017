@@ -1,18 +1,13 @@
 package towerwarspp.main;
 
-import static towerwarspp.main.debug.DebugLevel.*;
-import static towerwarspp.main.debug.DebugSource.MAIN;
-
 import towerwarspp.board.Board;
 import towerwarspp.io.GraphicIO;
 import towerwarspp.io.IO;
 import towerwarspp.io.TextIO;
 import towerwarspp.io.View;
-import javax.swing.*;
-import javax.xml.crypto.dsig.spec.ExcC14NParameterSpec;
-import java.awt.*;
 
-import towerwarspp.main.debug.DebugLevel;
+import towerwarspp.util.debug.Debug;
+import towerwarspp.util.debug.DebugLevel;
 import towerwarspp.main.game.*;
 import towerwarspp.main.tournament.*;
 import towerwarspp.network.Remote;

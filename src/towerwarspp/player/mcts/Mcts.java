@@ -1,7 +1,7 @@
 package towerwarspp.player.mcts;
 
-import static towerwarspp.main.debug.DebugLevel.*;
-import static towerwarspp.main.debug.DebugSource.PLAYER;
+import static towerwarspp.util.debug.DebugLevel.*;
+import static towerwarspp.util.debug.DebugSource.PLAYER;
 import static towerwarspp.player.mcts.Task.*;
 import static towerwarspp.preset.Status.OK;
 
@@ -12,7 +12,7 @@ import java.util.ArrayList;
 import java.util.concurrent.Future;
 
 import towerwarspp.board.Board;
-import towerwarspp.main.Debug;
+import towerwarspp.util.debug.Debug;
 import towerwarspp.player.PlayStrategy;
 
 import towerwarspp.preset.Move;

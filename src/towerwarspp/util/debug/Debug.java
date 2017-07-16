@@ -1,15 +1,11 @@
-package towerwarspp.main;
+package towerwarspp.util.debug;
 
 
-import towerwarspp.main.debug.DebugLevel;
-import towerwarspp.main.debug.DebugSource;
-
-import static towerwarspp.main.debug.DebugLevel.*;
-import static towerwarspp.main.debug.DebugSource.NO_SOURCE_DEBUG;
+import static towerwarspp.util.debug.DebugLevel.*;
+import static towerwarspp.util.debug.DebugSource.NO_SOURCE_DEBUG;
 
 /**
- * 
- * @author Robin Hundt
+ * Created by robin on 11.07.17.
  */
 public class Debug {
 
@@ -48,7 +44,7 @@ public class Debug {
     }
 
 
-    String getDebugOutput() {
+    public String getDebugOutput() {
         String debug = "";
         if(debugMessages.length() > 1) {
             debug =  debugMessages.toString();
@@ -57,21 +53,21 @@ public class Debug {
         return debug;
     }
 
-    DebugLevel getDebugLevel() {
+    public DebugLevel getDebugLevel() {
         return debugLevel;
     }
 
-    void setDebugLevel(DebugLevel debugLevel) {
+    public void setDebugLevel(DebugLevel debugLevel) {
         this.debugLevel = debugLevel;
         debugging = true;
 
     }
 
-    DebugSource getSource() {
+    public DebugSource getSource() {
         return debugSource;
     }
 
-    void setSource(DebugSource source) {
+    public void setSource(DebugSource source) {
         debugSource = source;
         debugging = true;
     }

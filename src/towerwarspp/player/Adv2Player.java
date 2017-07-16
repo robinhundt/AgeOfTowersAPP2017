@@ -1,8 +1,8 @@
 package towerwarspp.player;
 
-import towerwarspp.main.Debug;
-import towerwarspp.main.debug.DebugLevel;
-import towerwarspp.main.debug.DebugSource;
+import towerwarspp.util.debug.Debug;
+import towerwarspp.util.debug.DebugLevel;
+import towerwarspp.util.debug.DebugSource;
 import towerwarspp.player.mcts.Mcts;
 import towerwarspp.player.mcts.TreeSelectionStrategy;
 import towerwarspp.preset.Move;
@@ -24,7 +24,7 @@ public class Adv2Player extends BasePlayer {
     public Adv2Player(long timePerMove, int parallelizationFactor, TreeSelectionStrategy selectionStrategy,
                       PlayStrategy playStrategy, boolean fairPlay, double bias) {
         debug = Debug.getInstance();
-        mcts = new Mcts(timePerMove, parallelizationFactor, playStrategy, selectionStrategy, fairPlay, bias);
+        mcts = new Mcts(timePerMove, parallelizationFactor, playStrategy, selectionStrategy , fairPlay, bias);
         ai = new Thread(mcts);
         ai.setDaemon(true);
     }
@@ -44,7 +44,7 @@ public class Adv2Player extends BasePlayer {
     }
 
     @Override
-    public void init(int boardSize, PlayerColor playerColor) {
+    public void init(int boardSize, PlayerColor playerColor) throws Exception {
         super.init(boardSize, playerColor);
         mcts.setInit(board.clone());
         if(!ai.isAlive()){

@@ -1,8 +1,8 @@
 package towerwarspp.io;
 import java.awt.*;
-import towerwarspp.main.Debug;
-import towerwarspp.main.debug.DebugLevel;
-import towerwarspp.main.debug.DebugSource;
+import towerwarspp.util.debug.Debug;
+import towerwarspp.util.debug.DebugLevel;
+import towerwarspp.util.debug.DebugSource;
 import towerwarspp.preset.Position;
 /**
  * Class {@link HexagonGrid} creates the Grid of the Hexagons

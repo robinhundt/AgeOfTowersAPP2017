@@ -1,9 +1,9 @@
 package towerwarspp.player;
 
 import towerwarspp.board.Board;
-import towerwarspp.main.Debug;
-import towerwarspp.main.debug.DebugLevel;
-import towerwarspp.main.debug.DebugSource;
+import towerwarspp.util.debug.Debug;
+import towerwarspp.util.debug.DebugLevel;
+import towerwarspp.util.debug.DebugSource;
 import towerwarspp.preset.*;
 
 import static towerwarspp.preset.Status.*;
@@ -135,7 +135,10 @@ public abstract class BasePlayer implements Player {
      * @param color {@link PlayerColor} of player
      */
     @Override
-    public void init(int size, PlayerColor color) {
+    public void init(int size, PlayerColor color) throws Exception {
+        if(size < 4 || size > 26)
+            throw new Exception("Illegal board size (must be between 4 and 26)");
+
         board = new Board(size);
         this.color = color;
         if(color == RED)

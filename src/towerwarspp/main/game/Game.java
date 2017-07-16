@@ -2,10 +2,10 @@ package towerwarspp.main.game;
 
 import towerwarspp.board.Board;
 import towerwarspp.io.View;
-import towerwarspp.main.Debug;
+import towerwarspp.util.debug.Debug;
 import towerwarspp.main.WinType;
-import towerwarspp.main.debug.DebugLevel;
-import towerwarspp.main.debug.DebugSource;
+import towerwarspp.util.debug.DebugLevel;
+import towerwarspp.util.debug.DebugSource;
 import towerwarspp.preset.*;
 import towerwarspp.player.*;
 
@@ -187,8 +187,7 @@ public class Game {
 
             /*if debug mode is enabled output information*/
             if (debug && currentMove != null && hasView) {
-                view.display(currentColor + "'move :" + currentMove);
-                view.display("Status: " + board.getStatus());
+                view.display("Status: " + board.getStatus() + currentColor + "'move :" + currentMove);
             }
 
             saveGame.add(currentMove);

@@ -1,10 +1,10 @@
 package towerwarspp.player.mcts;
 
 
-import static towerwarspp.main.debug.DebugLevel.LEVEL_3;
-import static towerwarspp.main.debug.DebugLevel.LEVEL_4;
-import static towerwarspp.main.debug.DebugLevel.LEVEL_5;
-import static towerwarspp.main.debug.DebugSource.PLAYER;
+import static towerwarspp.util.debug.DebugLevel.LEVEL_3;
+import static towerwarspp.util.debug.DebugLevel.LEVEL_4;
+import static towerwarspp.util.debug.DebugLevel.LEVEL_5;
+import static towerwarspp.util.debug.DebugSource.PLAYER;
 import static towerwarspp.player.mcts.Mcts.DEF_SCORE;
 import static towerwarspp.preset.PlayerColor.BLUE;
 import static towerwarspp.preset.PlayerColor.RED;
@@ -12,7 +12,7 @@ import static towerwarspp.preset.Status.BLUE_WIN;
 import static towerwarspp.preset.Status.OK;
 
 import towerwarspp.board.Board;
-import towerwarspp.main.Debug;
+import towerwarspp.util.debug.Debug;
 import towerwarspp.player.PlayStrategy;
 
 import towerwarspp.preset.Move;

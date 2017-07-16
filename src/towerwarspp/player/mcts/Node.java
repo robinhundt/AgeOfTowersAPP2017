@@ -1,14 +1,14 @@
 package towerwarspp.player.mcts;
 
-import static towerwarspp.main.debug.DebugLevel.*;
-import static towerwarspp.main.debug.DebugSource.PLAYER;
+import static towerwarspp.util.debug.DebugLevel.*;
+import static towerwarspp.util.debug.DebugSource.PLAYER;
 import static towerwarspp.preset.PlayerColor.*;
 
 
 import java.util.*;
 
 import towerwarspp.board.Board;
-import towerwarspp.main.Debug;
+import towerwarspp.util.debug.Debug;
 
 import towerwarspp.preset.Move;
 import towerwarspp.preset.PlayerColor;

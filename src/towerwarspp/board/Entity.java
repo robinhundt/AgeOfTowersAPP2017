@@ -1,13 +1,12 @@
 package towerwarspp.board;
 
-import static towerwarspp.main.debug.DebugLevel.*;
-import static towerwarspp.main.debug.DebugSource.*;
+import static towerwarspp.util.debug.DebugLevel.*;
+import static towerwarspp.util.debug.DebugSource.*;
 
 import java.util.Vector;
 import java.util.HashSet;
 
-import towerwarspp.main.debug.*;
-import towerwarspp.main.Debug;
+import towerwarspp.util.debug.Debug;
 import towerwarspp.preset.Move;
 import towerwarspp.preset.PlayerColor;
 import towerwarspp.preset.Position;

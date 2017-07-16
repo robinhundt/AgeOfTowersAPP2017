@@ -3,9 +3,9 @@ import static towerwarspp.preset.PlayerColor.RED;
 import java.util.NoSuchElementException;
 import java.util.Scanner;
 import towerwarspp.board.Entity;
-import towerwarspp.main.Debug;
-import towerwarspp.main.debug.DebugLevel;
-import towerwarspp.main.debug.DebugSource;
+import towerwarspp.util.debug.Debug;
+import towerwarspp.util.debug.DebugLevel;
+import towerwarspp.util.debug.DebugSource;
 import towerwarspp.preset.Position;
 import towerwarspp.preset.Viewer;
 import towerwarspp.preset.PlayerColor;
@@ -77,7 +77,7 @@ public class TextIO implements IO {
     public TextIO() {
         this.debugInstance = Debug.getInstance();
         this.scanner = new Scanner(System.in);
-        this.debugInstance.send(DebugLevel.LEVEL_2, DebugSource.IO, "TextIO initialized.");
+        this.debugInstance.send(DebugLevel.LEVEL_1, DebugSource.IO, "TextIO initialized.");
     }
     /**
      * Overridden method setViewer() to set own {@link Viewer}.
@@ -211,7 +211,7 @@ public class TextIO implements IO {
             nextMove = this.scanner.nextLine();
             /*if user wants to surrender*/
             if (nextMove.equals("surrender")) {
-                this.debugInstance.send(DebugLevel.LEVEL_3, DebugSource.IO, "Game surrendered. Input: " + nextMove);
+                this.debugInstance.send(DebugLevel.LEVEL_1, DebugSource.IO, "Game surrendered. Input: " + nextMove);
                 return null;
             }
             /*another option to surrender, but user will be asked twice*/
@@ -219,11 +219,11 @@ public class TextIO implements IO {
                 System.out.println("Do you really want to surrender? yes or no");
                 String answer = this.scanner.nextLine();
                 if (answer.equals("yes") || answer.equals("y")) {
-                    this.debugInstance.send(DebugLevel.LEVEL_3, DebugSource.IO, "Game surrendered. Input: " + nextMove + " and " + answer);
+                    this.debugInstance.send(DebugLevel.LEVEL_1, DebugSource.IO, "Game surrendered. Input: " + nextMove + " and " + answer);
                     return null;
                 }
                 /*if something else then "yes" or "y" will be inputted, return illegal move, so user get's another chance*/
-                this.debugInstance.send(DebugLevel.LEVEL_3, DebugSource.IO, "Move illegal. (" + nextMove + ")");
+                this.debugInstance.send(DebugLevel.LEVEL_2, DebugSource.IO, "Move illegal. (" + nextMove + ")");
                 return new Move(new Position(1, 1), new Position(1, 1));
             }
 
@@ -251,7 +251,7 @@ public class TextIO implements IO {
             return new Move(new Position(1, 1), new Position(1, 1));
         }
         /*if everything went right, return the parsed move*/
-        this.debugInstance.send(DebugLevel.LEVEL_3, DebugSource.IO, "Returned move.");
+        this.debugInstance.send(DebugLevel.LEVEL_2, DebugSource.IO, "Returned move.");
         return move;
     }
 
