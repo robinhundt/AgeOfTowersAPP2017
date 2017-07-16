@@ -82,74 +82,146 @@ public class TResult {
         totalMoves = new int[2];
     }
 
+    /**
+     * Returns the wins.
+     * @return the wins
+     */
     int[] getWins() {
         return Arrays.copyOf(wins, wins.length);
     }
 
+    /**
+     * Sets the Wins.
+     * @param wins the new value of wins.
+     */
     void setWins(int[] wins) {
         this.wins = wins;
     }
 
+    /**
+     * Returns the Int-Array of destroyed-base-wins.
+     * @return the Int-Array of destroyed-base-wins.
+     */
     int[] getBaseDestroyed() {
         return Arrays.copyOf(baseDestroyed, baseDestroyed.length);
     }
 
+    /**
+     * Sets the int-array of destroyed bases
+     * @param baseDestroyed the new Value of baseDestroyed
+     */
     void setBaseDestroyed(int[] baseDestroyed) {
         this.baseDestroyed = baseDestroyed;
     }
 
+    /**
+     * Returns the noPosMoves-Array.
+     * @return the noPosMoves-Array 
+     */
     int[] getNoPosMoves() {
         return Arrays.copyOf(noPosMoves, noPosMoves.length);
     }
 
+    /**
+     * Sets the value of noPosMoves.
+     * @param noPosMoves the new value of noPosMoves
+     */
     void setNoPosMoves(int[] noPosMoves) {
         this.noPosMoves = noPosMoves;
     }
 
+    /**
+     * Returns the illegalMoves-array.
+     * @return illiegalMoves
+     */
     int[] getIllegalMove() {
         return Arrays.copyOf(illegalMove, illegalMove.length);
     }
 
+    /**
+     * Sets the value of illegalMoves
+     * @param the new value of illegal Moves
+     */
     void setIllegalMove(int[] illegalMove) {
         this.illegalMove = illegalMove;
     }
 
+    /**
+     * Returns the Value of surrender.
+     * @return the Value of surrender
+     */
     public int[] getSurrender() {
         return Arrays.copyOf(surrender, surrender.length);
     }
 
+    /**
+     * Sets the value of surrender.
+     * @param the new value of surrender
+     */
     public void setSurrender(int[] surrender) {
         this.surrender = surrender;
     }
 
+    /**
+     * Returns the Value of avgMoves.
+     * @return the Value of avgMoves
+     */
     double[] getAvgMoves() {
         return Arrays.copyOf(avgMoves, avgMoves.length);
     }
 
+    /**
+     * Sets the value of avgMoves.
+     * @param the new value of avgMoves
+     */
     void setAvgMoves(double[] avgMoves) {
         this.avgMoves = avgMoves;
     }
 
+    /**
+     * Returns the Value of totalMoves.
+     * @return the Value of totalMoves
+     */
     int[] getTotalMoves() {
         return Arrays.copyOf(totalMoves, totalMoves.length);
     }
 
+    /**
+     * Sets the value of totalMoves.
+     * @param the new value of totalMoves
+     */
     public void setTotalMoves(int[] totalMoves) {
         this.totalMoves = totalMoves;
     }
-
+    
+    /**
+     * Returns the Value of timeoutGames.
+     * @return the Value of timeoutGames
+     */
     int getTimeoutGames() {
         return timeoutGames;
     }
 
+    /**
+     * Sets the value of timeoutGames.
+     * @param the new value of timeoutGames
+     */
     void setTimeoutGames(int timeoutGames) {
         this.timeoutGames = timeoutGames;
     }
 
+    /**
+     * Returns the Value of totalGames.
+     * @return the Value of totalGames
+     */
     int getTotalGames() {
         return totalGames;
     }
 
+    /**
+     * Sets the value of totalGames.
+     * @param the new value of totalGames
+     */
     void setTotalGames (int totalGames) {
         this.totalGames = totalGames;
     }
