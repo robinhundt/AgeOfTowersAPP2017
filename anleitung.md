@@ -3,7 +3,7 @@
 
 #<p align="center">APP-Projekt 2017</p>  
 
-#Gruppenmitlgieder
+#Gruppenmitglieder
 - Alexander Wähling
 - Anastasiia Kysliak
 - Kai Kulhmann

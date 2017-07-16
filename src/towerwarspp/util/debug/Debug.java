@@ -52,20 +52,37 @@ public class Debug {
      debugMessages = new StringBuffer();
     }
 
+    /**
+     * Returns the current set {@link #debugLevel}
+     * @return current debug leve
+     */
     public DebugLevel getDebugLevel() {
         return debugLevel;
     }
 
+    /**
+     * Sets the Debug level.
+     * Also sets {@link #debugging} to true.
+     * @param debugLevel debug level to collect messages at
+     */
     public void setDebugLevel(DebugLevel debugLevel) {
         this.debugLevel = debugLevel;
         debugging = true;
 
     }
 
+    /**
+     * Returns the current logged {@link DebugSource}.
+     * @return logged source
+     */
     public DebugSource getSource() {
         return debugSource;
     }
-
+    /**
+     * Sets the Debug level.
+     * Also sets {@link #debugging} to true.
+     * @param source source to collect messages at
+     */
     public void setSource(DebugSource source) {
         debugSource = source;
         debugging = true;
