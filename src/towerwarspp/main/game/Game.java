@@ -253,6 +253,7 @@ public class Game {
 
     /**
      * returns the the playercolor of the player, who has to play now
+     * @return Returns which Player is at Turn
      */
     public PlayerColor turn () {
         return board.getTurn();
@@ -270,6 +271,5 @@ public class Game {
             }
             System.exit(0);
         }
-        return;
     }
 }

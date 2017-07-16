@@ -39,7 +39,7 @@ public class Remote {
     /**
      * Setup local RMI with specified port. If there is already a RMI instance on that port running, it's used instead
      * of creating a new RMI registry.
-     * @param port
+     * @param port Port to look on
      */
     public Remote(int port) {
         this.port = port;
@@ -112,7 +112,7 @@ public class Remote {
     }
 
     /**
-     * Look for a remote Player with the sppecified name on the {@link #registry} obtained at object construction.
+     * Look for a remote Player with the specified name on the {@link #registry} obtained at object construction.
      * @param name name to look for
      * @return remote reference to a Player object
      */
@@ -129,7 +129,7 @@ public class Remote {
     }
 
     /**
-     * Looks for Remote obkects bound to {@link #registry} obtained at object construction. If there is only one, it is automatically selected
+     * Looks for Remote objects bound to {@link #registry} obtained at object construction. If there is only one, it is automatically selected
      * and a Player reference to this object returned.
      * If more than one Remote object is bound to the Registry, all bound Objects are listed and the player is interactively
      * asked via commandline which player he wishes to play against.

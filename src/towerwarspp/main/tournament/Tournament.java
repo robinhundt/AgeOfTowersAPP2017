@@ -1,7 +1,4 @@
 package towerwarspp.main.tournament;
-
-import java.util.ArrayDeque;
-
 import towerwarspp.io.View;
 import towerwarspp.preset.*;
 import towerwarspp.main.game.*;
