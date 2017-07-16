@@ -123,6 +123,7 @@ public class Remote {
             player = (Player) registry.lookup(name);
         } catch (RemoteException | NotBoundException e) {
             System.out.println("Couldn't find player " + name + " on " + host + ":" + port);
+            System.exit(1);
         }
         return player;
     }
