@@ -242,7 +242,12 @@ getCounter();
 
 	}
 	private int getCounter() {
-		return moveCounter;
+		int cnt = 0;
+		for(int i = 1; i <= range; ++i) {
+			cnt += allMoves.get(i).size();
+		}
+		if(cnt != moveCounter) System.out.println("cnt != moveCounter");
+		return cnt;
 	}
 	/**
 	 * Clones this {@link Entity} instance with the copy-constructor.
