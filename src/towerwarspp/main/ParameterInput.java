@@ -346,18 +346,6 @@ public class ParameterInput {
                 wakeup();
             }
         });
-
-        //TODO
-        /*
-        same here with playertype, but thats gonna be pretty much code, so maybe allow
-        to tick more than one radiobutton and output an error if this happens
-
-        synchronising needed
-
-        parsing to string needs to be implemented, offered game (maybe with checkbox and if box is ticked,
-        open new options (-name -port -offer)
-         */
-
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.setVisible(true);
         frame.setLocationRelativeTo(null);

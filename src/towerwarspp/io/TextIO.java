@@ -11,7 +11,11 @@ import towerwarspp.preset.Viewer;
 import towerwarspp.preset.PlayerColor;
 import towerwarspp.preset.Move;
 /**
- * Class {@link TextIO} interacting with to user over the command line
+ * Class {@link TextIO} interacting with to user over the command line.
+ *
+ * The User get the Board as a text and after each Move he gets the new board.
+ * He can surrender if he writes in the cli "surrender" or nothing.
+ * The move must be written like A1->A2.
  *
  * @version 1.5 July 06th 2017
  * @author Kai Kuhlmann, Niklas Mueller
@@ -63,11 +67,12 @@ public class TextIO implements IO {
     private String saveGameName;
 
     /**
-     * shows, if the user wants to save the game
+     * Shows, if the user wants to save the game.
      */
     private boolean save = false;
     /**
-     * Constructor to Initialize the TextIO
+     * Constructor to Initialize the TextIO.
+     * Initialize the Scanner for textinput.
      */
     public TextIO() {
         this.debugInstance = Debug.getInstance();
@@ -75,7 +80,7 @@ public class TextIO implements IO {
         this.debugInstance.send(DebugLevel.LEVEL_2, DebugSource.IO, "TextIO initialized.");
     }
     /**
-     * Overridden method setViewer() to set own {@link Viewer}
+     * Overridden method setViewer() to set own {@link Viewer}.
      *
      * @param viewer {@link Viewer} object to be set as {@link Viewer}
      */
@@ -88,7 +93,7 @@ public class TextIO implements IO {
     public void setTitle(String string) {
     }
     /**
-     * Output of the Board
+     * Output of the Board and his Entities.
      */
     public void visualize() {
         StringBuilder output = new StringBuilder();
@@ -129,7 +134,7 @@ public class TextIO implements IO {
         System.out.println(output);
     }
     /**
-     * Overriden method display to get possibility for other classes to inform user
+     * Overriden method display to get possibility for other classes to inform user.
      *
      * @param string containing information for user
      */
@@ -137,11 +142,17 @@ public class TextIO implements IO {
     public void display(String string) {
         System.out.println(string);
     }
+
+    /**
+     * Overriden method to display the turnament or game Results.
+     * @param string information which should be displayed on that Dialog.
+     */
     @Override
     public void dialog(String string) {
+        System.out.println(string);
     }
     /**
-     * Method positionToString() showing if there is an {@link towerwarspp.board.Entity} at given {@link Position} and what kind
+     * Method positionToString() showing if there is an {@link towerwarspp.board.Entity} at given {@link Position} and what kind.
      *
      * @param position {@link Position} of the {@link towerwarspp.board.Entity}
      * @return String containing representation of the {@link Position}
@@ -184,7 +195,7 @@ public class TextIO implements IO {
         return " o ";
     }
     /**
-     * Overridden method deliver() parsing a textual input from the standard-input into a {@link Move}
+     * Overridden method deliver() parsing a textual input from the standard-input into a {@link Move}.
      *
      * @return {@link Move} user wants to make
      * @throws Exception if input has wrong format
@@ -243,12 +254,20 @@ public class TextIO implements IO {
         this.debugInstance.send(DebugLevel.LEVEL_3, DebugSource.IO, "Returned move.");
         return move;
     }
-    
+
+    /**
+     * Returns the name for the Savegame.
+     * @return name of the Savegame
+     */
     @Override
     public String getSaveGameName() {
         return saveGameName;
     }
 
+    /**
+     * Returns true when the game should be saved.
+     * @return true if save is in process.
+     */
     @Override
     public boolean getSave() {
         return save;

@@ -13,7 +13,12 @@ import towerwarspp.preset.Position;
 import towerwarspp.preset.Status;
 import towerwarspp.preset.PlayerColor;
 /**
- * Class {@link GraphicIO} interacts with the User over a GUI
+ * Class {@link GraphicIO} interacts with the User over a GUI.
+ *
+ * This Class draws a Grid of {@link Hexagon} in which this class also draws the {@link Entity}.
+ * The user can hover over one {@link Hexagon} and can see the possible {@link Move} of this {@link Entity} in that {@link Hexagon}.
+ * He can also click with an left click on the {@link Entity} so that he can do his move with a right click on one of the marked {@link Hexagon}.
+ * The user has the possibility to surrender the Game over an Button. He can save the actual Game which also closes the game.
  *
  * @version 0.6 July 07th 2017
  * @author Kai Kuhlmann
@@ -32,7 +37,7 @@ public class GraphicIO extends JFrame implements IO {
      */
     private Polygon[][] polygon;
     /**
-     * Polygon-Object for the marks of which player has turn
+     * Polygon-Object for the marks of which player has turn.
      */
     private Polygon[][] markedPolygon;
     /**
@@ -68,7 +73,7 @@ public class GraphicIO extends JFrame implements IO {
      */
     private JTextArea resultArea;
     /**
-     * The ResultDialog on which is shown the result of the tournament or the game
+     * The ResultDialog on which is shown the result of the tournament or the game.
      */
     private JDialog resultDialog;
     /**
@@ -92,13 +97,13 @@ public class GraphicIO extends JFrame implements IO {
      */
     private Debug debugInstance;
     /**
-     * Constructor of the Class {@link GraphicIO}
+     * Constructor of the Class {@link GraphicIO}.
      *
-     * Creates a JFrame and add a ComponentListener which listens on the resize of the JFrame
+     * Creates a JFrame and add a ComponentListener which listens on the resize of the JFrame.
      *
-     * Adds to the JPanel an MouseMotionListener and an MouseMoveListener for the click Event and mousemouve Event
+     * Adds to the JPanel an MouseMotionListener and an MouseMoveListener for the click Event and mousemouve Event.
      *
-     * Calculates the Size of the JPanel
+     * Calculates the Size of the JPanel.
      *
      */
     public GraphicIO() {
@@ -120,7 +125,7 @@ public class GraphicIO extends JFrame implements IO {
         debugInstance.send(DebugLevel.LEVEL_1, DebugSource.IO, "GraphicIO initialized.");
     }
     /**
-     * Get if Game should be saved
+     * Get if Game should be saved.
      * @return true if game should be saved
      */
     public boolean getSave() {
@@ -129,7 +134,7 @@ public class GraphicIO extends JFrame implements IO {
 
     /**
      * Set for save
-     * should be true when saveButton is clicked.
+     * Should be true when saveButton is clicked.
      * @param save true if button clicked false when dialog hidden.
      */
     private void setSave(boolean save) {
@@ -138,22 +143,22 @@ public class GraphicIO extends JFrame implements IO {
     /**
      * Get the Name of the SaveGame
      * @return name of the savegame
-     * @throws Exception
+     * @throws Exception if the Thread is Interrupted
      */
     synchronized public String getSaveGameName() throws Exception {
         wait();
         return this.saveGameName;
     }
     /**
-     * Setter of Viewer and Initialize of JPanels
+     * Setter of Viewer and Initialize of JPanels.
      *
-     * Creates the {@link HexagonGrid} when not initialized before
+     * Creates the {@link HexagonGrid} when not initialized before.
      *
      * Get the Arrays of {@link Polygon} which are
-     *  1. All Hexagons
-     *  2. All Hexagons a little smaller (for marking the tokens of the actual Player)
+     *  1. All Hexagons.
+     *  2. All Hexagons a little smaller (for marking the tokens of the actual Player).
      *
-     *  Add all JPanels to the JFrame
+     *  Add all JPanels to the JFrame.
      *
      * @param viewer Viewer-Object
      */
@@ -177,7 +182,7 @@ public class GraphicIO extends JFrame implements IO {
         }
     }
     /**
-     * Creates the ResultDialog after a Tournament with a Close Button which closes the Application
+     * Creates the ResultDialog after a Tournament with a Close Button which closes the Application.
      * @return returns ResultDialog
      */
     private JDialog getResultDialog() {
@@ -200,7 +205,8 @@ public class GraphicIO extends JFrame implements IO {
         return resultDialog;
     }
     /**
-     * Set the Text of the ResultDialog and set the Dialog on visible
+     * Set the Text of the ResultDialog and set the Dialog on visible.
+     * @param string String which sould be displayed.
      */
     @Override
     public void dialog(String string) {
@@ -212,7 +218,7 @@ public class GraphicIO extends JFrame implements IO {
         debugInstance.send(DebugLevel.LEVEL_4, DebugSource.IO, "ResultDialog shown.");
     }
     /**
-     * Sets the Title of the JFrame
+     * Sets the Title of the JFrame.
      * @param string String who should be in the Title
      */
     public void setTitle(String string) {
@@ -220,9 +226,9 @@ public class GraphicIO extends JFrame implements IO {
         debugInstance.send(DebugLevel.LEVEL_5, DebugSource.IO, "Title of JFrame set.");
     }
     /**
-     * Creates the ButtonPanel with the two Buttons surrender and save
-     * Surrender Button sends a null Move for surrendering
-     * save button opens a JDialog
+     * Creates the ButtonPanel with the two Buttons surrender and save.
+     * Surrender Button sends a null Move for surrendering.
+     * Save button opens a JDialog.
      * @return returns the ButtonPanel
      */
     private JPanel getButtonPanel() {
@@ -239,8 +245,7 @@ public class GraphicIO extends JFrame implements IO {
         return buttonPanel;
     }
     /**
-     * Creates a TextField at the buttom of the JFrame
-     * and shows actual messages
+     * Creates a TextField at the bottom of the JFrame and shows actual messages
      * @return returns the DebugLine
      */
     private JTextField getDebugLine() {
@@ -252,7 +257,7 @@ public class GraphicIO extends JFrame implements IO {
         return debugLine;
     }
     /**
-     * Set the textarea of ButtonPanel to display e.g turn and player
+     * Set the textarea of ButtonPanel to display e.g turn and player.
      * @param string Information which should be displayed
      */
     @Override
@@ -260,7 +265,7 @@ public class GraphicIO extends JFrame implements IO {
         debugLine.setText(string);
     }
     /**
-     * Creates the SaveDialog where the humanPlayer can choose the savename
+     * Creates the SaveDialog where the humanPlayer can choose the savename.
      * @return returns the savedialog
      */
     private JButton getSaveButton() {
@@ -275,6 +280,11 @@ public class GraphicIO extends JFrame implements IO {
         });
         return save;
     }
+
+    /**
+     * Returns the SaveDialog in which the User can define the name of the savegame.
+     * @return The SaveDialog
+     */
     private JDialog getSaveDialog() {
         JDialog saveDialog = new JDialog();
         JPanel savePanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
@@ -311,16 +321,16 @@ public class GraphicIO extends JFrame implements IO {
         return saveDialog;
     }
     /**
-     * Set the saveDialog visible
+     * Set the saveDialog visible.
      */
     private void showSaveDialog() {
         this.saveDialog.setVisible(true);
         debugInstance.send(DebugLevel.LEVEL_5, DebugSource.IO, "SaveDialog visible.");
     }
     /**
-     * Listener on Resize of Frame
+     * Listener on Resize of Frame.
      *
-     * Recalculate the {@link Polygon} size
+     * Recalculate the {@link Polygon} size.
      *
      * Update the {@link HexagonGrid}
      *
@@ -339,7 +349,7 @@ public class GraphicIO extends JFrame implements IO {
         };
     }
     /**
-     * Setter of the size of a single Polygon
+     * Setter of the size of a single Polygon.
      *
      * Calculates the {@link Polygon} size based on the size of the Frame
      *
@@ -353,7 +363,7 @@ public class GraphicIO extends JFrame implements IO {
         this.polySize = gridX < gridY ? (int)gridX : (int)gridY;
     }
     /**
-     * Get the coordinates of the clicked token
+     * Get the coordinates of the clicked token.
      * @param mouseX X-Coordinate of the Mouse
      * @param mouseY Y-Coordinate of the Mouse
      * @return Coordinates of the Entity
@@ -373,9 +383,9 @@ public class GraphicIO extends JFrame implements IO {
         return null;
     }
     /**
-     * Creates the MouseListener for the JPanel for the clicks and hover on stones
+     * Creates the MouseListener for the JPanel for the clicks and hover on stones.
      * When you hover over a token it shows the possible Moves of this token same for click,
-     * but only possible on own Stones
+     * but only possible on own Stones.
      * @return MouseListener
      */
     private MouseAdapter getMouseListener() {
@@ -389,24 +399,19 @@ public class GraphicIO extends JFrame implements IO {
                 /*-- left mouse click --*/
                 if (e.getButton() == 1 && position != null) {
                     debugInstance.send(DebugLevel.LEVEL_6, DebugSource.IO, "Left Mouseclick.");
-                    try {
-                        positionStart = new Position(position[0], position[1]);
-                        Entity entity = viewer.getEntity(positionStart);
-                        /*-- not Empty & right player & not endofgame --*/
-                        if (entity != null && viewer.getTurn() == entity.getColor() && viewer.getStatus() == Status.OK) {
-                            debugInstance.send(DebugLevel.LEVEL_5, DebugSource.IO, "Clicked on token.");
-                            possibleMoves = entity.getMovesAsVector();
-                            clicked = true;
-                            jPanel.repaint();
-                        } else {
-                            debugInstance.send(DebugLevel.LEVEL_5, DebugSource.IO, "Clicked on empty Hexagon.");
-                            possibleMoves = null;
-                            clicked = false;
-                            jPanel.repaint();
-                        }
-                    } catch (Exception ex) {
-                        System.out.println("mouseClick" + ex);
-                        System.exit(1);
+                    positionStart = new Position(position[0], position[1]);
+                    Entity entity = viewer.getEntity(positionStart);
+                    /*-- not Empty & right player & not endofgame --*/
+                    if (entity != null && viewer.getTurn() == entity.getColor() && viewer.getStatus() == Status.OK) {
+                        debugInstance.send(DebugLevel.LEVEL_5, DebugSource.IO, "Clicked on token.");
+                        possibleMoves = entity.getMovesAsVector();
+                        clicked = true;
+                        jPanel.repaint();
+                    } else {
+                        debugInstance.send(DebugLevel.LEVEL_5, DebugSource.IO, "Clicked on empty Hexagon.");
+                        possibleMoves = null;
+                        clicked = false;
+                        jPanel.repaint();
                     }
                 } else if (e.getButton() == 3 && position != null) { /*-- right mouse click --*/
                     debugInstance.send(DebugLevel.LEVEL_6, DebugSource.IO, "Right mouseclick.");
@@ -444,7 +449,7 @@ public class GraphicIO extends JFrame implements IO {
         };
     }
     /**
-     * Creates the JPanel where the HexagonGrid and the Entities are displayed
+     * Creates the JPanel where the HexagonGrid and the Entities are displayed.
      * @return JPanel
      */
     private JPanel getJPanel() {
@@ -486,7 +491,7 @@ public class GraphicIO extends JFrame implements IO {
         };
     }
     /**
-     * Returns the Char for the Token-Type
+     * Returns the Char for the Token-Type.
      * @param entity Tower or Stone
      * @return the type of the Token as Char
      */
@@ -509,7 +514,7 @@ public class GraphicIO extends JFrame implements IO {
         return chars;
     }
     /**
-     * Returns the Color of the Token
+     * Returns the Color of the Token.
      * @param entity Tower or Stone
      * @return the color of the Token
      */
@@ -532,7 +537,7 @@ public class GraphicIO extends JFrame implements IO {
         return null;
     }
     /**
-     * Creates a Button with the action of surrender
+     * Creates a Button with the action of surrender.
      * @return The surrender Button
      */
     private JButton getSurrenderButton() {
@@ -549,7 +554,7 @@ public class GraphicIO extends JFrame implements IO {
         return button;
     }
     /**
-     * Updates the JPanel
+     * Updates the JPanel.
      */
     @Override
     public void visualize() {
@@ -559,7 +564,7 @@ public class GraphicIO extends JFrame implements IO {
         }
     }
     /**
-     * Waits for Player Input and set the Main-Thread to wait()
+     * Waits for Player Input and set the Main-Thread to wait().
      * @return Move
      * @throws Exception Illegal move
      */
@@ -571,7 +576,7 @@ public class GraphicIO extends JFrame implements IO {
         return deliverMove;
     }
     /**
-     * Draws the LetterLine on top
+     * Draws the LetterLine on top.
      * @param g the graphics Object
      * @param distance the distance of an Hexagoncenter to the edge
      */
@@ -588,7 +593,7 @@ public class GraphicIO extends JFrame implements IO {
         debugInstance.send(DebugLevel.LEVEL_5, DebugSource.IO, "Letter draw complete.");
     }
     /**
-     * fills the Hexagons which have the hovered or clicked token can reach with Green
+     * Fills the Hexagons which have the hovered or clicked token can reach with Green.
      * @param g the graphics Object
      */
     private void drawPossibleMoves(Graphics2D g) {
@@ -606,7 +611,7 @@ public class GraphicIO extends JFrame implements IO {
         }
     }
     /**
-     * Draws the Numbers on the left side
+     * Draws the Numbers on the left side.
      * @param g the graphics Object
      * @param distance the distance of an Hexagoncenter to the edge
      * @param y the row count
@@ -618,7 +623,7 @@ public class GraphicIO extends JFrame implements IO {
         g.drawString(leftNumber, (y - 1) * (distance / 2), hexagonGrid.getCenter(1, y).getY() + (polySize / 4));
     }
     /**
-     * Draws the Entity
+     * Draws the Entity.
      * @param g the graphics Object
      * @param entity the entity on x and y
      * @param distance the distance of an Hexagoncenter to the edge
@@ -648,7 +653,7 @@ public class GraphicIO extends JFrame implements IO {
         }
     }
     /**
-     * Wakes the dormant Main-Thread
+     * Wakes the dormant Main-Thread.
      */
     synchronized private void wakeUp() {
         debugInstance.send(DebugLevel.LEVEL_4, DebugSource.IO, "MainThread wakes up.");
