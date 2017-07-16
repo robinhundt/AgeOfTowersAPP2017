@@ -206,7 +206,9 @@ public class GraphicIO extends JFrame implements IO {
     public void dialog(String string) {
         this.resultArea.setText(string);
         this.resultDialog.pack();
-        this.resultDialog.setVisible(true);
+        if(!this.resultDialog.isVisible()) {
+            this.resultDialog.setVisible(true);
+        }
         debugInstance.send(DebugLevel.LEVEL_4, DebugSource.IO, "ResultDialog shown.");
     }
     /**
