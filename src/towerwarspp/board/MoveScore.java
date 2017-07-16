@@ -4,7 +4,7 @@ import towerwarspp.preset.Move;
 /**
 * This class represents the information on a move in respect to its score made according to the simple strategy
 * and the move's possible consequence. The score is stored as an integer value.
-* The possible conseq‪uence is represented by one of the {@like MoveResult} values.
+* The possible conseq‪uence is represented by one of the {@link MoveResult} values.
 *
 * @author Anastasiia Kysliak
 * @version 15-07-17
@@ -24,7 +24,7 @@ public class MoveScore implements Comparable<MoveScore> {
 	*/
 	private MoveResult result;
 	/**
-	* Creates a new instance of {@lik MoveScore} with the specified parameters.
+	* Creates a new instance of {@link MoveScore} with the specified parameters.
 	* @param move the move whose score and consequence are to be stored in this {@link MoveScore} object.
 	* @param score the score for the move made according to the simple strategy.
 	* @param result the possible consequence of the move.

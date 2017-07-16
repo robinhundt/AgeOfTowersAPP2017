@@ -604,7 +604,7 @@ public class SimpleBoard implements Viewable {
 	* If so, adds a new move - to the position emptyPos - to the tower's possible moves.
 	* @param emptyPos the newly empty position.
 	* @param pos some other position on the board neigbouring to emptyPos.
-	* @col the color of the player whose token has just left the position emptyPos.
+	* @param col the color of the player whose token has just left the position emptyPos.
 	*/
 	private void actualiseTowerNeighbourIsEmpty(Position emptyPos, Position pos, PlayerColor col) {
 		Entity ent = getElement(pos);
@@ -672,7 +672,7 @@ public class SimpleBoard implements Viewable {
 	*		remote moves will be removed from their lists of possible moves.
 	* 	2. For all neigbouring towers of the same color: no changes are needed.
 	* @param tower the tower in question.
-	* @change the necessary change in the step range: will be subtracted from the current range values of the neighbouring stones.
+	* @param change the necessary change in the step range: will be subtracted from the current range values of the neighbouring stones.
 	*/
 	private void actualiseTowerNeighboursRemoveRanges(Entity tower, int change) {
 		HashSet<Move> moves = tower.getMoves().get(1);
@@ -692,7 +692,7 @@ public class SimpleBoard implements Viewable {
 	* 	3. If the tower in question has reached the maximum height, all moves to its position will be removed 
 	* 		from the lists of possible moves for all tokens (stones and towers) of the same color in case they had such moves.
 	* @param tower the tower whose height has been increased.
-	* @change the necessary change in the step range: will be added to the current range values of the neighbouring stones.
+	* @param change the necessary change in the step range: will be added to the current range values of the neighbouring stones.
 	*/
 	private void actualiseOwnTowerUnblockedOrIncreased(Entity tower, int change) {
 		HashSet<Move> moves = tower.getMoves().get(1);
