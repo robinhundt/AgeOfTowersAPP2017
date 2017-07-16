@@ -76,7 +76,9 @@ public class AgeOfTowers {
                 try {
                     args = initArguments();
                 } catch (Exception e) {
-
+                    System.out.println(e.getMessage());
+                    System.out.println(helpOutput());
+                    System.exit(0);
                 }
             }
             /*create new ArgumentParser to get access to settings and flags*/
